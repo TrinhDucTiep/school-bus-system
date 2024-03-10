@@ -6,8 +6,8 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+//import org.springframework.security.oauth2.jwt.Jwt;
+//import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,15 +26,15 @@ public class UserController {
      *
      * @param token The JWT token that was passed in the request.
      */
-    @GetMapping
-    public void syncUser(JwtAuthenticationToken token) {
-        Jwt principal = (Jwt) token.getPrincipal();
-        userService.synchronizeUser(
-                principal.getClaim("preferred_username"),
-                principal.getClaim("email"),
-                principal.getClaim("given_name"),
-                principal.getClaim("family_name"));
-    }
+//    @GetMapping
+//    public void syncUser(JwtAuthenticationToken token) {
+//        Jwt principal = (Jwt) token.getPrincipal();
+//        userService.synchronizeUser(
+//                principal.getClaim("preferred_username"),
+//                principal.getClaim("email"),
+//                principal.getClaim("given_name"),
+//                principal.getClaim("family_name"));
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable String id) {

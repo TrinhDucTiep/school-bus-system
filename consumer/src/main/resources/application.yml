@@ -2,20 +2,24 @@ spring:
   application:
     name: consumer
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3308}/${MYSQL_DB:base_project}?createDatabaseIfNotExist=true
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:1}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${SQL_DB_HOST}:${SQL_DB_PORT}/${POSTGRES_DB}
+    username: ${SQL_DB_USER}
+    password: ${SQL_DB_PASS}
+    hikari: # reference: https://github:com/brettwooldridge/HikariCP#configuration-knobs-baby:
+      maxLifetime: 30000
+      leakDetectionThreshold: 30000
   jpa:
     generate-ddl: true
     show-sql: true
-    hibernate:
-      ddl-auto: update
     properties:
       hibernate:
         jdbc:
+          batch_size: 50
           time_zone: UTC
-        dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
+        order_inserts: true
+        ddl-auto: create
 server:
   port: ${SERVER_PORT:8082}
 

@@ -1,6 +1,7 @@
 app:
   cors:
-    allowed-origins: http://localhost:3000
+    allowed-origins: "*"
+#    allowed-origins: http://localhost:3000
 
 spring:
   application:
@@ -64,61 +65,61 @@ server:
   servlet:
     context-path: '/api'
 
-#management:
-#  metrics:
-#    distribution:
-#      percentiles[http.server.requests]: 0.5, 0.90, 0.95, 0.99
-#      percentiles-histogram[http.server.requests]: true
-#      slo[http.server.requests]: 100ms, 250ms, 500ms, 1s, 2s, 5s, 10s, 30s
-#
-#      percentiles[http.client.requests]: 0.5, 0.90, 0.95, 0.99
-#      percentiles-histogram[http.client.requests]: true
-#      slo[http.client.requests]: 100ms, 250ms, 500ms, 1s, 2s, 5s, 10s, 30s
-#      percentiles-histogram:
-#        http:
-#          server:
-#            requests: true
-#  endpoints:
-#    web:
-#      exposure:
-#        include:
-#          - "health"
-#          - "metrics"
-#          - "prometheus"
-#          - "info"
-#    prometheus:
-#      enabled: true
-#  endpoint:
-#    health:
-#      show-details: always
-#      show-components: always
-#      probes:
-#        enabled: true
-#    prometheus:
-#      enabled: true
-#  otlp:
-#    metrics:
-#      export:
-#        url: ${OTLP_EXPORT_URL:http://localhost:4318/v1/metrics}
-#        step: 10s
-#    tracing:
-#      endpoint: ${OTLP_TRACE_URL:http://localhost:4318/v1/traces}
-#      export:
-#        step: 10s # Export interval set to 10 seconds
-#    tags: #from this i try
-#      application: app
-#    distribution:
-#      percentiles-histogram:
-#        http:
-#          server:
-#            requests: 'true'
-#  tracing:
-#    sampling:
-#      probability: 1.0
-#  prometheus:
-#    metrics:
-#      export:
-#        enabled: true
+management:
+  metrics:
+    distribution:
+      percentiles[http.server.requests]: 0.5, 0.90, 0.95, 0.99
+      percentiles-histogram[http.server.requests]: true
+      slo[http.server.requests]: 100ms, 250ms, 500ms, 1s, 2s, 5s, 10s, 30s
+
+      percentiles[http.client.requests]: 0.5, 0.90, 0.95, 0.99
+      percentiles-histogram[http.client.requests]: true
+      slo[http.client.requests]: 100ms, 250ms, 500ms, 1s, 2s, 5s, 10s, 30s
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "health"
+          - "metrics"
+          - "prometheus"
+          - "info"
+    prometheus:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+    prometheus:
+      enabled: true
+  otlp:
+    metrics:
+      export:
+        url: ${OTLP_EXPORT_URL:http://localhost:4318/v1/metrics}
+        step: 10s
+    tracing:
+      endpoint: ${OTLP_TRACE_URL:http://localhost:4318/v1/traces}
+      export:
+        step: 10s # Export interval set to 10 seconds
+    tags: #from this i try
+      application: app
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: 'true'
+  tracing:
+    sampling:
+      probability: 1.0
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 #logging:
 #  level:
