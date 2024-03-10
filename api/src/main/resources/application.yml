@@ -1,7 +1,7 @@
 app:
   cors:
-    allowed-origins: "*"
-#    allowed-origins: http://localhost:3000
+#    allowed-origins: "*"
+    allowed-origins: http://localhost:3000
 
 spring:
   application:

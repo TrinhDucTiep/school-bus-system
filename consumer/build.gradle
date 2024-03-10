@@ -36,12 +36,12 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka:3.1.1'
 
     // monitoring with opentelemetry, logback, prometheus, micrometer, grafana, loki, tempo
-    implementation 'io.opentelemetry:opentelemetry-sdk'
-    implementation 'io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.0.0-alpha', {
-        exclude group: 'org.jetbrains', module: 'annotations'
-        exclude group: 'org.jetbrains', module: 'kotlin-logging'
-    }
-    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+//    implementation 'io.opentelemetry:opentelemetry-sdk'
+//    implementation 'io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.0.0-alpha', {
+//        exclude group: 'org.jetbrains', module: 'annotations'
+//        exclude group: 'org.jetbrains', module: 'kotlin-logging'
+//    }
+//    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
 }
 
 tasks.named('test') {

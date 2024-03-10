@@ -27,20 +27,20 @@ dependencies {
     // database
     implementation 'org.postgresql:postgresql'
 
-    // monitoring with opentelemetry, logback, prometheus, micrometer, grafana, loki, tempo
-    implementation 'io.micrometer:micrometer-registry-otlp'
-    implementation 'io.opentelemetry:opentelemetry-api'
-    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
-    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
-    runtimeOnly 'io.opentelemetry:opentelemetry-exporter-common'
-    implementation 'io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.0.0-alpha', {
-        exclude group: 'org.jetbrains', module: 'annotations'
-        exclude group: 'org.jetbrains', module: 'kotlin-logging'
-    }
-    implementation 'io.opentelemetry:opentelemetry-sdk'
-    implementation 'io.opentelemetry.instrumentation:opentelemetry-instrumentation-api-semconv'
-    runtimeOnly 'io.opentelemetry:opentelemetry-exporter-otlp-common'
-    implementation 'io.micrometer:micrometer-registry-prometheus'
+//    // monitoring with opentelemetry, logback, prometheus, micrometer, grafana, loki, tempo
+//    implementation 'io.micrometer:micrometer-registry-otlp'
+//    implementation 'io.opentelemetry:opentelemetry-api'
+//    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+//    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+//    runtimeOnly 'io.opentelemetry:opentelemetry-exporter-common'
+//    implementation 'io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.0.0-alpha', {
+//        exclude group: 'org.jetbrains', module: 'annotations'
+//        exclude group: 'org.jetbrains', module: 'kotlin-logging'
+//    }
+//    implementation 'io.opentelemetry:opentelemetry-sdk'
+//    implementation 'io.opentelemetry.instrumentation:opentelemetry-instrumentation-api-semconv'
+//    runtimeOnly 'io.opentelemetry:opentelemetry-exporter-otlp-common'
+//    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     // kafka
     implementation 'org.springframework.kafka:spring-kafka:3.1.1'
