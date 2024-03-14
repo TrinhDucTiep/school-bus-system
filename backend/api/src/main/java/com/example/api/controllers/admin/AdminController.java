@@ -44,7 +44,7 @@ public class AdminController {
     public ResponseEntity<CommonResponse<Object>> postExample(
     ) {
         log.info("This is post /example");
-        return ResponseUtil.toInternalErrorCommonResponse("This is post /example");
+        return ResponseUtil.toInternalErrorCommonResponse();
     }
 
     @PostMapping("/testKafka")

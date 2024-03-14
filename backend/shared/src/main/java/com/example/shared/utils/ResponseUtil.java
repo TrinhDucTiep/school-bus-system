@@ -9,7 +9,7 @@ public class ResponseUtil {
         return new ResponseEntity<>(new CommonResponse<>(data), HttpStatus.OK);
     }
 
-    public static ResponseEntity<CommonResponse<Object>> toInternalErrorCommonResponse(String message) {
+    public static ResponseEntity<CommonResponse<Object>> toInternalErrorCommonResponse() {
         return new ResponseEntity<>(CommonResponse.internalError(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
