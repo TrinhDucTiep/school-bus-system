@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -74,9 +75,10 @@ public class MyExceptionHandler {
             HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InvalidParamsSendException.class)
-    public ResponseEntity<Object> handleSendResponseException(InvalidParamsSendException e) {
-        return new ResponseEntity<>(e.toResponse(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({InvalidParamsSendException.class, BadCredentialsException.class})
+    public ResponseEntity<Object> handleSendResponseException(RuntimeException e) {
+        return new ResponseEntity<>(CommonResponse.badRequest(e.getMessage()),
+            HttpStatus.BAD_REQUEST);
     }
 
     
