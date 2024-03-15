@@ -2,16 +2,14 @@ package com.example.api.controllers.admin;
 
 import com.example.api.controllers.admin.dto.ExampleARequest;
 import com.example.api.services.serviceA.ExampleServiceA;
-import com.example.api.services.serviceA.ExampleServiceAImpl;
 import com.example.shared.response.CommonResponse;
 import com.example.shared.utils.PageableUtils;
 import com.example.shared.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +38,7 @@ public class AdminController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/example")
     public ResponseEntity<CommonResponse<Object>> postExample(
     ) {

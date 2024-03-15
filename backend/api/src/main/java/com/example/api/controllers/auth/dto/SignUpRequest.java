@@ -1,25 +1,25 @@
 package com.example.api.controllers.auth.dto;
 
 import com.example.api.services.auth.dto.SignUpInput;
-import com.example.shared.enumeration.EnumConstraint;
+import com.example.shared.enumeration.EnumValidator;
 import com.example.shared.enumeration.UserRole;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignUpRequest {
-    @NonNull
+    @NotNull
     private String username;
-    @NonNull
+    @NotNull
     private String password;
-    @NonNull
-    @EnumConstraint(enumClass = UserRole.class, message = "Invalid role")
+    @NotNull
+    @EnumValidator(enumClass = UserRole.class)
     private UserRole role;
 
     public SignUpInput toInput() {

@@ -50,6 +50,7 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka:3.1.1'
 
     implementation 'org.apache.commons:commons-lang3'
+    implementation 'jakarta.validation:jakarta.validation-api:2.0.2'
 
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'

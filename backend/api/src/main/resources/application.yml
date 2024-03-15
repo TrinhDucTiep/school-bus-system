@@ -25,6 +25,10 @@ spring:
         format_sql: true
         order_inserts: true
         ddl-auto: create
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  main:
+    allow-bean-definition-overriding: true
 
 security:
   jwt:

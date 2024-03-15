@@ -29,10 +29,10 @@ public class AuthConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/public/*").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/admin/*").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/v1/admin/*").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/v1/client/*").hasRole("CLIENT")
-                .requestMatchers(HttpMethod.POST, "/api/v1/client/*").hasRole("CLIENT")
+//                .requestMatchers(HttpMethod.POST, "/api/v1/admin/*").hasRole("ADMIN") // it will throw error before my exception handler catch it
+//                .requestMatchers(HttpMethod.GET, "/api/v1/admin/*").hasRole("ADMIN")
+//                .requestMatchers(HttpMethod.GET, "/api/v1/client/*").hasRole("CLIENT")
+//                .requestMatchers(HttpMethod.POST, "/api/v1/client/*").hasRole("CLIENT")
                 .anyRequest().authenticated())
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
             .build();

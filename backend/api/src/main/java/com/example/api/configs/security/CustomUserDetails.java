@@ -44,10 +44,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == UserRole.ADMIN) {
-            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
-                           new SimpleGrantedAuthority("ROLE_CLIENT"));
+            return List.of(new SimpleGrantedAuthority("ADMIN"),
+                           new SimpleGrantedAuthority("CLIENT"));
         } else {
-            return List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
+            return List.of(new SimpleGrantedAuthority("CLIENT"));
         }
     }
 

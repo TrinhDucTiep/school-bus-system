@@ -1,19 +1,22 @@
 package com.example.shared.enumeration;
 
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class EnumValidator {
-    public static <T extends Enum<T>> boolean isValid(Enum<?> value, Class<T> enumClass) {
-        if (value == null) {
-            return false;
-        }
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = EnumValidatorConstraint.class)
+public @interface EnumValidator {
 
-        for (Enum<?> enumValue : enumClass.getEnumConstants()) {
-            if (enumValue.name().equals(value.name())) {
-                return true;
-            }
-        }
+  Class<? extends Enum<?>> enumClass();
 
-        return false;
-    }
+  String message() default "invalid value";
+
+  Class<?>[] groups() default {};
+
+  Class<? extends Payload>[] payload() default {};
 }
-
