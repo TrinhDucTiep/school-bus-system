@@ -2,6 +2,7 @@
 import React from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
+import { Button, ButtonGroup } from "@nextui-org/react";
 
 export const Auth: React.FC = () => {
   // extracting data from usesession as session
@@ -42,6 +43,11 @@ export const Auth: React.FC = () => {
     <section>
       <div className="w-full h-screen flex flex-col justify-center items-center">
         <p className="text-2xl mb-2">Not Signed In</p>
+        <ButtonGroup>
+          <Button>One</Button>
+          <Button>Two</Button>
+          <Button>Three</Button>
+        </ButtonGroup>
         <button
           className="bg-blue-600 py-2 px-6 rounded-md mb-2"
           onClick={() => signIn("google")}
