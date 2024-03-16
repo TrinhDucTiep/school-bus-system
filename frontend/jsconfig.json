@@ -1,1 +1,11 @@
 // Configuration file for JavaScript
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "*"
+            ]
+        }
+    }
+}
