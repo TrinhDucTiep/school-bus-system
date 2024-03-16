@@ -4,6 +4,7 @@ import com.example.shared.db.entities.Account;
 import com.example.shared.enumeration.UserRole;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,24 +12,34 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails, OAuth2User {
 
     private long id;
     private String username;
     private String password;
     private UserRole role;
+    private Map<String, Object> attributes;
 
-    public static CustomUserDetails fromAccount(com.example.shared.db.entities.Account account) {
+    public CustomUserDetails (Account account, Map<String, Object> attributes){
+        this.id = account.getId();
+        this.username = account.getUsername();
+        this.password = account.getPassword();
+        this.attributes = attributes;
+        this.role = account.getRole();
+    }
+    public static CustomUserDetails fromAccount(Account account) {
         return new CustomUserDetails(
             account.getId(),
             account.getUsername(),
             account.getPassword(),
-            account.getRole()
+            account.getRole(),
+            null
         );
     }
 
@@ -39,6 +50,11 @@ public class CustomUserDetails implements UserDetails {
             .password(this.password)
             .role(this.role)
             .build();
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
     @Override
@@ -79,5 +95,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return this.username;
     }
 }

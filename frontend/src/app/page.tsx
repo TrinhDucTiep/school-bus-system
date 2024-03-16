@@ -1,10 +1,9 @@
+import { Auth } from "@/components";
 
-export default async function Home() {
+export default function Home() {
   return (
-    <html lang="en">
-      <body>
-        <h1>Hello, world!</h1>
-      </body>
-    </html>
+    <main>
+      <Auth />
+    </main>
   );
 }

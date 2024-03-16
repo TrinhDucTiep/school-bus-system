@@ -1,6 +1,8 @@
 package com.example.shared.db.entities;
 
+import com.example.shared.enumeration.AuthProvider;
 import com.example.shared.enumeration.UserRole;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,7 +35,10 @@ public class Account {
     private String password;
     @Enumerated(EnumType.STRING)
     private UserRole role;
-
+    @Column
+    private AuthProvider provider;
+    @Column(name = "provider_id")
+    private String providerId;
     @CreatedDate
     @CreationTimestamp
     private Instant createdAt;

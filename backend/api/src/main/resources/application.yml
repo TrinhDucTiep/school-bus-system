@@ -2,6 +2,7 @@ app:
   cors:
 #    allowed-origins: "*"
     allowed-origins: http://localhost:3000
+  authorizedRedirectUris: http://localhost:3000/oauth2/callback
 
 spring:
   application:
@@ -29,6 +30,18 @@ spring:
     property-naming-strategy: SNAKE_CASE
   main:
     allow-bean-definition-overriding: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: "345149505576-u7kee7j5oaa95baf5aa7a657p8viqjsh.apps.googleusercontent.com"
+            client-secret: "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"
+            redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
 
 security:
   jwt:
