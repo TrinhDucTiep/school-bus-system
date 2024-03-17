@@ -2,6 +2,7 @@
 import React from "react";
 import { Tabs, Tab, Input, Link, Button, Card, CardBody, CardHeader, Spacer, Divider, TableRow } from "@nextui-org/react";
 import { Google, Github, Twitter, FaceBook } from "@/components/icons";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Login() {
     const [selected, setSelected] = React.useState("login");
@@ -16,7 +17,7 @@ export default function Login() {
                         aria-label="Tabs form"
                         selectedKey={selected}
                         color="primary"
-                        onSelectionChange={setSelected}
+                        onSelectionChange={(key: any) => setSelected(key)}
                     >
                         <Tab key="login" title="Login">
                             <form className="flex flex-col gap-4">
@@ -72,8 +73,13 @@ export default function Login() {
                         <Divider className="flex-grow w-50" />
                     </div>
                     <div className="flex items-center justify-center" style={{ gap: '8px', marginTop: '8px', textAlign: 'center', flexWrap: 'wrap' }}>
-                        <Button isIconOnly variant="flat" color="primary">
-                            <Google />
+                        <Button isIconOnly
+                            variant="flat"
+                            color="primary"
+                        >
+                            <a href={process.env.GOOGLE_AUTHORIZE_URL}>
+                                <Google />
+                            </a>
                         </Button>
                         <Button isIconOnly variant="flat" color="primary">
                             <Github />

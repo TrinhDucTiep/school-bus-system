@@ -41,7 +41,7 @@ public class JwtUtil {
         }
     }
 
-    public static String refreshToken(Account account) {
+    public static String generateRefreshToken(Account account) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
             return JWT.create()
@@ -54,11 +54,11 @@ public class JwtUtil {
         }
     }
 
-    private static Instant genAccessExpirationDate() {
+    public static Instant genAccessExpirationDate() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("+07:00"));
     }
 
-    private static Instant genRefreshExpirationDate() {
+    public static Instant genRefreshExpirationDate() {
         return LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.of("+07:00"));
     }
 }

@@ -47,11 +47,7 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService implements Ser
         Account user;
         if(userOptional.isPresent()){
             user = userOptional.get();
-            AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId());
-            throw new OAuth2AuthenticationProcessingException(
-                "Use your " + user.getProvider() + " account to login");
-
-
+            user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
         }else{
             user = signUpNewUser(oAuth2UserRequest,oAuth2UserInfo);
         }
