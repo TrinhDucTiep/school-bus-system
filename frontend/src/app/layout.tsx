@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/providers";
+import { Providers } from "./providers";
+import { fontSans } from '@/config/fonts';
+import clsx from "clsx";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,9 +20,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <SessionProvider>{children}</SessionProvider>
+      {/* <body className={inter.className}> */}
+      <body className={clsx("font-sans antialiased", fontSans.className)}>
+        <SessionProvider>
+          <Providers>
+            {children}
+          </Providers>
+        </SessionProvider>
       </body>
-    </html>
+    </html >
   );
 }
