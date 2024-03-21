@@ -20,7 +20,6 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning lang="en">
-      {/* <body className={inter.className}> */}
       <body className={clsx("font-sans antialiased", fontSans.className)}>
         <SessionProvider>
           <Providers>

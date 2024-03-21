@@ -11,13 +11,24 @@ export interface ProvidersProps {
 }
 
 export function Providers({ children, themeProps }: ProvidersProps) {
-  return (
-    <NextUIProvider>
-      <NextThemesProvider defaultTheme="system" attribute="class" {...themeProps}>
-        <Layout>
+
+  if (localStorage.getItem('accessToken') && localStorage.getItem('refreshToken')) {
+    return (
+      <NextUIProvider>
+        <NextThemesProvider defaultTheme="system" attribute="class" {...themeProps}>
+          <Layout>
+            {children}
+          </Layout>
+        </NextThemesProvider>
+      </NextUIProvider>
+    );
+  } else {
+    return (
+      <NextUIProvider>
+        <NextThemesProvider defaultTheme="system" attribute="class" {...themeProps}>
           {children}
-        </Layout>
-      </NextThemesProvider>
-    </NextUIProvider>
-  );
+        </NextThemesProvider>
+      </NextUIProvider>
+    );
+  }
 }

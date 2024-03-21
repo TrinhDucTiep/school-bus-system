@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation'
 
 export default function OAuth2Callback() {
     const [refreshToken, setRefreshToken] = useState<string | null>('');
     const [accessToken, setAccessToken] = useState<string | null>('');
+    const router = useRouter()
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -21,7 +22,7 @@ export default function OAuth2Callback() {
                 localStorage.setItem('refreshToken', refreshToken);
             }
 
-            redirect('/');
+            router.push('/')
         }
     }, []);
 
