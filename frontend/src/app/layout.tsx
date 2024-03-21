@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
       {/* <body className={inter.className}> */}
       <body className={clsx("font-sans antialiased", fontSans.className)}>
         <SessionProvider>
