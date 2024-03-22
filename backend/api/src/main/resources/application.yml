@@ -36,8 +36,8 @@ spring:
       client:
         registration:
           google:
-            client-id: "345149505576-u7kee7j5oaa95baf5aa7a657p8viqjsh.apps.googleusercontent.com"
-            client-secret: "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"
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
             scope:
               - email
@@ -46,7 +46,7 @@ spring:
 security:
   jwt:
     token:
-      secret-key: ${JWT_SECRET:tieptd_194185}
+      secret-key: ${JWT_SECRET}
 
 server:
   port: ${SERVER_PORT:8080}
