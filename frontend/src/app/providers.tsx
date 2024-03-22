@@ -11,8 +11,14 @@ export interface ProvidersProps {
 }
 
 export function Providers({ children, themeProps }: ProvidersProps) {
+  const [accessToken, setAccessToken] = React.useState<string | null>();
+  const [refreshToken, setRefreshToken] = React.useState<string | null>();
+  React.useEffect(() => {
+    setAccessToken(localStorage.getItem('accessToken'));
+    setRefreshToken(localStorage.getItem('refreshToken'));
+  }, []);
 
-  if (localStorage.getItem('accessToken') && localStorage.getItem('refreshToken')) {
+  if (accessToken && refreshToken) {
     return (
       <NextUIProvider>
         <NextThemesProvider defaultTheme="system" attribute="class" {...themeProps}>
