@@ -1,12 +1,8 @@
-"use client";
-
+"use client"
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'
-
+import {redirect} from 'next/navigation';
+import Cookies from 'js-cookie';
 export default function OAuth2Callback() {
-    const [refreshToken, setRefreshToken] = useState<string | null>('');
-    const [accessToken, setAccessToken] = useState<string | null>('');
-    const router = useRouter()
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -15,16 +11,14 @@ export default function OAuth2Callback() {
 
         if (token) {
             console.log('token', token);
-            setAccessToken(token);
             localStorage.setItem('accessToken', token);
-            setRefreshToken(refreshToken);
+            Cookies.set('accessToken', token); // Set accessToken in cookies
             if (refreshToken) {
                 localStorage.setItem('refreshToken', refreshToken);
+                Cookies.set('refreshToken', refreshToken); // Set refreshToken in cookies
             }
 
-            router.push('/')
+            redirect('/'); // Redirect to home page
         }
     }, []);
-
-    return null;
 }
