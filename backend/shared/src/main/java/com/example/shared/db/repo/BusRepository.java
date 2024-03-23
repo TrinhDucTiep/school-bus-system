@@ -34,4 +34,6 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
         Long driverMateId,
         Pageable pageable
     );
+
+    Bus findByNumberPlate(String numberPlate);
 }
