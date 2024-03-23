@@ -11,12 +11,10 @@ export interface ProvidersProps {
 
 export default function WithLayoutGroup({ children, themeProps }: ProvidersProps) {
 
-
     return (
         <Layout>
             {children}
         </Layout>
     );
-
 
 }

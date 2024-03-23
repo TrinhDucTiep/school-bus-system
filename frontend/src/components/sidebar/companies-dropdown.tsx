@@ -47,8 +47,8 @@ export const CompaniesDropdown = () => {
         onAction={(e) => {
           if (e === "1") {
             setCompany({
-              name: "Facebook",
-              location: "San Fransico, CA",
+              name: "Admin",
+              location: "School bus",
               logo: <AcmeIcon />,
             });
           }
@@ -80,13 +80,13 @@ export const CompaniesDropdown = () => {
           <DropdownItem
             key="1"
             startContent={<AcmeIcon />}
-            description="San Fransico, CA"
+            description="School bus"
             classNames={{
               base: "py-4",
               title: "text-base font-semibold",
             }}
           >
-            Facebook
+            Admin
           </DropdownItem>
           <DropdownItem
             key="2"

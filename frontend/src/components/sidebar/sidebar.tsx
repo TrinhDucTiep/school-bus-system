@@ -40,42 +40,64 @@ export const SidebarWrapper = () => {
         <div className="flex flex-col justify-between h-full">
           <div className={Sidebar.Body()}>
             <SidebarItem
-              title="Home"
+              title="Trang chủ"
               icon={<HomeIcon />}
               isActive={pathname === "/"}
-              href="/"
+              href="/admin"
             />
             <SidebarMenu title="Main Menu">
               <SidebarItem
-                isActive={pathname === "/accounts"}
-                title="Accounts"
-                icon={<AccountsIcon />}
-                href="accounts"
+                isActive={pathname === "/monitoring"}
+                title="Theo dõi & giám sát"
+                icon={<PaymentsIcon />}
+                href="/admin/monitoring"
               />
               <SidebarItem
-                isActive={pathname === "/payments"}
-                title="Payments"
-                icon={<PaymentsIcon />}
+                isActive={pathname === "/manipulating"}
+                title="Điều phối"
+                icon={<ProductsIcon />}
+                href="/admin/manipulating"
+              />
+              <SidebarItem
+                isActive={pathname === "/vehicles"}
+                title="Lực lượng xe"
+                icon={<AccountsIcon />}
+                href="/admin/vehicles"
+              />
+              <SidebarItem
+                isActive={pathname === "/parents-students"}
+                title="Phụ huynh & học sinh"
+                icon={<CustomersIcon />}
+                href="/admin/parents-students"
+              />
+              <SidebarItem
+                isActive={pathname === "/register"}
+                title="Đăng ký dịch vụ"
+                icon={<ReportsIcon />}
+                href="/admin/register"
+              />
+              <SidebarItem
+                isActive={pathname === "/history-ride"}
+                title="Lịch sử đưa đón"
+                icon={<ReportsIcon />}
+                href="/admin/history-ride"
+              />
+              <SidebarItem
+                isActive={pathname === "/help-center"}
+                title="Trung tâm trợ giúp"
+                icon={<ReportsIcon />}
+                href="/admin/help-center"
+              />
+              <SidebarItem
+                isActive={pathname === "/reports"}
+                title="Báo cáo"
+                icon={<ReportsIcon />}
+                href="/admin/reports"
               />
               <CollapseItems
                 icon={<BalanceIcon />}
                 items={["Banks Accounts", "Credit Cards", "Loans"]}
                 title="Balances"
-              />
-              <SidebarItem
-                isActive={pathname === "/customers"}
-                title="Customers"
-                icon={<CustomersIcon />}
-              />
-              <SidebarItem
-                isActive={pathname === "/products"}
-                title="Products"
-                icon={<ProductsIcon />}
-              />
-              <SidebarItem
-                isActive={pathname === "/reports"}
-                title="Reports"
-                icon={<ReportsIcon />}
               />
             </SidebarMenu>
 

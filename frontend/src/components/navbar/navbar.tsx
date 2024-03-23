@@ -34,7 +34,7 @@ export const NavbarWrapper = ({ children }: Props) => {
               input: "w-full",
               mainWrapper: "w-full",
             }}
-            placeholder="Search..."
+            placeholder="Tìm kiếm..."
           />
         </NavbarContent>
         <NavbarContent
