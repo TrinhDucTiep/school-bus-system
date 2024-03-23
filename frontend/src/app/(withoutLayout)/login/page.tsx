@@ -15,16 +15,16 @@ export default function Login() {
         handleSubmit,
         watch,
         formState: { errors },
-      } = useForm<ILoginData>()
+    } = useForm<ILoginData>()
     const handleLogin: SubmitHandler<ILoginData> = (data) => loginMutation.mutate(data);
 
     const signUpMutation = useHandlerSignup();
     const {
-        register : registerSignUp,
+        register: registerSignUp,
         handleSubmit: handleSubmitSignUp,
         watch: watchSignUp,
         formState: { errors: errorsSignUp },
-      } = useForm<ILoginData>()
+    } = useForm<ILoginData>()
     const handleSignUp: SubmitHandler<ISignUpData> = (data) => signUpMutation.mutate(data);
     return (
         <div className="flex flex-col w-full items-center justify-center min-h-screen">
@@ -40,16 +40,17 @@ export default function Login() {
                     >
                         <Tab key="login" title="Login">
                             <form className="flex flex-col gap-4"
-                            onSubmit={handleSubmit(handleLogin)}
+                                onSubmit={handleSubmit(handleLogin)}
                             >
-                                <Input isRequired label="Email" placeholder="Enter your email" type="email" 
-                                {...register("username")}/>
+                                <Input isRequired label="Email" placeholder="Enter your email" type="email"
+                                    {...register("username", { required: true })}
+                                />
                                 <Input
                                     isRequired
                                     label="Password"
                                     placeholder="Enter your password"
                                     type="password"
-                                    {...register("password")}
+                                    {...register("password", { required: true })}
                                 />
                                 <p className="text-center text-small">
                                     Need to create an account?{" "}
@@ -66,18 +67,18 @@ export default function Login() {
                         </Tab>
                         <Tab key="sign-up" title="Sign up">
                             <form className="flex flex-col gap-4"
-                            onSubmit={handleSubmitSignUp(handleSignUp)}
+                                onSubmit={handleSubmitSignUp(handleSignUp)}
                             >
                                 {/* <Input isRequired label="Name" placeholder="Enter your name" type="password" /> */}
-                                <Input isRequired label="Email" placeholder="Enter your email" type="email" 
-                                {...registerSignUp("username")}
+                                <Input isRequired label="Email" placeholder="Enter your email" type="email"
+                                    {...registerSignUp("username", { required: true })}
                                 />
                                 <Input
                                     isRequired
                                     label="Password"
                                     placeholder="Enter your password"
                                     type="password"
-                                    {...registerSignUp("password")}
+                                    {...registerSignUp("password", { required: true })}
                                 />
                                 <p className="text-center text-small">
                                     Already have an account?{" "}

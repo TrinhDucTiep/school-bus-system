@@ -57,7 +57,7 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService implements Ser
     private Account signUpNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo){
 
         Account account = Account.builder()
-            .provider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
+            .provider(AuthProvider.fromValue(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
             .username(oAuth2UserInfo.getEmail())
             .role(UserRole.CLIENT)
             .build();

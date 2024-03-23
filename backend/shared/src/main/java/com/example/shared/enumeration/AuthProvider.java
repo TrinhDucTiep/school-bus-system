@@ -12,4 +12,13 @@ public enum AuthProvider {
     public String getValue() {
         return provider;
     }
+
+    public static AuthProvider fromValue(String value) {
+        for (AuthProvider provider : AuthProvider.values()) {
+            if (provider.provider.equalsIgnoreCase(value)) {
+                return provider;
+            }
+        }
+        throw new IllegalArgumentException("Invalid AuthProvider value: " + value);
+    }
 }
