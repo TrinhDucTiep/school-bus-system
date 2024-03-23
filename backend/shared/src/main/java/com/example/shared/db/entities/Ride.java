@@ -1,14 +1,16 @@
 package com.example.shared.db.entities;
 
-import com.example.shared.enumeration.AuthProvider;
-import com.example.shared.enumeration.UserRole;
+import com.example.shared.enumeration.RideStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
@@ -25,24 +27,31 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tieptd_194185_account")
-public class Account {
+@Table(name = "tieptd_194185_ride")
+public class Ride {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bus_id")
+    private Bus bus;
 
-    private String password;
+    private Instant startAt;
+
+    private Instant endAt;
+
+    @Column(name = "start_from")
+    private String startFrom;
+
+    @Column(name = "current_latitude")
+    private Double currentLatitude;
+
+    @Column(name = "current_longitude")
+    private Double currentLongitude;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
-
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
-
-    @Column(name = "provider_id")
-    private String providerId;
+    private RideStatus status;
 
     @CreatedDate
     @CreationTimestamp
@@ -50,5 +59,4 @@ public class Account {
     @LastModifiedDate
     @UpdateTimestamp
     private Instant updatedAt;
-
 }

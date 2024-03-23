@@ -1,14 +1,12 @@
 package com.example.shared.db.entities;
 
-import com.example.shared.enumeration.AuthProvider;
-import com.example.shared.enumeration.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
@@ -25,24 +23,24 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tieptd_194185_account")
-public class Account {
+@Table(name = "tieptd_194185_parent")
+public class Parent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 
-    private String password;
+    private String name;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private String avatar;
 
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
+    private Instant dob;
 
-    @Column(name = "provider_id")
-    private String providerId;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @CreatedDate
     @CreationTimestamp
@@ -50,5 +48,4 @@ public class Account {
     @LastModifiedDate
     @UpdateTimestamp
     private Instant updatedAt;
-
 }

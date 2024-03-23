@@ -1,14 +1,16 @@
 package com.example.shared.db.entities;
 
-import com.example.shared.enumeration.AuthProvider;
-import com.example.shared.enumeration.UserRole;
+import com.example.shared.enumeration.DayOfWeek;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
@@ -25,24 +27,28 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tieptd_194185_account")
-public class Account {
+@Table(name = "tieptd_194185_schedule")
+public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    @Column(name = "to_school_at")
+    private Instant toSchoolAt;
 
-    private String password;
+    @Column(name = "out_school_at")
+    private Instant outSchoolAt;
 
+    @Column(name = "day_of_week")
     @Enumerated(EnumType.STRING)
-    private UserRole role;
 
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
+    private DayOfWeek dayOfWeek;
 
-    @Column(name = "provider_id")
-    private String providerId;
+    private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private Student student;
 
     @CreatedDate
     @CreationTimestamp
@@ -50,5 +56,4 @@ public class Account {
     @LastModifiedDate
     @UpdateTimestamp
     private Instant updatedAt;
-
 }

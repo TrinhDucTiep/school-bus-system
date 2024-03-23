@@ -1,7 +1,6 @@
 package com.example.shared.db.entities;
 
-import com.example.shared.enumeration.AuthProvider;
-import com.example.shared.enumeration.UserRole;
+import com.example.shared.enumeration.BusStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,24 +24,26 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tieptd_194185_account")
-public class Account {
+@Table(name = "tieptd_194185_bus")
+public class Bus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    @Column(name = "number_plate")
+    private String numberPlate;
 
-    private String password;
+    @Column(name = "seat_number")
+    private Integer seatNumber;
+
+    @Column(name = "driver_id")
+    private Long driverId;
+
+    @Column(name = "driver_mate_id")
+    private Long driverMateId;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
-
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
-
-    @Column(name = "provider_id")
-    private String providerId;
+    private BusStatus status;
 
     @CreatedDate
     @CreationTimestamp
@@ -50,5 +51,4 @@ public class Account {
     @LastModifiedDate
     @UpdateTimestamp
     private Instant updatedAt;
-
 }
