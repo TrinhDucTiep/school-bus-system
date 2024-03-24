@@ -2,7 +2,8 @@ package com.example.api.services.bus;
 
 import com.example.api.services.bus.dto.GetListBusOutput;
 import com.example.api.services.bus.dto.ListBusFilterParam;
-import com.example.api.services.serviceA.dto.AddBusInput;
+import com.example.api.services.bus.dto.AddBusInput;
+import com.example.api.services.bus.dto.UpdateBusInput;
 import com.example.shared.db.dto.GetListBusDTO;
 import com.example.shared.db.entities.Bus;
 import com.example.shared.db.repo.BusRepository;
@@ -55,6 +56,32 @@ public class BusServiceImpl implements BusService {
             .driverMateId(input.getDriverMateId())
             .build();
         busRepository.save(newBus);
+    }
+
+    @Override
+    public void updateBus(UpdateBusInput input) {
+        Bus bus = busRepository.findById(input.getId())
+            .orElseThrow(() -> new MyException(null,
+                "BUS_NOT_FOUND",
+                "Bus with id " + input.getId() + " not found",
+                HttpStatus.NOT_FOUND));
+
+//        bus.setNumberPlate(input.getNumberPlate()); // not allow to update number plate
+        bus.setSeatNumber(input.getSeatNumber());
+        bus.setStatus(input.getStatus());
+        bus.setDriverId(input.getDriverId());
+        bus.setDriverMateId(input.getDriverMateId());
+        busRepository.save(bus);
+    }
+
+    @Override
+    public void deleteBus(Long id) {
+        Bus bus = busRepository.findById(id)
+            .orElseThrow(() -> new MyException(null,
+                "BUS_NOT_FOUND",
+                "Bus with id " + id + " not found",
+                HttpStatus.NOT_FOUND));
+        busRepository.delete(bus);
     }
 
 }

@@ -41,14 +41,14 @@ public class AuthConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-//                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
 //                .requestMatchers(HttpMethod.GET, "/api/v1/public/**").permitAll()
 //                .requestMatchers(HttpMethod.POST, "/api/v1/public/**").permitAll()
 //                .requestMatchers(HttpMethod.POST, "/api/v1/admin/*").hasRole("ADMIN") // it will throw error before my exception handler catch it
 //                .requestMatchers(HttpMethod.GET, "/api/v1/admin/*").hasRole("ADMIN")
 //                .requestMatchers(HttpMethod.GET, "/api/v1/client/*").hasRole("CLIENT")
 //                .requestMatchers(HttpMethod.POST, "/api/v1/client/*").hasRole("CLIENT")
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
             )
             .oauth2Login(oauth2Login -> oauth2Login
                 .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint

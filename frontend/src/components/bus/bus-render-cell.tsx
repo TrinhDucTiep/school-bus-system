@@ -3,6 +3,8 @@ import React from "react";
 import { DeleteIcon } from "../icons/table/delete-icon";
 import { EditIcon } from "../icons/table/edit-icon";
 import { EyeIcon } from "../icons/table/eye-icon";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useUpdateBus, useDeleteBus } from "@/services/busService";
 
 interface Props {
     bus: IBusTable;
@@ -10,14 +12,27 @@ interface Props {
 }
 
 export const BusRenderCell = ({ bus, columnKey }: Props) => {
+    // const updateBusMutation = useUpdateBus();
+    // const deleteBusMutation = useDeleteBus();
+
+    // const {
+    //     register,
+    //     handleSubmit,
+    //     watch,
+    //     formState: { errors },
+    // } = useForm<IBus>();
+    // const handleUpdateBus: SubmitHandler<IBus> = (data) => updateBusMutation.mutate(data);
+
+    // const handleDeleteBus = (id: number) => deleteBusMutation.mutate(id);
+
     // @ts-ignore
-    const cellValue = bus[columnKey];
+    // const cellValue = bus[columnKey];
     switch (columnKey) {
         case "numberPlate":
             return (
                 <div>
                     <div>
-                        <span>{cellValue}</span>
+                        <span>{bus?.bus.numberPlate}</span>
                     </div>
                 </div>
             );
@@ -25,7 +40,7 @@ export const BusRenderCell = ({ bus, columnKey }: Props) => {
             return (
                 <div>
                     <div>
-                        <span>{cellValue}</span>
+                        <span>{bus?.bus.seatNumber}</span>
                     </div>
                 </div>
             );
@@ -35,9 +50,9 @@ export const BusRenderCell = ({ bus, columnKey }: Props) => {
                     avatarProps={{
                         src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                     }}
-                    name={cellValue}
+                    name={bus?.driver?.name}
                 >
-                    {bus.driverName}
+                    {bus?.driver?.name}
                 </User>
             );
         case "driverMateName":
@@ -46,9 +61,9 @@ export const BusRenderCell = ({ bus, columnKey }: Props) => {
                     avatarProps={{
                         src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                     }}
-                    name={cellValue}
+                    name={bus?.driverMate?.name}
                 >
-                    {bus.driverMateName}
+                    {bus?.driverMate?.name}
                 </User>
             );
         case "status":
@@ -57,14 +72,14 @@ export const BusRenderCell = ({ bus, columnKey }: Props) => {
                     size="sm"
                     variant="flat"
                     color={
-                        cellValue === "active"
+                        bus?.bus?.status === "AVAILABLE"
                             ? "success"
-                            : cellValue === "paused"
+                            : bus?.bus?.status === "MAINTENANCE"
                                 ? "danger"
                                 : "warning"
                     }
                 >
-                    <span className="capitalize text-xs">{cellValue}</span>
+                    <span className="capitalize text-xs">{bus?.bus?.status}</span>
                 </Chip>
             );
 
@@ -73,14 +88,14 @@ export const BusRenderCell = ({ bus, columnKey }: Props) => {
                 <div className="flex items-center gap-4 ">
                     <div>
                         <Tooltip content="Details">
-                            <button onClick={() => console.log("View bus", bus.id)}>
+                            <button onClick={() => console.log("View bus", bus?.bus.id)}>
                                 <EyeIcon size={20} fill="#979797" />
                             </button>
                         </Tooltip>
                     </div>
                     <div>
                         <Tooltip content="Edit bus" color="secondary">
-                            <button onClick={() => console.log("Edit bus", bus.id)}>
+                            <button onClick={() => console.log("Edit bus", bus?.bus.id)}>
                                 <EditIcon size={20} fill="#979797" />
                             </button>
                         </Tooltip>
@@ -89,7 +104,7 @@ export const BusRenderCell = ({ bus, columnKey }: Props) => {
                         <Tooltip
                             content="Delete bus"
                             color="danger"
-                            onClick={() => console.log("Delete bus", bus.id)}
+                            onClick={() => console.log("Delete bus", bus?.bus.id)}
                         >
                             <button>
                                 <DeleteIcon size={20} fill="#FF0080" />
@@ -99,6 +114,6 @@ export const BusRenderCell = ({ bus, columnKey }: Props) => {
                 </div>
             );
         default:
-            return cellValue;
+            return null;
     }
 };

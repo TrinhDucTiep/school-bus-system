@@ -1,8 +1,9 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { camelCase } from 'lodash';
 // Create an axios instance
 const apiClient = axios.create({
-  baseURL: "http://localhost:8080", //todo: hieudt
+  baseURL: "http://localhost:8080", //todo: lam lai sau
 });
 const REFRESH_TOKEN_ENDPOINT: string = process.env.REFRESH_TOKEN_ENDPOINT || ''; // replace with your refresh token endpoint
 // Add a request interceptor
@@ -11,6 +12,9 @@ apiClient.interceptors.request.use((config) => {
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }
+  if (config.data) {
+    config.data = toSnakeCase(config.data);
+  }
   return config;
 }, (error) => {
   return Promise.reject(error);
@@ -18,6 +22,7 @@ apiClient.interceptors.request.use((config) => {
 '/refresh-token-endpoint'
 // Add a response interceptor
 apiClient.interceptors.response.use((response) => {
+  response.data = toCamelCase(response.data);
   return response;
 }, async (error) => {
   const originalRequest = error.config;
@@ -33,5 +38,29 @@ apiClient.interceptors.response.use((response) => {
   }
   return Promise.reject(error);
 });
+
+function toCamelCase(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(v => toCamelCase(v));
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [camelCase(k), toCamelCase(v)])
+    );
+  } else {
+    return obj;
+  }
+}
+
+function toSnakeCase(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(v => toSnakeCase(v));
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [k.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`), toSnakeCase(v)])
+    );
+  } else {
+    return obj;
+  }
+}
 
 export default apiClient;

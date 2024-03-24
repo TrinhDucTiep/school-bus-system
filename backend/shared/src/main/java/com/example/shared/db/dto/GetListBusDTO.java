@@ -5,7 +5,7 @@ import com.example.shared.db.entities.Employee;
 import java.util.List;
 
 public interface GetListBusDTO {
-    public Bus getBus();
-    public Employee getDriver();
-    public Employee getDriverMate();
+    Bus getBus();
+    Employee getDriver();
+    Employee getDriverMate();
 }

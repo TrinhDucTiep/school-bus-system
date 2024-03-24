@@ -1,4 +1,4 @@
-package com.example.api.services.serviceA.dto;
+package com.example.api.services.bus.dto;
 
 import com.example.shared.enumeration.BusStatus;
 import lombok.Builder;

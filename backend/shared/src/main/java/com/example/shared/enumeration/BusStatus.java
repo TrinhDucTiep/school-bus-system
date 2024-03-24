@@ -1,8 +1,9 @@
 package com.example.shared.enumeration;
 
 public enum BusStatus {
-    ACTIVE("Active"),
-    INACTIVE("Inactive"),
+    AVAILABLE("Available"),
+    RUNNING("Running"),
+    BROKEN("Broken"),
     MAINTENANCE("Maintenance");
 
     private final String status;

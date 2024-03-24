@@ -5,10 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.shared.db.entities.Account;
+import com.example.shared.exception.MyException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 
 public class JwtUtil {
     @Value("${security.jwt.token.secret-key}")
@@ -37,7 +39,7 @@ public class JwtUtil {
                 .verify(token)
                 .getSubject();
         } catch (JWTVerificationException exception) {
-            throw new JWTVerificationException("Error while validating token", exception);
+            throw new MyException(exception, "INVALID_TOKEN", exception.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -55,10 +57,10 @@ public class JwtUtil {
     }
 
     public static Instant genAccessExpirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("+07:00"));
+        return LocalDateTime.now().plusHours(24*5).toInstant(ZoneOffset.of("+07:00"));
     }
 
     public static Instant genRefreshExpirationDate() {
-        return LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.of("+07:00"));
+        return LocalDateTime.now().plusDays(30).toInstant(ZoneOffset.of("+07:00"));
     }
 }

@@ -7,16 +7,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface BusRepository extends JpaRepository<Bus, Long> {
 
     @Query("""
     SELECT b as bus, d as driver, dm as driverMate
-        FROM Bus b, Employee d, Employee dm
+        FROM Bus b
+        LEFT JOIN Employee d ON b.driverId = d.id
+        LEFT JOIN Employee dm ON b.driverMateId = dm.id
         WHERE
-            b.driverId = d.id
-            AND b.driverMateId = dm.id
-            AND (:numberPlate IS NULL OR b.numberPlate LIKE %:numberPlate%)
+            (:numberPlate IS NULL OR b.numberPlate LIKE %:numberPlate%)
             AND (:seatNumber IS NULL OR b.seatNumber = :seatNumber)
             AND (:status IS NULL OR b.status = :status)
             AND (:driverName IS NULL OR d.name LIKE %:driverName%)
@@ -25,13 +26,13 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
             AND (:driverMateId IS NULL OR dm.id = :driverMateId)
     """)
     Page<GetListBusDTO> getListBus(
-        String numberPlate,
-        Integer seatNumber,
-        BusStatus status,
-        String driverName,
-        Long driverId,
-        String driverMateName,
-        Long driverMateId,
+        @Param("numberPlate") String numberPlate,
+        @Param("seatNumber") Integer seatNumber,
+        @Param("status") BusStatus status,
+        @Param("driverName") String driverName,
+        @Param("driverId") Long driverId,
+        @Param("driverMateName") String driverMateName,
+        @Param("driverMateId") Long driverMateId,
         Pageable pageable
     );
 
