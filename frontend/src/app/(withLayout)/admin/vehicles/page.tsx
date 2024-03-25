@@ -12,15 +12,33 @@ import {
     TableHeader,
     TableRow,
     Pagination,
+    useDisclosure,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
 } from "@nextui-org/react";
 import { BusRenderCell } from '@/components/bus/bus-render-cell';
 import { AddBus } from '@/components/bus/add-bus';
 import { ExportIcon } from '@/components/icons/export-icon';
-import { useGetListBus } from '@/services/busService';
+import { useGetListBus, useUpdateBus, useDeleteBus } from '@/services/busService';
 import CustomSkeleton from '@/components/custom-skeleton';
+import { SubmitHandler, useForm } from "react-hook-form";
 
 const VehiclesPage: React.FC = () => {
     const [page, setPage] = React.useState(1);
+
+    // define for bus-render-cell.tsx
+    const updateBusMutation = useUpdateBus();
+    const deleteBusMutation = useDeleteBus();
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm<IBus>();
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const columns = [
         { name: 'BIỂN SỐ XE', uid: 'numberPlate' },
@@ -145,8 +163,15 @@ const VehiclesPage: React.FC = () => {
                                 <TableRow key={item.bus.id}>
                                     {(columnKey) => (
                                         <TableCell>
-                                            {BusRenderCell({ bus: item as IBusTable, columnKey: columnKey })}
+                                            {BusRenderCell({
+                                                bus: item as IBusTable, columnKey: columnKey, updateBusMutation, deleteBusMutation,
+                                                register,
+                                                handleSubmit,
+                                                watch,
+                                                errors,
+                                            })}
                                         </TableCell>
+
                                     )}
                                 </TableRow>
                             )}
@@ -156,6 +181,68 @@ const VehiclesPage: React.FC = () => {
                     )}
                 </Table>
             </div>
+
+            {/* modal for edit button */}
+            <Modal
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                placement="top-center"
+            >
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">
+                        Cập nhật xe Bus
+                    </ModalHeader>
+                    <form
+                        className="space-y-4"
+                        onSubmit={handleSubmit(handleUpdateBus)}
+                    >
+                        <ModalBody>
+                            <Input
+                                label="Biển số xe"
+                                variant="bordered"
+                                {...register("numberPlate", { required: true })}
+                                defaultValue={bus.bus.numberPlate}
+                            />
+                            <Input
+                                label="Số chỗ ngồi"
+                                variant="bordered"
+                                {...register("seatNumber", {
+                                    required: true,
+                                    validate: (value: any) => parseInt(value, 10) > 0 || 'Số chỗ ngồi không hợp lệ'
+                                })}
+                                defaultValue={bus.bus.seatNumber}
+                            />
+                            {errors.seatNumber && errors.seatNumber.message && <p className="text-red-500 text-sm">{`*${errors.seatNumber.message}`}</p>}
+                            <Input
+                                label="Trạng thái"
+                                variant="bordered"
+                                {...register("status", { required: true })}
+                                defaultValue={bus.bus.status}
+                            />
+                            <Input
+                                label="Tài xế"
+                                variant="bordered"
+                                {...register("driverId", { required: false })}
+                                defaultValue={bus.bus.driverId}
+                            />
+                            <Input
+                                label="Phụ xe"
+                                variant="bordered"
+                                {...register("driverMateId", { required: false })}
+                                defaultValue={bus.bus.driverMateId}
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button variant="ghost" onPress={onOpenChange}>
+                                Hủy
+                            </Button>
+                            <Button color="primary" onPress={onOpenChange} type="submit">
+                                Cập nhật
+                            </Button>
+                        </ModalFooter>
+                    </form>
+                </ModalContent>
+            </Modal>
         </div>
     );
 };

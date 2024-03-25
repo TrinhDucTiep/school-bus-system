@@ -15,7 +15,6 @@ export const useGetListBus = (params: IGetListBusParams) => {
 };
 
 const addBus = async (data: IBus) => {
-    console.log(data);
     const response = await apiClient.post('/api/v1/admin/bus', data);
     return response.data;
 }
