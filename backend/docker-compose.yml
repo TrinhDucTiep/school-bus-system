@@ -29,24 +29,19 @@ services:
 #      - my-network
 #    logging: *default-logging
 
-#  postgresql:
-#    image: postgres
-#    container_name: postgresql
-#    environment:
-#      SERVER_PORT: 8080
-#      SERVICE_HOST: localhost
-#      DOCKER_SERVER_HOST: http://erp3.soict.ai:12375
-#      SQL_DB_HOST: erp3.soict.ai
-#      SQL_DB_PORT: 6543
-#      SQL_DB_USER: postgres
-#      SQL_DB_PASS: "0penerp@2023#"
-#      POSTGRES_DB: erp_dev_2024
-#    ports:
-#      - '5432:5432'
-#    volumes:
-#      - /home/tip/Documents/postgresql:/var/lib/postgresql/data
-#    networks:
-#      - my-network
+  postgresql:
+    image: postgres
+    container_name: postgresql
+    environment:
+      POSTGRES_DB: school_bus
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1
+    ports:
+      - '5432:5432'
+    volumes:
+      - /home/tip/Documents/postgresql:/var/lib/postgresql/data
+    networks:
+      - my-network
 #    logging: *default-logging
 
   api:

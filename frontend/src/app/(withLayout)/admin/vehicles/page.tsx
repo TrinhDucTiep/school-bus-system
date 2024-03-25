@@ -39,6 +39,10 @@ const VehiclesPage: React.FC = () => {
         formState: { errors },
     } = useForm<IBus>();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const handleUpdateBus: SubmitHandler<IBus> = (data) => updateBusMutation.mutate(data);
+    const handleDeleteBus = (id: number) => deleteBusMutation.mutate(id);
+    const [selectedBus, setSelectedBus] = React.useState<IBusTable | null>(null);
+    const handleOpenChange = () => onOpenChange();
 
     const columns = [
         { name: 'BIỂN SỐ XE', uid: 'numberPlate' },
@@ -164,11 +168,7 @@ const VehiclesPage: React.FC = () => {
                                     {(columnKey) => (
                                         <TableCell>
                                             {BusRenderCell({
-                                                bus: item as IBusTable, columnKey: columnKey, updateBusMutation, deleteBusMutation,
-                                                register,
-                                                handleSubmit,
-                                                watch,
-                                                errors,
+                                                bus: item as IBusTable, columnKey: columnKey, handleOpenChange: () => { handleOpenChange() }, setSelectedBus: (bus: IBusTable) => setSelectedBus(bus)
                                             })}
                                         </TableCell>
 
@@ -201,7 +201,7 @@ const VehiclesPage: React.FC = () => {
                                 label="Biển số xe"
                                 variant="bordered"
                                 {...register("numberPlate", { required: true })}
-                                defaultValue={bus.bus.numberPlate}
+                                defaultValue={selectedBus?.bus.numberPlate}
                             />
                             <Input
                                 label="Số chỗ ngồi"
@@ -210,26 +210,26 @@ const VehiclesPage: React.FC = () => {
                                     required: true,
                                     validate: (value: any) => parseInt(value, 10) > 0 || 'Số chỗ ngồi không hợp lệ'
                                 })}
-                                defaultValue={bus.bus.seatNumber}
+                                defaultValue={selectedBus?.bus.seatNumber?.toString()}
                             />
                             {errors.seatNumber && errors.seatNumber.message && <p className="text-red-500 text-sm">{`*${errors.seatNumber.message}`}</p>}
                             <Input
                                 label="Trạng thái"
                                 variant="bordered"
                                 {...register("status", { required: true })}
-                                defaultValue={bus.bus.status}
+                                defaultValue={selectedBus?.bus.status}
                             />
                             <Input
                                 label="Tài xế"
                                 variant="bordered"
                                 {...register("driverId", { required: false })}
-                                defaultValue={bus.bus.driverId}
+                                defaultValue={selectedBus?.bus.driverId?.toString()}
                             />
                             <Input
                                 label="Phụ xe"
                                 variant="bordered"
                                 {...register("driverMateId", { required: false })}
-                                defaultValue={bus.bus.driverMateId}
+                                defaultValue={selectedBus?.bus.driverMateId?.toString()}
                             />
                         </ModalBody>
                         <ModalFooter>

@@ -14,32 +14,17 @@ import React from "react";
 import { DeleteIcon } from "../icons/table/delete-icon";
 import { EditIcon } from "../icons/table/edit-icon";
 import { EyeIcon } from "../icons/table/eye-icon";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useUpdateBus, useDeleteBus } from "@/services/busService";
 
 interface Props {
     bus: IBusTable;
     columnKey: string | React.Key;
-    updateBusMutation: any;
-    deleteBusMutation: any;
-    register: any;
-    handleSubmit: any;
-    watch: any;
-    errors: any;
+    handleOpenChange: () => void;
+    setSelectedBus: (bus: IBusTable) => void;
 }
 
 // const { isOpen, onOpen, onOpenChange } = useDisclosure();
-export const BusRenderCell = ({ bus, columnKey, updateBusMutation,
-    deleteBusMutation,
-    register,
-    handleSubmit,
-    watch,
-    errors,
+export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
 }: Props) => {
-
-
-    const handleUpdateBus: SubmitHandler<IBus> = (data) => updateBusMutation.mutate(data);
-    const handleDeleteBus = (id: number) => deleteBusMutation.mutate(id);
 
     // @ts-ignore
     // const cellValue = bus[columnKey];
@@ -111,7 +96,11 @@ export const BusRenderCell = ({ bus, columnKey, updateBusMutation,
                     </div>
                     <div>
                         <Tooltip content="Edit bus" color="secondary">
-                            <button onClick={() => onOpenChange(true)}>
+                            <button onClick={
+                                () => {
+                                    setSelectedBus(bus);
+                                    handleOpenChange();
+                                }}>
                                 <EditIcon size={20} fill="#979797" />
                             </button>
                         </Tooltip>
