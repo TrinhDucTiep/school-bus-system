@@ -1,6 +1,7 @@
 package com.example.api.controllers.admin;
 
 import com.example.api.controllers.admin.dto.AddBusRequest;
+import com.example.api.controllers.admin.dto.DeleteBusRequest;
 import com.example.api.controllers.admin.dto.UpdateBusRequest;
 import com.example.api.services.bus.BusService;
 import com.example.api.services.bus.dto.ListBusFilterParam;
@@ -56,9 +57,9 @@ public class BusController {
 
     @DeleteMapping("")
     public ResponseEntity<CommonResponse<Object>> deleteBus(
-        @RequestBody Long id
+        @RequestBody DeleteBusRequest request
         ) {
-        busService.deleteBus(id);
+        busService.deleteBus(request.getId());
         return ResponseUtil.toSuccessCommonResponse("Delete bus successfully");
     }
 }

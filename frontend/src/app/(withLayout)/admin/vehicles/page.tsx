@@ -44,6 +44,19 @@ const VehiclesPage: React.FC = () => {
     const [selectedBus, setSelectedBus] = React.useState<IBusTable | null>(null);
     const handleOpenChange = () => onOpenChange();
 
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const handleOpenChangeDelete = () => onOpenChangeDelete();
+
+
+    // search filters
+    const [numberPlate, setNumberPlate] = React.useState('');
+    const [seatNumber, setSeatNumber] = React.useState<number | null>(null);
+    const [status, setStatus] = React.useState('');
+    const [driverName, setDriverName] = React.useState('');
+    const [driverId, setDriverId] = React.useState('');
+    const [driverMateName, setDriverMateName] = React.useState('');
+    const [driverMateId, setDriverMateId] = React.useState('');
+
     const columns = [
         { name: 'BIỂN SỐ XE', uid: 'numberPlate' },
         { name: 'SỐ CHỖ NGỒI', uid: 'seatNumber' },
@@ -54,9 +67,9 @@ const VehiclesPage: React.FC = () => {
     ];
 
     const { data, isLoading, isError } = useGetListBus({
-        numberPlate: null,
-        seatNumber: null,
-        status: null,
+        numberPlate: numberPlate,
+        seatNumber: seatNumber,
+        status: status,
         driverName: null,
         driverId: null,
         driverMateName: null,
@@ -80,12 +93,6 @@ const VehiclesPage: React.FC = () => {
         </div>
     );
 
-    if (isLoading) {
-        return <div className="py-2 px-2 flex w-full justify-center items-center">
-            <CustomSkeleton />
-        </div>;
-    }
-
     if (isError) {
         return <div>Error!</div>; // replace with your actual error component
     }
@@ -103,6 +110,8 @@ const VehiclesPage: React.FC = () => {
                             }}
                             size='sm'
                             label="Biển số xe"
+                            value={numberPlate}
+                            onValueChange={(newValue) => setNumberPlate(newValue)}
                         />
                         <Input
                             classNames={{
@@ -111,6 +120,9 @@ const VehiclesPage: React.FC = () => {
                             }}
                             size='sm'
                             label="Số chỗ ngồi"
+                            type="number"
+                            value={seatNumber?.toString() || ''}
+                            onValueChange={(newValue) => setSeatNumber(newValue ? parseInt(newValue) : null)}
                         />
                         <Input
                             classNames={{
@@ -119,6 +131,8 @@ const VehiclesPage: React.FC = () => {
                             }}
                             size='sm'
                             label="Trạng thái"
+                            value={status}
+                            onValueChange={(newValue) => setStatus(newValue)}
                         />
                         <Input
                             classNames={{
@@ -146,111 +160,154 @@ const VehiclesPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4 mx-4">
-                <Table aria-label="Example table with custom cells"
-                    bottomContent={bottomContent}
-                >
-                    <TableHeader columns={columns}>
-                        {(column) => (
-                            <TableColumn
-                                key={column.uid}
-                                hideHeader={column.uid === "actions"}
-                                align={column.uid === "actions" ? "center" : "start"}
-                            >
-                                {column.name}
-                            </TableColumn>
-                        )}
-                    </TableHeader>
-                    {data?.result && data.result.content ? (
-                        <TableBody items={data.result.content}>
-                            {(item) => (
-                                <TableRow key={item.bus.id}>
-                                    {(columnKey) => (
-                                        <TableCell>
-                                            {BusRenderCell({
-                                                bus: item as IBusTable, columnKey: columnKey, handleOpenChange: () => { handleOpenChange() }, setSelectedBus: (bus: IBusTable) => setSelectedBus(bus)
-                                            })}
-                                        </TableCell>
+            {isLoading ? <CustomSkeleton /> :
+                <>
+                    <div className="flex flex-col gap-4 mx-4">
+                        <Table aria-label="Example table with custom cells"
+                            bottomContent={bottomContent}
+                        >
+                            <TableHeader columns={columns}>
+                                {(column) => (
+                                    <TableColumn
+                                        key={column.uid}
+                                        hideHeader={column.uid === "actions"}
+                                        align={column.uid === "actions" ? "center" : "start"}
+                                    >
+                                        {column.name}
+                                    </TableColumn>
+                                )}
+                            </TableHeader>
+                            {data?.result && data.result.content ? (
+                                <TableBody items={data.result.content}>
+                                    {(item) => (
+                                        <TableRow key={item.bus.id}>
+                                            {(columnKey) => (
+                                                <TableCell>
+                                                    {BusRenderCell({
+                                                        bus: item as IBusTable,
+                                                        columnKey: columnKey,
+                                                        handleOpenChange: () => { handleOpenChange() },
+                                                        setSelectedBus: (bus: IBusTable) => setSelectedBus(bus),
+                                                        handleOpenChangeDelete: () => { handleOpenChangeDelete() },
+                                                    })}
+                                                </TableCell>
 
+                                            )}
+                                        </TableRow>
                                     )}
-                                </TableRow>
+                                </TableBody>
+                            ) : (
+                                <div>No data available</div> // replace with your actual fallback component
                             )}
-                        </TableBody>
-                    ) : (
-                        <div>No data available</div> // replace with your actual fallback component
-                    )}
-                </Table>
-            </div>
+                        </Table>
+                    </div>
 
-            {/* modal for edit button */}
-            <Modal
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                placement="top-center"
-            >
-                <ModalContent>
-                    <ModalHeader className="flex flex-col gap-1">
-                        Cập nhật xe Bus
-                    </ModalHeader>
-                    <form
-                        className="space-y-4"
-                        onSubmit={handleSubmit(handleUpdateBus)}
+                    {/* modal for edit button */}
+                    <Modal
+                        isOpen={isOpen}
+                        onOpenChange={onOpenChange}
+                        placement="top-center"
                     >
-                        <ModalBody>
-                            {false && (
-                                <Input
-                                    label="id"
-                                    variant="bordered"
-                                    {...register("id", { required: true })}
-                                    defaultValue={selectedBus?.bus.id?.toString()}
-                                />
+                        <ModalContent>
+                            <ModalHeader className="flex flex-col gap-1">
+                                Cập nhật xe Bus
+                            </ModalHeader>
+                            <form
+                                className="space-y-4"
+                                onSubmit={handleSubmit(handleUpdateBus)}
+                            >
+                                <ModalBody>
+                                    {/* {false && ( */}
+                                    <Input
+                                        label="id"
+                                        variant="bordered"
+                                        className='hidden'
+                                        {...register("id", { required: true })}
+                                        defaultValue={selectedBus?.bus.id?.toString()}
+                                    />
+                                    {/* )} */}
+                                    <Input
+                                        label="Biển số xe"
+                                        variant="bordered"
+                                        {...register("numberPlate", { required: true })}
+                                        defaultValue={selectedBus?.bus.numberPlate}
+                                    />
+                                    <Input
+                                        label="Số chỗ ngồi"
+                                        variant="bordered"
+                                        {...register("seatNumber", {
+                                            required: true,
+                                            validate: (value: any) => parseInt(value, 10) > 0 || 'Số chỗ ngồi không hợp lệ'
+                                        })}
+                                        defaultValue={selectedBus?.bus.seatNumber?.toString()}
+                                    />
+                                    {errors.seatNumber && errors.seatNumber.message && <p className="text-red-500 text-sm">{`*${errors.seatNumber.message}`}</p>}
+                                    <Input
+                                        label="Trạng thái"
+                                        variant="bordered"
+                                        {...register("status", { required: true })}
+                                        defaultValue={selectedBus?.bus.status}
+                                    />
+                                    <Input
+                                        label="Tài xế"
+                                        variant="bordered"
+                                        {...register("driverId", { required: false })}
+                                        defaultValue={selectedBus?.bus.driverId?.toString()}
+                                    />
+                                    <Input
+                                        label="Phụ xe"
+                                        variant="bordered"
+                                        {...register("driverMateId", { required: false })}
+                                        defaultValue={selectedBus?.bus.driverMateId?.toString()}
+                                    />
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button variant="ghost" onPress={onOpenChange}>
+                                        Hủy
+                                    </Button>
+                                    <Button color="primary" onPress={onOpenChange} type="submit">
+                                        Cập nhật
+                                    </Button>
+                                </ModalFooter>
+                            </form>
+                        </ModalContent>
+                    </Modal>
+
+
+                    {/* delete modal */}
+                    <Modal isOpen={isOpenDelete} onOpenChange={onOpenChangeDelete}>
+                        <ModalContent>
+                            {(onCloseDelete) => (
+                                <>
+                                    <ModalHeader className="flex flex-col gap-1">Xoá xe {selectedBus?.bus.numberPlate}</ModalHeader>
+                                    <ModalBody>
+                                        <p>
+                                            Bạn có muốn xoá không?
+                                        </p>
+                                    </ModalBody>
+                                    <ModalFooter>
+                                        <Button color="danger" variant="light" onPress={onCloseDelete}>
+                                            Huỷ
+                                        </Button>
+                                        <Button color="primary" onPress={() => {
+                                            if (selectedBus?.bus.id !== undefined) {
+                                                handleDeleteBus(selectedBus.bus.id);
+                                                onOpenChangeDelete();
+                                            } else {
+                                                console.error('selectedBus?.bus.id is undefined');
+                                            }
+                                        }}>
+                                            Xác nhận
+                                        </Button>
+                                    </ModalFooter>
+                                </>
                             )}
-                            <Input
-                                label="Biển số xe"
-                                variant="bordered"
-                                {...register("numberPlate", { required: true })}
-                                defaultValue={selectedBus?.bus.numberPlate}
-                            />
-                            <Input
-                                label="Số chỗ ngồi"
-                                variant="bordered"
-                                {...register("seatNumber", {
-                                    required: true,
-                                    validate: (value: any) => parseInt(value, 10) > 0 || 'Số chỗ ngồi không hợp lệ'
-                                })}
-                                defaultValue={selectedBus?.bus.seatNumber?.toString()}
-                            />
-                            {errors.seatNumber && errors.seatNumber.message && <p className="text-red-500 text-sm">{`*${errors.seatNumber.message}`}</p>}
-                            <Input
-                                label="Trạng thái"
-                                variant="bordered"
-                                {...register("status", { required: true })}
-                                defaultValue={selectedBus?.bus.status}
-                            />
-                            <Input
-                                label="Tài xế"
-                                variant="bordered"
-                                {...register("driverId", { required: false })}
-                                defaultValue={selectedBus?.bus.driverId?.toString()}
-                            />
-                            <Input
-                                label="Phụ xe"
-                                variant="bordered"
-                                {...register("driverMateId", { required: false })}
-                                defaultValue={selectedBus?.bus.driverMateId?.toString()}
-                            />
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button variant="ghost" onPress={onOpenChange}>
-                                Hủy
-                            </Button>
-                            <Button color="primary" onPress={onOpenChange} type="submit">
-                                Cập nhật
-                            </Button>
-                        </ModalFooter>
-                    </form>
-                </ModalContent>
-            </Modal>
+                        </ModalContent>
+                    </Modal>
+                </>
+            }
+
+
         </div>
     );
 };

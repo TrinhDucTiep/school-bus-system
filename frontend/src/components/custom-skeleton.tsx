@@ -3,7 +3,7 @@ import { Card, Skeleton } from "@nextui-org/react";
 
 export default function CustomSkeleton() {
   return (
-    <div className="w-full mx-2">
+    <div className="w-auto mx-4">
       <Card className="w-full space-y-5 p-4 my-4" radius="lg">
         <Skeleton className="rounded-lg">
           <div className="h-24 rounded-lg bg-default-300"></div>

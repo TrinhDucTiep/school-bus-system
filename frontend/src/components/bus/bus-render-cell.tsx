@@ -20,10 +20,11 @@ interface Props {
     columnKey: string | React.Key;
     handleOpenChange: () => void;
     setSelectedBus: (bus: IBusTable) => void;
+    handleOpenChangeDelete: () => void;
 }
 
 // const { isOpen, onOpen, onOpenChange } = useDisclosure();
-export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
+export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus, handleOpenChangeDelete
 }: Props) => {
 
     // @ts-ignore
@@ -107,11 +108,12 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
                     </div>
                     <div>
                         <Tooltip
-                            content="Delete bus"
-                            color="danger"
-                            onClick={() => console.log("Delete bus", bus?.bus.id)}
-                        >
-                            <button>
+                            content="Delete bus" color="danger" >
+                            <button onClick={
+                                () => {
+                                    setSelectedBus(bus);
+                                    handleOpenChangeDelete();
+                                }}>
                                 <DeleteIcon size={20} fill="#FF0080" />
                             </button>
                         </Tooltip>

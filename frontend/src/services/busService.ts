@@ -74,6 +74,7 @@ export const useDeleteBus = () => {
         {
             mutationFn: (id: number) => deleteBus(id),
             onSuccess: (result) => {
+                queryClient.invalidateQueries({ queryKey: ['busList'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {
