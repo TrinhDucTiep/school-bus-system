@@ -1,4 +1,5 @@
 import apiClient from "@/config/axiosClient";
+import { queryClient } from "@/providers/TanstackProvider";
 import { useMutation, useQuery, UseMutationOptions } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -23,6 +24,7 @@ export const useAddBus = () => {
         {
             mutationFn: (data: IBus) => addBus(data),
             onSuccess: (result) => {
+                queryClient.invalidateQueries({ queryKey: ['busList'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {
@@ -47,6 +49,7 @@ export const useUpdateBus = () => {
         {
             mutationFn: (data: IBus) => updateBus(data),
             onSuccess: (result) => {
+                queryClient.invalidateQueries({ queryKey: ['busList'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {

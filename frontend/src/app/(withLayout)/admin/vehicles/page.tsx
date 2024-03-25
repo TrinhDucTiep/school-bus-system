@@ -197,6 +197,14 @@ const VehiclesPage: React.FC = () => {
                         onSubmit={handleSubmit(handleUpdateBus)}
                     >
                         <ModalBody>
+                            {false && (
+                                <Input
+                                    label="id"
+                                    variant="bordered"
+                                    {...register("id", { required: true })}
+                                    defaultValue={selectedBus?.bus.id?.toString()}
+                                />
+                            )}
                             <Input
                                 label="Biển số xe"
                                 variant="bordered"
