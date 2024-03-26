@@ -45,7 +45,7 @@ interface IEmployee {
 interface IGetListBusParams {
   numberPlate: string | null;
   seatNumber: number | null;
-  status: string | null;
+  statuses: string | null;
   driverName: string | null;
   driverId: number | null;
   driverMateName: string | null;
