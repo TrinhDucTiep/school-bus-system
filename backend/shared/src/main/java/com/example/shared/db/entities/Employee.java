@@ -1,7 +1,10 @@
 package com.example.shared.db.entities;
 
+import com.example.shared.enumeration.EmployeeRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,9 +47,11 @@ public class Employee {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bus_id")
-    private Bus bus;
+    private Long busId;
+
+    @Enumerated(EnumType.STRING)
+    private EmployeeRole role;
 
     @CreatedDate
     @CreationTimestamp

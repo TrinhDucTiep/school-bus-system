@@ -65,6 +65,12 @@ export const SidebarWrapper = () => {
                 href="/admin/vehicles"
               />
               <SidebarItem
+                isActive={pathname === "/employee"}
+                title="Đội ngũ"
+                icon={<AccountsIcon />}
+                href="/admin/employee"
+              />
+              <SidebarItem
                 isActive={pathname === "/parents-students"}
                 title="Phụ huynh & học sinh"
                 icon={<CustomersIcon />}

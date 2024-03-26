@@ -76,9 +76,9 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
                     color={
                         bus?.bus?.status === "AVAILABLE"
                             ? "success"
-                            : bus?.bus?.status === "MAINTENANCE"
-                                ? "danger"
-                                : "warning"
+                            : bus?.bus?.status === "RUNNING"
+                                ? "warning"
+                                : "danger"
                     }
                 >
                     <span className="capitalize text-xs">{bus?.bus?.status}</span>

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -53,6 +54,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @Transactional
     public void addBus(AddBusInput input) {
         Bus bus = busRepository.findByNumberPlate(input.getNumberPlate());
         if (bus != null) {
@@ -73,6 +75,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @Transactional
     public void updateBus(UpdateBusInput input) {
         Bus bus = busRepository.findById(input.getId())
             .orElseThrow(() -> new MyException(null,
@@ -119,12 +122,22 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    @Transactional
     public void deleteBus(Long id) {
         Bus bus = busRepository.findById(id)
             .orElseThrow(() -> new MyException(null,
                 "BUS_NOT_FOUND",
                 "Bus with id " + id + " not found",
                 HttpStatus.NOT_FOUND));
+        List<Employee> employees = employeeRepository.findByBusId(id).orElse(null);
+
+        if (employees != null && !employees.isEmpty()) {
+            for (Employee employee : employees) {
+                employee.setBusId(null);
+            }
+            employeeRepository.saveAll(employees);
+        }
+
         busRepository.delete(bus);
     }
 
