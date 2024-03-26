@@ -31,8 +31,8 @@ public class ParentFilterParam {
             .id(this.id)
             .name(this.name)
             .role(this.role)
-            .searchBy(ParentSearchInput.SearchBy.valueOf(this.searchBy))
-            .pageable(PageableUtils.generateForNativeQuery(this.page, this.size, sortBy, "createdAt"))
+            .searchBy(ParentSearchInput.SearchBy.fromValue(this.searchBy))
+            .pageable(PageableUtils.generate(this.page, this.size, sortBy, "-createdAt"))
             .build();
     }
 }

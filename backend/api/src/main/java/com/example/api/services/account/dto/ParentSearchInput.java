@@ -1,8 +1,6 @@
 package com.example.api.services.account.dto;
 
 
-import java.time.Instant;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,12 +26,24 @@ public class ParentSearchInput {
     @Getter
     public enum SearchBy {
         PARENT_NAME("PARENT_NAME"),
-        CHILD_NAME("CHILD_NAME"),
+        STUDENT_NAME("STUDENT_NAME"),
         ;
         private final String value;
 
         SearchBy(String value) {
             this.value = value;
+        }
+
+        public static SearchBy fromValue(String value) {
+            if(value == null) {
+                return SearchBy.PARENT_NAME;
+            }
+            for (SearchBy searchBy : SearchBy.values()) {
+                if (searchBy.value.equals(value)) {
+                    return searchBy;
+                }
+            }
+            return SearchBy.PARENT_NAME;
         }
     }
 }

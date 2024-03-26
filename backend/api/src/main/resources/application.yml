@@ -25,7 +25,7 @@ spring:
           time_zone: UTC
         format_sql: true
         order_inserts: true
-        ddl-auto: create
+        ddl-auto: update
   jackson:
     property-naming-strategy: SNAKE_CASE
   main:

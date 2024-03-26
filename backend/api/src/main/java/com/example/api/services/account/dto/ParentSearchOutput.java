@@ -1,7 +1,7 @@
 package com.example.api.services.account.dto;
 
 
-import com.example.shared.db.dto.GetParentAndChildDTO;
+import com.example.shared.db.entities.Parent;
 import java.time.Instant;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -22,20 +22,24 @@ public class ParentSearchOutput {
 
     private Instant dob;
 
+    private String phoneNumber;
+
     private Instant createdAt;
 
     private Instant updatedAt;
 
     private List<StudentSearchOutput> students;
 
-    public static ParentSearchOutput from(GetParentAndChildDTO dto) {
+    public static ParentSearchOutput from(Parent dto) {
         return ParentSearchOutput.builder()
-            .id(dto.getParentId())
-            .name(dto.getParentName())
-            .avatar(dto.getParentAvatar())
-            .dob(Instant.parse(dto.getParentDateOfBirth()))
+            .id(dto.getId())
+            .name(dto.getName())
+            .avatar(dto.getAvatar())
+            .dob(dto.getDob() != null ? Instant.ofEpochMilli(dto.getDob().toEpochMilli()) : null)
+            .phoneNumber(dto.getPhoneNumber())
             .createdAt(Instant.now())
             .updatedAt(Instant.now())
+            .students(dto.getStudents().stream().map(StudentSearchOutput::from).toList())
             .build();
     }
 }

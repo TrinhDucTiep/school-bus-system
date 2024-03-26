@@ -7,7 +7,6 @@ import com.example.shared.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +20,7 @@ public class AccountController {
 
     @GetMapping("/pagination")
 //    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CommonResponse<Object>> getBuses(ParentFilterParam filterParam) {
+    public ResponseEntity<CommonResponse<Object>> getParent(ParentFilterParam filterParam) {
         var res =accountService.searchParents(filterParam.toInput());
         return ResponseUtil.toSuccessCommonResponse(res);
     }
