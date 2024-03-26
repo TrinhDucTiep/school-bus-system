@@ -1,14 +1,8 @@
 import {
-    Button,
     User,
     Tooltip,
     Chip,
-    Input,
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
+    Snippet,
 } from "@nextui-org/react";
 import React from "react";
 import { DeleteIcon } from "../icons/table/delete-icon";
@@ -23,18 +17,15 @@ interface Props {
     handleOpenChangeDelete: () => void;
 }
 
-// const { isOpen, onOpen, onOpenChange } = useDisclosure();
 export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus, handleOpenChangeDelete
 }: Props) => {
 
-    // @ts-ignore
-    // const cellValue = bus[columnKey];
     switch (columnKey) {
         case "numberPlate":
             return (
                 <div>
                     <div>
-                        <span>{bus?.bus.numberPlate}</span>
+                        <Snippet symbol="" variant="solid" >{bus?.bus.numberPlate}</Snippet>
                     </div>
                 </div>
             );

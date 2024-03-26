@@ -38,6 +38,7 @@ interface IEmployee {
   dob: string;
   phoneNumber: string;
   busID: number;
+  role: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -50,6 +51,23 @@ interface IGetListBusParams {
   driverId: number | null;
   driverMateName: string | null;
   driverMateId: number | null;
+  page: number | null;
+  size: number | null;
+  sort: string | null;
+}
+
+interface IEmployeeTable {
+  employee: IEmployee;
+  bus: IBus;
+}
+
+interface IGetListEmployeeParams {
+  name: string | null;
+  phoneNumber: string | null;
+  dob: string | null;
+  busID: number | null;
+  busNumberPlate: string | null;
+  role: string | null;
   page: number | null;
   size: number | null;
   sort: string | null;
