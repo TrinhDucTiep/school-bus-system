@@ -18,13 +18,25 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
+    Select,
+    SelectItem,
+    select,
 } from "@nextui-org/react";
 import { BusRenderCell } from '@/components/bus/bus-render-cell';
 import { AddBus } from '@/components/bus/add-bus';
 import { ExportIcon } from '@/components/icons/export-icon';
 import { useGetListBus, useUpdateBus, useDeleteBus } from '@/services/busService';
 import CustomSkeleton from '@/components/custom-skeleton';
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, set, useForm } from "react-hook-form";
+
+const bus_statuses_map = [
+    { value: 'AVAILABLE', label: 'Đang hoạt động' },
+    { value: 'RUNNING', label: 'Đang chạy' },
+    { value: 'BROKEN', label: 'Hỏng hóc' },
+    { value: 'MAINTENANCE', label: 'Bảo Dưỡng' },
+];
+
+
 
 const VehiclesPage: React.FC = () => {
     const [page, setPage] = React.useState(1);
@@ -41,9 +53,10 @@ const VehiclesPage: React.FC = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const handleUpdateBus: SubmitHandler<IBus> = (data) => updateBusMutation.mutate(data);
     const handleDeleteBus = (id: number) => deleteBusMutation.mutate(id);
-    const [selectedBus, setSelectedBus] = React.useState<IBusTable | null>(null);
-    const handleOpenChange = () => onOpenChange();
 
+    const [selectedBus, setSelectedBus] = React.useState<IBusTable | null>(null);
+
+    const handleOpenChange = () => onOpenChange();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const handleOpenChangeDelete = () => onOpenChangeDelete();
 
@@ -51,7 +64,7 @@ const VehiclesPage: React.FC = () => {
     // search filters
     const [numberPlate, setNumberPlate] = React.useState('');
     const [seatNumber, setSeatNumber] = React.useState<number | null>(null);
-    const [status, setStatus] = React.useState('');
+    const [statuses, setStatuses] = React.useState<string| null>('');
     const [driverName, setDriverName] = React.useState('');
     const [driverId, setDriverId] = React.useState('');
     const [driverMateName, setDriverMateName] = React.useState('');
@@ -69,7 +82,7 @@ const VehiclesPage: React.FC = () => {
     const { data, isLoading, isError } = useGetListBus({
         numberPlate: numberPlate? numberPlate : null,
         seatNumber: seatNumber,
-        status: status ? status : null,
+        statuses: statuses,
         driverName: driverName ? driverName : null,
         driverId: null,
         driverMateName: driverMateName ? driverMateName : null,
@@ -121,16 +134,25 @@ const VehiclesPage: React.FC = () => {
                             value={seatNumber?.toString() || ''}
                             onValueChange={(newValue) => setSeatNumber(newValue ? parseInt(newValue) : null)}
                         />
-                        <Input
-                            classNames={{
-                                input: "w-full",
-                                mainWrapper: "w-full",
-                            }}
-                            size='sm'
+                        <Select
                             label="Trạng thái"
-                            value={status}
-                            onValueChange={(newValue) => setStatus(newValue)}
-                        />
+                            placeholder='Chọn trạng thái'
+                            selectionMode='multiple'
+                            value={statuses?.split(',')}
+                            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                                const newValue = event.target.value;
+                                setStatuses(newValue);
+                            }}
+                        >
+                            { bus_statuses_map.map((status) => (
+                                <SelectItem key={status.value} value={status.value} 
+                                >
+                                    {status.label}
+                                </SelectItem>
+                            ))
+                            }
+    
+                        </Select>
                         <Input
                             classNames={{
                                 input: "w-full",

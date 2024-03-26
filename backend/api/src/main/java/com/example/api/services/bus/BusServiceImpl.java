@@ -9,7 +9,9 @@ import com.example.shared.db.entities.Bus;
 import com.example.shared.db.entities.Employee;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.EmployeeRepository;
+import com.example.shared.enumeration.BusStatus;
 import com.example.shared.exception.MyException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,11 +28,15 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public Page<GetListBusOutput> getListBus(ListBusFilterParam filterParam, Pageable pageable) {
+        List<BusStatus> statuses = filterParam.getStatuses();
+        if (statuses != null && statuses.isEmpty()) {
+            statuses = null;
+        }
         try {
             Page<GetListBusDTO> getListBusDTOS = busRepository.getListBus(
                 filterParam.getNumberPlate(),
                 filterParam.getSeatNumber(),
-                filterParam.getStatus(),
+                statuses,
                 filterParam.getDriverName(),
                 filterParam.getDriverId(),
                 filterParam.getDriverMateName(),

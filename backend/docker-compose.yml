@@ -39,7 +39,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - /home/tip/Documents/postgresql:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     networks:
       - my-network
 #    logging: *default-logging

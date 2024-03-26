@@ -3,6 +3,7 @@ package com.example.shared.db.repo;
 import com.example.shared.db.dto.GetListBusDTO;
 import com.example.shared.db.entities.Bus;
 import com.example.shared.enumeration.BusStatus;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +20,7 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
         WHERE
             (:numberPlate IS NULL OR b.numberPlate LIKE %:numberPlate%)
             AND (:seatNumber IS NULL OR b.seatNumber = :seatNumber)
-            AND (:status IS NULL OR b.status = :status)
+            AND (:statuses IS NULL OR b.status in (:statuses))
             AND (:driverName IS NULL OR d.name LIKE %:driverName%)
             AND (:driverId IS NULL OR d.id = :driverId)
             AND (:driverMateName IS NULL OR dm.name LIKE %:driverMateName%)
@@ -28,7 +29,7 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
     Page<GetListBusDTO> getListBus(
         @Param("numberPlate") String numberPlate,
         @Param("seatNumber") Integer seatNumber,
-        @Param("status") BusStatus status,
+        @Param("statuses") List<BusStatus> statuses,
         @Param("driverName") String driverName,
         @Param("driverId") Long driverId,
         @Param("driverMateName") String driverMateName,
