@@ -67,12 +67,12 @@ const VehiclesPage: React.FC = () => {
     ];
 
     const { data, isLoading, isError } = useGetListBus({
-        numberPlate: numberPlate,
+        numberPlate: numberPlate? numberPlate : null,
         seatNumber: seatNumber,
-        status: status,
-        driverName: null,
+        status: status ? status : null,
+        driverName: driverName ? driverName : null,
         driverId: null,
-        driverMateName: null,
+        driverMateName: driverMateName ? driverMateName : null,
         driverMateId: null,
         page: page - 1,
         size: 10,
@@ -93,9 +93,6 @@ const VehiclesPage: React.FC = () => {
         </div>
     );
 
-    if (isError) {
-        return <div>Error!</div>; // replace with your actual error component
-    }
 
     return (
         <div>
@@ -141,6 +138,8 @@ const VehiclesPage: React.FC = () => {
                             }}
                             size='sm'
                             label="Tài xế"
+                            value={driverName}
+                            onValueChange={(newValue) => setDriverName(newValue)}
                         />
                         <Input
                             classNames={{
@@ -149,6 +148,8 @@ const VehiclesPage: React.FC = () => {
                             }}
                             size='sm'
                             label="Phụ xe"
+                            value={driverMateName}
+                            onValueChange={(newValue) => setDriverMateName(newValue)}
                         />
                     </div>
                     <div className="flex flex-row gap-3.5 flex-wrap">
@@ -197,7 +198,7 @@ const VehiclesPage: React.FC = () => {
                                     )}
                                 </TableBody>
                             ) : (
-                                <div>No data available</div> // replace with your actual fallback component
+                                <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
                             )}
                         </Table>
                     </div>
