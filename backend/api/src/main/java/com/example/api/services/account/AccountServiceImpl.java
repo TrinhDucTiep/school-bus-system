@@ -99,6 +99,7 @@ public class AccountServiceImpl implements AccountService {
             parent = Parent.builder()
                 .name(input.getName())
                 .dob(input.getDob())
+                .phoneNumber(input.getPhoneNumber())
                 .avatar(input.getAvatar())
                 .build();
         } else {
@@ -106,6 +107,7 @@ public class AccountServiceImpl implements AccountService {
                 .name(input.getName())
                 .dob(input.getDob())
                 .avatar(input.getAvatar())
+                .phoneNumber(input.getPhoneNumber())
                 .students(studentRepository.findAllById(input.getStudentIds()))
                 .build();
         }

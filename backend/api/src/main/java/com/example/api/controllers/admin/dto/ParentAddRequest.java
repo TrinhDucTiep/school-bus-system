@@ -1,6 +1,7 @@
 package com.example.api.controllers.admin.dto;
 
 import com.example.api.services.account.dto.ParentAddInput;
+import com.example.shared.utils.DateConvertUtil;
 import java.time.Instant;
 import java.util.List;
 import lombok.Data;
@@ -9,15 +10,16 @@ import lombok.Data;
 public class ParentAddRequest {
     private String name;
     private String avatar;
-    private Instant dob;
+    private String dob;
     private String phoneNumber;
     private List<Long> studentIds;
 
     public ParentAddInput toInput() {
+        Instant dob = DateConvertUtil.convertStringToInstant(this.dob);
         return ParentAddInput.builder()
             .name(this.name)
             .avatar(this.avatar)
-            .dob(this.dob)
+            .dob(dob)
             .phoneNumber(this.phoneNumber)
             .studentIds(this.studentIds)
             .build();
