@@ -1,13 +1,23 @@
 package com.example.api.controllers.admin;
 
+import com.example.api.controllers.admin.dto.ParentAddRequest;
 import com.example.api.controllers.admin.dto.ParentFilterParam;
+import com.example.api.controllers.admin.dto.ParentUpdateRequest;
+import com.example.api.controllers.admin.dto.StudentAddRequest;
+import com.example.api.controllers.admin.dto.StudentFilterParam;
+import com.example.api.controllers.admin.dto.StudentUpdateRequest;
 import com.example.api.services.account.AccountService;
 import com.example.shared.response.CommonResponse;
 import com.example.shared.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,10 +28,68 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
     private final AccountService accountService;
 
-    @GetMapping("/pagination")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/parent/pagination")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getParent(ParentFilterParam filterParam) {
-        var res =accountService.searchParents(filterParam.toInput());
+        var res = accountService.searchParents(filterParam.toInput());
         return ResponseUtil.toSuccessCommonResponse(res);
     }
+
+    @GetMapping("/student/pagination")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> getStudent(StudentFilterParam request) {
+        var res = accountService.searchStudents(request.toInput());
+        return ResponseUtil.toSuccessCommonResponse(res);
+    }
+
+    @PostMapping("/student")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> createStudent(StudentAddRequest request) {
+        accountService.addStudent(request.toInput());
+        return ResponseUtil.toSuccessCommonResponse(null);
+    }
+
+    @PutMapping("/student/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> updateStudent(StudentUpdateRequest request,
+                                                                @PathVariable(name = "id")
+                                                                Long id) {
+        request.setId(id);
+        accountService.updateStudent(request.toInput());
+        return ResponseUtil.toSuccessCommonResponse(null);
+    }
+
+    @DeleteMapping("/student/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> deleteStudent(
+        @PathVariable(name = "id") Long id) {
+        accountService.deleteStudent(id);
+        return ResponseUtil.toSuccessCommonResponse(null);
+    }
+
+    @PostMapping("/parent")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> createParent(ParentAddRequest request) {
+        accountService.addParent(request.toInput());
+        return ResponseUtil.toSuccessCommonResponse(null);
+    }
+
+    @PutMapping("/parent/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> updateParent(ParentUpdateRequest request,
+                                                               @PathVariable(name = "id")
+                                                               Long id) {
+        request.setId(id);
+        accountService.updateParent(request.toInput());
+        return ResponseUtil.toSuccessCommonResponse(null);
+    }
+
+    @DeleteMapping("/parent/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> deleteParent(@PathVariable(name = "id") Long id) {
+        accountService.deleteParent(id);
+        return ResponseUtil.toSuccessCommonResponse(null);
+    }
+
+
 }
