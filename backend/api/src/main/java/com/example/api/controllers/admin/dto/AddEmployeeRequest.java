@@ -2,6 +2,7 @@ package com.example.api.controllers.admin.dto;
 
 import com.example.api.services.employee.dto.AddEmployeeInput;
 import com.example.shared.enumeration.EmployeeRole;
+import com.example.shared.utils.DateConvertUtil;
 import java.time.Instant;
 import lombok.Data;
 
@@ -12,9 +13,14 @@ public class AddEmployeeRequest {
     private String phoneNumber;
     private String address;
     private String avatar;
-    private Instant dob;
+    private String dob;
     private Long busId;
+    private String numberPlate;
     private EmployeeRole role;
+
+    // for create account
+    private String username;
+    private String password;
 
     public AddEmployeeInput toInput() {
         return AddEmployeeInput.builder()
@@ -22,10 +28,12 @@ public class AddEmployeeRequest {
                 .phoneNumber(phoneNumber)
                 .address(address)
                 .avatar(avatar)
-                .dob(dob)
+                .dob(DateConvertUtil.convertStringToInstant(dob))
                 .busId(busId)
                 .role(role)
-                .accountId(accountId)
+                .numberPlate(numberPlate)
+                .username(username)
+                .password(password)
                 .build();
     }
 }

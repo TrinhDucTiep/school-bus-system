@@ -22,7 +22,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             (:id IS NULL OR e.id = :id)
             AND (:name IS NULL OR e.name LIKE %:name%)
             AND (:phoneNumber IS NULL OR e.phoneNumber LIKE %:phoneNumber%)
-            AND (:dob IS NULL OR e.dob = :dob)
             AND (:busId IS NULL OR e.busId = :busId)
             AND (:busNumberPlate IS NULL OR b.numberPlate LIKE %:busNumberPlate%)
             AND (:role IS NULL OR e.role = :role)
@@ -31,7 +30,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         @Param("id") Long id,
         @Param("name") String name,
         @Param("phoneNumber") String phoneNumber,
-        @Param("dob") Instant dob,
         @Param("busId") Long busId,
         @Param("busNumberPlate") String busNumberPlate,
         @Param("role") EmployeeRole role,

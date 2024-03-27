@@ -12,9 +12,11 @@ import com.example.shared.db.repo.AccountRepository;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.EmployeeRepository;
 import com.example.shared.enumeration.EmployeeRole;
+import com.example.shared.enumeration.UserRole;
 import com.example.shared.exception.MyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,7 +39,6 @@ public class EmployeeServiceImpl implements EmployeeService{
                     filterParam.getId(),
                     filterParam.getName(),
                     filterParam.getPhoneNumber(),
-                    filterParam.getDob(),
                     filterParam.getBusId(),
                     filterParam.getBusNumberPlate(),
                     filterParam.getRole(),
@@ -45,6 +46,7 @@ public class EmployeeServiceImpl implements EmployeeService{
             );
             return listEmployeeDTOS.map(GetListEmployeeOutput::fromDto);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MyException(null,
                     "GET_LIST_EMPLOYEE_ERROR",
                     "Invalid input",
@@ -55,6 +57,7 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Override
     @Transactional
     public void addEmployee(AddEmployeeInput input) {
+        // validate if employee already exists
         Employee employee = employeeRepository.findByPhoneNumber(input.getPhoneNumber())
             .orElse(null);
         if (employee != null) {
@@ -64,11 +67,50 @@ public class EmployeeServiceImpl implements EmployeeService{
                     HttpStatus.BAD_REQUEST);
         }
 
-        Account account = accountRepository.findById(input.getAccountId())
-            .orElseThrow(() -> new MyException(null,
-                    "ACCOUNT_NOT_FOUND",
-                    "Account not found",
+        // validate if account already exists
+        if (input.getUsername() == null || input.getPassword() == null) {
+            throw new MyException(null,
+                    "INVALID_INPUT",
+                    "Username and password are required",
+                    HttpStatus.BAD_REQUEST);
+        }
+        Account account = accountRepository.findByUsername(input.getUsername())
+            .orElse(null);
+        if (account != null) {
+            throw new MyException(null,
+                    "USERNAME_ALREADY_EXISTS",
+                    "Username already exists",
+                    HttpStatus.BAD_REQUEST);
+        }
+        account = Account.builder()
+            .username(input.getUsername())
+            .password(input.getPassword())
+            .role(UserRole.EMPLOYEE)
+            .build();
+        account = accountRepository.save(account);
+
+
+        if (input.getBusId() != null) {
+            Bus bus = busRepository.findById(input.getBusId())
+                .orElseThrow(() -> new MyException(null,
+                    "BUS_NOT_FOUND",
+                    "Bus not found",
                     HttpStatus.NOT_FOUND));
+            validateDriverAndEmployeeRole(input, bus);
+        }
+
+        if (input.getNumberPlate() != null) {
+            Bus bus = busRepository.findByNumberPlate(input.getNumberPlate());
+                if (bus == null) {
+                    throw new MyException(null,
+                    "BUS_NOT_FOUND",
+                    "Bus not found",
+                    HttpStatus.NOT_FOUND);
+                }
+            validateDriverAndEmployeeRole(input, bus);
+
+            input.setBusId(bus.getId());
+        }
 
         employee = Employee.builder()
                 .account(account)
@@ -80,6 +122,37 @@ public class EmployeeServiceImpl implements EmployeeService{
                 .role(input.getRole())
                 .build();
         employeeRepository.save(employee);
+
+
+        if (input.getBusId() != null) {
+            Bus bus = busRepository.findById(input.getBusId())
+                .orElseThrow(() -> new MyException(null,
+                    "BUS_NOT_FOUND",
+                    "Bus not found",
+                    HttpStatus.NOT_FOUND));
+            if (input.getRole() == EmployeeRole.DRIVER) {
+                bus.setDriverId(employee.getId());
+            }
+            if (input.getRole() == EmployeeRole.DRIVER_MATE) {
+                bus.setDriverMateId(employee.getId());
+            }
+            busRepository.save(bus);
+        }
+    }
+
+    private void validateDriverAndEmployeeRole(AddEmployeeInput input, Bus bus) {
+        if (bus.getDriverId() != null && input.getRole() == EmployeeRole.DRIVER) {
+            throw new MyException(null,
+                "BUS_ALREADY_ASSIGNED",
+                "Bus already assigned to another driver",
+                HttpStatus.BAD_REQUEST);
+        }
+        if (bus.getDriverMateId() != null && input.getRole() == EmployeeRole.DRIVER_MATE) {
+            throw new MyException(null,
+                "BUS_ALREADY_ASSIGNED",
+                "Bus already assigned to another driver mate",
+                HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

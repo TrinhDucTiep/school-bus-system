@@ -1,5 +1,8 @@
 package com.example.shared.enumeration;
 
+import lombok.Getter;
+
+@Getter
 public enum EmployeeRole {
     DRIVER("DRIVER"),
     DRIVER_MATE("DRIVER_MATE"),
@@ -11,7 +14,4 @@ public enum EmployeeRole {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
-    }
 }
