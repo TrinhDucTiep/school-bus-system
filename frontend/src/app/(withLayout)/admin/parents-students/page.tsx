@@ -45,7 +45,7 @@ const ParentsStudentsPage: React.FC = () => {
     );
     return (
         <div className="flex flex-wrap items-center">
-            <div className='w-1/2'>
+            <div className='sm:w-full xl:w-1/2'>
                 <h3 className="text-xl font-semibold">Danh sách Phụ Huynh</h3>
                 <Table aria-label="Example table with custom cells"
                         bottomContent={bottomContent}
@@ -86,7 +86,7 @@ const ParentsStudentsPage: React.FC = () => {
                     </Table>
             </div>
 
-            <div className='items-center flex-wrap md:flex-nowrap w-1/2'>
+            <div className='sm:w-full xl:w-1/2'>
                 <h3 className="text-xl font-semibold">Danh sách Học Sinh</h3>
                 <Table aria-label="Example table with custom cells"
                         bottomContent={bottomContent}

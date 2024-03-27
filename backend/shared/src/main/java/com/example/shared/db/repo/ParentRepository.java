@@ -12,8 +12,8 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
     @Query(value = """
     select p
     from Parent p
-    join Student s on s.parent.id = p.id
-    join Account a on a.id = p.account.id
+    left join Student s on s.parent.id = p.id
+    left join Account a on a.id = p.account.id
     where (:id is null or p.id = :id)
     and (:role is null or a.role = :role)
     and :searchType is null or :name is null or 

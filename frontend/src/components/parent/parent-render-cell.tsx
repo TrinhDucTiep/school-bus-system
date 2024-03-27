@@ -34,10 +34,9 @@ export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelec
             return (
                 <div>
                     <div>
-                        <span>{parent.name}</span>
                         <User
                             avatarProps={{
-                                src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+                                src: parent.avatar ? parent.avatar : undefined,
                             }}
                             name={parent.name}
                         >
@@ -58,7 +57,7 @@ export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelec
                 return (
                     <div>
                         <div>
-                            <span>{parent.dob}</span>
+                            <span>{parent.phoneNumber}</span>
                         </div>
                     </div>
                 );

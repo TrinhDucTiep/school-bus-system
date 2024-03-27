@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,38 +30,40 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping("/parent/pagination")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getParent(ParentFilterParam filterParam) {
         var res = accountService.searchParents(filterParam.toInput());
         return ResponseUtil.toSuccessCommonResponse(res);
     }
 
     @GetMapping("/student/pagination")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getStudent(StudentFilterParam request) {
         var res = accountService.searchStudents(request.toInput());
         return ResponseUtil.toSuccessCommonResponse(res);
     }
 
     @PostMapping("/student")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CommonResponse<Object>> createStudent(StudentAddRequest request) {
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> createStudent(
+        @RequestBody StudentAddRequest request) {
         accountService.addStudent(request.toInput());
         return ResponseUtil.toSuccessCommonResponse(null);
     }
 
     @PutMapping("/student/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CommonResponse<Object>> updateStudent(StudentUpdateRequest request,
-                                                                @PathVariable(name = "id")
-                                                                Long id) {
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> updateStudent(
+        @RequestBody StudentUpdateRequest request,
+        @PathVariable(name = "id")
+        Long id) {
         request.setId(id);
         accountService.updateStudent(request.toInput());
         return ResponseUtil.toSuccessCommonResponse(null);
     }
 
     @DeleteMapping("/student/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> deleteStudent(
         @PathVariable(name = "id") Long id) {
         accountService.deleteStudent(id);
@@ -68,24 +71,26 @@ public class AccountController {
     }
 
     @PostMapping("/parent")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CommonResponse<Object>> createParent(ParentAddRequest request) {
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> createParent(
+        @RequestBody ParentAddRequest request) {
         accountService.addParent(request.toInput());
         return ResponseUtil.toSuccessCommonResponse(null);
     }
 
     @PutMapping("/parent/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CommonResponse<Object>> updateParent(ParentUpdateRequest request,
-                                                               @PathVariable(name = "id")
-                                                               Long id) {
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> updateParent(
+        @RequestBody ParentUpdateRequest request,
+        @PathVariable(name = "id")
+        Long id) {
         request.setId(id);
         accountService.updateParent(request.toInput());
         return ResponseUtil.toSuccessCommonResponse(null);
     }
 
     @DeleteMapping("/parent/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> deleteParent(@PathVariable(name = "id") Long id) {
         accountService.deleteParent(id);
         return ResponseUtil.toSuccessCommonResponse(null);

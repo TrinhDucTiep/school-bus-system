@@ -13,6 +13,7 @@ import com.example.shared.db.entities.Student;
 import com.example.shared.db.repo.ParentRepository;
 import com.example.shared.db.repo.StudentRepository;
 import com.example.shared.exception.MyException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -92,12 +93,23 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void addParent(ParentAddInput input) {
-        Parent parent = Parent.builder()
-            .name(input.getName())
-            .dob(input.getDob())
-            .avatar(input.getAvatar())
-            .students(studentRepository.findAllById(input.getStudentIds()))
-            .build();
+        List<Long> studentIds = input.getStudentIds();
+        Parent parent;
+        if (studentIds == null) {
+            parent = Parent.builder()
+                .name(input.getName())
+                .dob(input.getDob())
+                .avatar(input.getAvatar())
+                .build();
+        } else {
+            parent = Parent.builder()
+                .name(input.getName())
+                .dob(input.getDob())
+                .avatar(input.getAvatar())
+                .students(studentRepository.findAllById(input.getStudentIds()))
+                .build();
+        }
+
         parentRepository.save(parent);
     }
 

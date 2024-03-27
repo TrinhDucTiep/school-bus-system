@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 const getListParent = async (params: IGetListParentParams) => {
-    const response = await apiClient.get<ICommonResponse<Page<IParent>>>('/api/v1/admin/account/pagination', { params });
+    const response = await apiClient.get<ICommonResponse<Page<IParent>>>('/api/v1/admin/account/parent/pagination', { params });
     return response.data;
 }
 export const useGetListParent = (params: IGetListParentParams) => {
@@ -16,7 +16,7 @@ export const useGetListParent = (params: IGetListParentParams) => {
 };
 
 const addParent = async (data: IParent) => {
-    const response = await apiClient.post('/api/v1/admin/account', data);
+    const response = await apiClient.post('/api/v1/admin/account/parent', data);
     return response.data;
 }
 export const useAddParent = () => {
@@ -41,7 +41,7 @@ export const useAddParent = () => {
 };
 
 const updateParent = async (data: IParent) => {
-    const response = await apiClient.put('/api/v1/admin/account', data);
+    const response = await apiClient.put('/api/v1/admin/account/parent', data);
     return response.data;
 }
 export const useUpdateParent = () => {
@@ -66,10 +66,10 @@ export const useUpdateParent = () => {
 };
 
 const deleteParent = async (id: number) => {
-    const response = await apiClient.delete(`/api/v1/admin/account`, { data: { id } });
+    const response = await apiClient.delete(`/api/v1/admin/account/parent`, { data: { id } });
     return response.data;
 }
-export const useDeleteBus = () => {
+export const useDeleteParent = () => {
     return useMutation(
         {
             mutationFn: (id: number) => deleteParent(id),
