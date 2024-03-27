@@ -15,14 +15,14 @@ export const useGetListEmployee = (params: IGetListEmployeeParams) => {
     });
 };
 
-const addEmployee = async (data: IEmployee) => {
+const addEmployee = async (data: IAddEmployee) => {
     const response = await apiClient.post('/api/v1/admin/employee', data);
     return response.data;
 }
 export const useAddEmployee = () => {
     return useMutation(
         {
-            mutationFn: (data: IEmployee) => addEmployee(data),
+            mutationFn: (data: IAddEmployee) => addEmployee(data),
             onSuccess: (result) => {
                 queryClient.invalidateQueries({ queryKey: ['employeeList'] });
                 toast.success(result.message);

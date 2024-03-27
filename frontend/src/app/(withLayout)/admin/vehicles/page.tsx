@@ -64,7 +64,7 @@ const VehiclesPage: React.FC = () => {
     // search filters
     const [numberPlate, setNumberPlate] = React.useState('');
     const [seatNumber, setSeatNumber] = React.useState<number | null>(null);
-    const [statuses, setStatuses] = React.useState<string| null>('');
+    const [statuses, setStatuses] = React.useState<string | null>('');
     const [driverName, setDriverName] = React.useState('');
     const [driverId, setDriverId] = React.useState('');
     const [driverMateName, setDriverMateName] = React.useState('');
@@ -80,7 +80,7 @@ const VehiclesPage: React.FC = () => {
     ];
 
     const { data, isLoading, isError } = useGetListBus({
-        numberPlate: numberPlate? numberPlate : null,
+        numberPlate: numberPlate ? numberPlate : null,
         seatNumber: seatNumber,
         statuses: statuses,
         driverName: driverName ? driverName : null,
@@ -89,7 +89,7 @@ const VehiclesPage: React.FC = () => {
         driverMateId: null,
         page: page - 1,
         size: 10,
-        sort: "createdAt",
+        sort: "-createdAt",
     });
 
     const bottomContent = (
@@ -144,14 +144,14 @@ const VehiclesPage: React.FC = () => {
                                 setStatuses(newValue);
                             }}
                         >
-                            { bus_statuses_map.map((status) => (
-                                <SelectItem key={status.value} value={status.value} 
+                            {bus_statuses_map.map((status) => (
+                                <SelectItem key={status.value} value={status.value}
                                 >
                                     {status.label}
                                 </SelectItem>
                             ))
                             }
-    
+
                         </Select>
                         <Input
                             classNames={{
