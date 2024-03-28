@@ -19,11 +19,12 @@ const addEmployee = async (data: IAddEmployee) => {
     const response = await apiClient.post('/api/v1/admin/employee', data);
     return response.data;
 }
-export const useAddEmployee = () => {
+export const useAddEmployee = (callback: any) => {
     return useMutation(
         {
             mutationFn: (data: IAddEmployee) => addEmployee(data),
             onSuccess: (result) => {
+                callback();
                 queryClient.invalidateQueries({ queryKey: ['employeeList'] });
                 toast.success(result.message);
             },
@@ -44,11 +45,12 @@ const updateEmployee = async (data: IEmployee) => {
     const response = await apiClient.put('/api/v1/admin/employee', data);
     return response.data;
 }
-export const useUpdateEmployee = () => {
+export const useUpdateEmployee = (callback: any) => {
     return useMutation(
         {
             mutationFn: (data: IEmployee) => updateEmployee(data),
             onSuccess: (result) => {
+                callback();
                 queryClient.invalidateQueries({ queryKey: ['employeeList'] });
                 toast.success(result.message);
             },
@@ -69,11 +71,12 @@ const deleteEmployee = async (id: number) => {
     const response = await apiClient.delete<ICommonResponse<any>>(`/api/v1/admin/employee/${id}`);
     return response.data;
 }
-export const useDeleteEmployee = () => {
+export const useDeleteEmployee = (callback: any) => {
     return useMutation(
         {
             mutationFn: (id: number) => deleteEmployee(id),
             onSuccess: (result) => {
+                callback();
                 queryClient.invalidateQueries({ queryKey: ['employeeList'] });
                 toast.success(result.message);
             },

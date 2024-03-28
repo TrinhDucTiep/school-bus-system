@@ -16,7 +16,7 @@ import { useAddEmployee } from "@/services/employeeService";
 export const AddEmployee = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    const addEmployeeMutation = useAddEmployee();
+    const addEmployeeMutation = useAddEmployee(onOpenChange);
 
     const {
         register,
@@ -93,52 +93,52 @@ export const AddEmployee = () => {
                             <Input
                                 label="Họ tên"
                                 variant="bordered"
-                                {...register("employee.name", { required: true, maxLength: 50 })}
+                                {...register("name", { required: true, maxLength: 50 })}
                             />
-                            {errors?.employee?.name && errors.employee.name.type === "required" && (
+                            {errors?.name && errors.name.type === "required" && (
                                 <p className="text-red-500 text-sm">*Tên không được để trống</p>
                             )}
-                            {errors?.employee?.name && errors.employee.name.type === "maxLength" && (
+                            {errors?.name && errors.name.type === "maxLength" && (
                                 <p className="text-red-500 text-sm">*Tên không được dài hơn 50 ký tự</p>
                             )}
                             <Input
                                 label="Avatar"
                                 variant="bordered"
-                                {...register("employee.avatar", { required: false })}
+                                {...register("avatar", { required: false })}
                             />
                             <Input
                                 label="Ngày sinh"
                                 variant="bordered"
                                 type="date"
-                                {...register("employee.dob", { required: true })}
+                                {...register("dob", { required: true })}
                             />
-                            {errors?.employee?.dob && errors.employee.dob.type === "required" && (
+                            {errors?.dob && errors.dob.type === "required" && (
                                 <p className="text-red-500 text-sm">*Ngày sinh không được để trống</p>)}
                             <Input
                                 label="Số điện thoại"
                                 variant="bordered"
                                 type="number"
-                                {...register("employee.phoneNumber", {
+                                {...register("phoneNumber", {
                                     required: true,
                                     maxLength: 10,
                                     pattern: /^[0-9]{10,11}$/
                                 })}
                             />
-                            {errors.employee?.phoneNumber && errors.employee?.phoneNumber.type === "required" && (
+                            {errors?.phoneNumber && errors?.phoneNumber.type === "required" && (
                                 <p className="text-red-500 text-sm">*Số điện thoại không được để trống</p>
                             )}
-                            {errors.employee?.phoneNumber && errors.employee?.phoneNumber.type === "maxLength" && (
+                            {errors?.phoneNumber && errors?.phoneNumber.type === "maxLength" && (
                                 <p className="text-red-500 text-sm">*Số điện thoại phải là 10 hoặc 11 số</p>
                             )}
                             <Input
                                 label="Xe Bus hiện tại"
                                 variant="bordered"
-                                {...register("employee.busNumberPlate", { required: false })}
+                                {...register("busNumberPlate", { required: false })}
                             />
                             <Input
                                 label="Vai trò"
                                 variant="bordered"
-                                {...register("employee.role", { required: false })}
+                                {...register("role", { required: false })}
                             />
                         </ModalBody>
                         <ModalFooter>

@@ -57,7 +57,12 @@ export const EmployeeRenderCell = ({
             return (
                 <div>
                     <div>
-                        <Snippet symbol="" variant="solid" >{employeeTable?.bus.numberPlate}</Snippet>
+                        {
+                            employeeTable?.bus?.numberPlate ?
+                                <Snippet symbol="" variant="solid" >{employeeTable?.bus?.numberPlate}</Snippet>
+                                : ""
+                        }
+
                     </div>
                 </div>
             );
@@ -67,7 +72,7 @@ export const EmployeeRenderCell = ({
                     {employeeTable?.employee.role}
                 </Chip>
             );
-        case "action":
+        case "actions":
             return (
                 <div className="flex items-center gap-4 ">
                     <div>

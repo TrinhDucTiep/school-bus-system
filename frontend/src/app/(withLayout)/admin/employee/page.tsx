@@ -28,6 +28,7 @@ import { ExportIcon } from '@/components/icons/export-icon';
 import { useGetListEmployee, useUpdateEmployee, useDeleteEmployee } from '@/services/employeeService';
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SubmitHandler, set, useForm } from 'react-hook-form';
+import { on } from 'events';
 
 const employee_role_map = [
     { value: 'DRIVER', label: 'Tài xế' },
@@ -37,23 +38,25 @@ const employee_role_map = [
 const EmployeePage: React.FC = () => {
     const [page, setPage] = React.useState(1);
 
-    // define for employee-render-cell.tsx
-    const updateEmployeeMutation = useUpdateEmployee();
-    const deleteEmployeeMutation = useDeleteEmployee();
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const updateEmployeeMutation = useUpdateEmployee(onOpenChange);
+    const deleteEmployeeMutation = useDeleteEmployee(onOpenChangeDelete);
     const {
         register,
         handleSubmit,
         watch,
         formState: { errors },
     } = useForm<IEmployee>();
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const handleUpdateEmployee: SubmitHandler<IEmployee> = (data) => updateEmployeeMutation.mutate(data);
+    const handleUpdateEmployee: SubmitHandler<IEmployee> = (data) => {
+        updateEmployeeMutation.mutate(data);
+    }
     const handleDeleteEmployee = (id: number) => deleteEmployeeMutation.mutate(id);
 
     const [selectedEmployee, setSelectedEmployee] = React.useState<IEmployeeTable | null>(null);
 
     const handleOpenChange = () => onOpenChange();
-    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const handleOpenChangeDelete = () => onOpenChangeDelete();
 
     // search filters
@@ -227,7 +230,6 @@ const EmployeePage: React.FC = () => {
                                 onSubmit={handleSubmit(handleUpdateEmployee)}
                             >
                                 <ModalBody>
-                                    {/* {false && ( */}
                                     <Input
                                         label="id"
                                         variant="bordered"
@@ -235,14 +237,55 @@ const EmployeePage: React.FC = () => {
                                         {...register("id", { required: true })}
                                         defaultValue={selectedEmployee?.employee.id?.toString()}
                                     />
-                                    {/* )} */}
-                                    {/* Add other input fields here */}
+
+                                    <Input
+                                        label="Họ tên"
+                                        variant="bordered"
+                                        {...register("name", { required: true })}
+                                        defaultValue={selectedEmployee?.employee.name}
+                                    />
+
+                                    <Input
+                                        label="Số điện thoại"
+                                        variant="bordered"
+                                        {...register("phoneNumber", { required: true })}
+                                        defaultValue={selectedEmployee?.employee.phoneNumber}
+                                    />
+
+                                    <Input
+                                        label="Ngày sinh"
+                                        variant="bordered"
+                                        {...register("dob", { required: true })}
+                                        defaultValue={selectedEmployee?.employee.dob}
+                                    />
+
+                                    <Input
+                                        label="Xe bus hiện tại"
+                                        variant="bordered"
+                                        {...register("busNumberPlate", { required: false })}
+                                        defaultValue={selectedEmployee?.bus?.numberPlate}
+                                    />
+
+                                    <Select
+                                        label="Vai trò"
+                                        placeholder='Chọn vai trò'
+                                        selectionMode='single'
+                                        value={selectedEmployee?.employee.role}
+                                        {...register("role", { required: true })}
+                                    >
+                                        {employee_role_map.map((role) => (
+                                            <SelectItem key={role.value} value={role.value}>
+                                                {role.label}
+                                            </SelectItem>
+                                        ))}
+                                    </Select>
+
                                 </ModalBody>
                                 <ModalFooter>
                                     <Button variant="ghost" onPress={onOpenChange}>
                                         Hủy
                                     </Button>
-                                    <Button color="primary" onPress={onOpenChange} type="submit">
+                                    <Button color="primary" type="submit">
                                         Cập nhật
                                     </Button>
                                 </ModalFooter>
@@ -269,7 +312,6 @@ const EmployeePage: React.FC = () => {
                                         <Button color="primary" onPress={() => {
                                             if (selectedEmployee?.employee.id !== undefined) {
                                                 handleDeleteEmployee(selectedEmployee.employee.id);
-                                                onOpenChangeDelete();
                                             } else {
                                                 console.error('selectedEmployee?.id is undefined');
                                             }
