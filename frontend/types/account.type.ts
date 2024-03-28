@@ -10,8 +10,7 @@ interface IStudent {
     updated_at: string;
 }
 
-interface IParent {
-    id: number;
+interface IParentBase {
     name: string | null;
     avatar: string | null;
     dob: string | null;
@@ -21,10 +20,26 @@ interface IParent {
     students: IStudent[] | null;
 }
 
-interface IParentAdd extends IParent {
-    email: string | null;
+interface IParent extends IParentBase {
+    id: number;
+}
+interface IParentDetail extends IParentBase {
+    id: number;
+    username: string | null;
+}
+
+interface IParentAdd extends IParentBase {
+    username: string | null;
     password: string | null;
     confirmPassword: string | null;
+    studentIds: number[] | null;
+}
+
+interface IParentUpdate extends IParentBase {
+    id: number;
+    username?: string | null;
+    password?: string | null;
+    confirmPassword?: string | null;
     studentIds: number[] | null;
 }
 

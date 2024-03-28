@@ -1,6 +1,7 @@
 package com.example.api.services.account;
 
 import com.example.api.services.account.dto.ParentAddInput;
+import com.example.api.services.account.dto.ParentDetailOutput;
 import com.example.api.services.account.dto.ParentSearchInput;
 import com.example.api.services.account.dto.ParentSearchOutput;
 import com.example.api.services.account.dto.ParentUpdateInput;
@@ -8,10 +9,15 @@ import com.example.api.services.account.dto.StudentAddInput;
 import com.example.api.services.account.dto.StudentSearchInput;
 import com.example.api.services.account.dto.StudentSearchOutput;
 import com.example.api.services.account.dto.StudentUpdateInput;
+import com.example.api.services.auth.AuthService;
+import com.example.api.services.auth.dto.SignUpInput;
+import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Parent;
 import com.example.shared.db.entities.Student;
+import com.example.shared.db.repo.AccountRepository;
 import com.example.shared.db.repo.ParentRepository;
 import com.example.shared.db.repo.StudentRepository;
+import com.example.shared.enumeration.UserRole;
 import com.example.shared.exception.MyException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +28,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class AccountServiceImpl implements AccountService {
+    private final AuthService authService;
     private final ParentRepository parentRepository;
     private final StudentRepository studentRepository;
 
@@ -47,6 +54,22 @@ public class AccountServiceImpl implements AccountService {
             input.getPageable()
         );
         return res.map(StudentSearchOutput::from);
+    }
+
+    @Override
+    public ParentDetailOutput getParentDetail(Long id) {
+        Parent parent = parentRepository.findById(id)
+            .orElseThrow(() -> new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
+                HttpStatus.NOT_FOUND));
+        List<Student> students = studentRepository.findByParent_Id(id);
+        return ParentDetailOutput.builder()
+            .id(parent.getId())
+            .name(parent.getName())
+            .dob(parent.getDob())
+            .avatar(parent.getAvatar())
+            .phoneNumber(parent.getPhoneNumber())
+            .students(students.stream().map(StudentSearchOutput::from).toList())
+            .build();
     }
 
     @Override
@@ -93,25 +116,23 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void addParent(ParentAddInput input) {
-        List<Long> studentIds = input.getStudentIds();
-        Parent parent;
-        if (studentIds == null) {
-            parent = Parent.builder()
-                .name(input.getName())
-                .dob(input.getDob())
-                .phoneNumber(input.getPhoneNumber())
-                .avatar(input.getAvatar())
-                .build();
-        } else {
-            parent = Parent.builder()
-                .name(input.getName())
-                .dob(input.getDob())
-                .avatar(input.getAvatar())
-                .phoneNumber(input.getPhoneNumber())
-                .students(studentRepository.findAllById(input.getStudentIds()))
-                .build();
-        }
+        Parent.ParentBuilder parentBuilder = Parent.builder()
+            .name(input.getName())
+            .dob(input.getDob())
+            .avatar(input.getAvatar())
+            .phoneNumber(input.getPhoneNumber());
 
+        if (input.getStudentIds() != null) {
+            parentBuilder.students(studentRepository.findAllById(input.getStudentIds()));
+        }
+        Account account = authService.signUp(SignUpInput.builder()
+            .username(input.getUsername())
+            .password(input.getPassword())
+            .role(UserRole.CLIENT)
+            .build());
+        parentBuilder.account(account);
+
+        Parent parent = parentBuilder.build();
         parentRepository.save(parent);
     }
 
@@ -125,6 +146,14 @@ public class AccountServiceImpl implements AccountService {
         parent.setAvatar(input.getAvatar());
         parent.setStudents(studentRepository.findAllById(input.getStudentIds()));
         parent.setPhoneNumber(input.getPhoneNumber());
+        Account account = parent.getAccount();
+        if(input.getUsername() != null) {
+            account.setUsername(input.getUsername());
+        }
+        if(input.getPassword() != null) {
+            account.setPassword(input.getPassword());
+        }
+        parent.setAccount(account);
         parentRepository.save(parent);
     }
 
@@ -135,5 +164,4 @@ public class AccountServiceImpl implements AccountService {
                 HttpStatus.NOT_FOUND));
         parentRepository.delete(parent);
     }
-
 }

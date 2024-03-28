@@ -40,7 +40,7 @@ public class StudentSearchOutput {
             .dob(dto.getDob() != null ? Instant.ofEpochMilli(dto.getDob().toEpochMilli()) : null)
             .phoneNumber(dto.getPhoneNumber())
             .studentClass(dto.getStudentClass())
-            .parentId(dto.getParent().getId())
+            .parentId(dto.getParent() != null ? dto.getParent().getId() : null)
             .createdAt(Instant.now())
             .updatedAt(Instant.now())
             .build();

@@ -20,7 +20,7 @@ import { on } from "events";
 export const AddParent = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    const addParentMutation = useAddParent();
+    const addParentMutation = useAddParent(onOpenChange);
     const {
         register,
         handleSubmit,
@@ -30,7 +30,6 @@ export const AddParent = () => {
     } = useForm<IParentAdd>();
     const handAddParent: SubmitHandler<IParentAdd> = (data) => {
         console.log("data: ", data)
-        onOpenChange()
         addParentMutation.mutate(data)
     };
 
@@ -59,7 +58,7 @@ export const AddParent = () => {
             >
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">
-                        Thêm xe Bus
+                        Thêm phụ huynh
                     </ModalHeader>
                     <form
                         className="space-y-4"
@@ -83,11 +82,12 @@ export const AddParent = () => {
                                 label="Ngày sinh"
                                 variant="bordered"
                                 type="date"
-                                {...register("dob", { required: true })}
+                                {...register("dob", { required: true, pattern: /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/ })}
                             />
                             {errors.dob && errors.dob.type === "required" && (
                                 <p className="text-red-500 text-sm">*Ngày sinh không được để trống</p>)}
-
+                            {errors.dob && errors.dob.type === "pattern" && (
+                                <p className="text-red-500 text-sm">*Ngày sinh không hợp lệ</p>)}
                             <Input
                                 label="Số điện thoại"
                                 variant="bordered"
@@ -108,16 +108,16 @@ export const AddParent = () => {
                                 label="Email đăng nhập"
                                 type="email"
                                 variant="bordered"
-                                {...register("email", {
+                                {...register("username", {
                                     required: true,
                                     pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
                                 })}
                             >
                             </Input>
-                            {errors.email && errors.email.type === "required" && (
+                            {errors.username && errors.username.type === "required" && (
                                 <p className="text-red-500 text-sm">*Email không được để trống</p>
                             )}
-                            {errors.email && errors.email.type === "pattern" && (
+                            {errors.username && errors.username.type === "pattern" && (
                                 <p className="text-red-500 text-sm">*Email không hợp lệ</p>
                             )}
                             <Input
@@ -147,25 +147,9 @@ export const AddParent = () => {
                             {errors.confirmPassword && errors.confirmPassword.type === "required" && (
                                 <p className="text-red-500 text-sm">*Mật khẩu không được để trống</p>
                             )}
-                            <Select
-                                label="Học sinh"
-                                variant="bordered"
-                                {...register("studentIds", { required: true })}
-                                selectionMode="multiple"
-                                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                                    const newValue = event.target.value;
-                                    setValue("studentIds", newValue.split(",").map((item) => parseInt(item, 10)));
-                                }}
-                                >
-                                {(studentList?.result.content || []).map((student) => {
-                                    return (
-                                        <SelectItem key={student.id} value={student.id}>
-                                            {student.name}
-                                        </SelectItem>
-                                    );
-                                })}
-                            </Select>
-
+                            {errors.confirmPassword && errors.confirmPassword.type === "validate" && (
+                                <p className="text-red-500 text-sm">*Mật khẩu không khớp</p>
+                            )}
 
                         </ModalBody>
                         <ModalFooter>
@@ -173,7 +157,7 @@ export const AddParent = () => {
                                 Huỷ
                             </Button>
                             <Button color="primary" type="submit">
-                                Thêm phụ huynh
+                                Xác nhận
                             </Button>
                         </ModalFooter>
                     </form>

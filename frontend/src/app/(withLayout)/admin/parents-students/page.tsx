@@ -10,11 +10,10 @@ const ParentsStudentsPage: React.FC = () => {
 
 
     return (
-        <div className="flex flex-wrap items-center">
+        <div className="flex flex-wrap justify-center">
             <div className='sm:w-full xl:w-1/2'>
                 <div className='m-2'>
                     <ParentTable/>
-                   
                 </div>
 
             </div>

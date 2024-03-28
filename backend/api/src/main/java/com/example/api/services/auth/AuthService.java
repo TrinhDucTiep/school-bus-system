@@ -27,7 +27,7 @@ public class AuthService implements UserDetailsService {
         return CustomUserDetails.fromAccount(account);
     }
 
-    public UserDetails signUp(SignUpInput input) {
+    public Account signUp(SignUpInput input) {
         if (accountRepository.findByUsername(input.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -37,6 +37,6 @@ public class AuthService implements UserDetailsService {
                 .password(encryptedPassword)
                 .role(input.getRole() == null ? UserRole.CLIENT : input.getRole())
                 .build();
-        return CustomUserDetails.fromAccount(accountRepository.save(account));
+        return accountRepository.save(account);
     }
 }

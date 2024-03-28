@@ -4,6 +4,8 @@ import { ParentRenderCell } from './parent-render-cell';
 import { useGetListParent } from '@/services/accountService';
 import { ExportIcon } from '../icons/export-icon';
 import { AddParent } from './add-parent';
+import ModalDeleteParent from './delete-parent';
+import ModalUpdateParent from './update-parent';
 
 
 const columns = [
@@ -70,7 +72,7 @@ const ParentTable: React.FC = () => {
                 </div>
                 <div className="flex flex-row flex-wrap m-1 mb-8">
 
-                <AddParent></AddParent>
+                    <AddParent></AddParent>
                 </div>
             </div>
             <Table aria-label="Example table with custom cells"
@@ -110,6 +112,16 @@ const ParentTable: React.FC = () => {
                     <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
                 )}
             </Table>
+            <ModalDeleteParent
+                isOpenDelete={isOpenDelete}
+                onOpenChangeDelete={handleOpenChangeDeleteParent}
+                selectedParent={selectParent}
+            ></ModalDeleteParent>
+            <ModalUpdateParent
+                isOpen={isOpen}
+                onOpenChange={handleOpenChangeParent}
+                selectedParent={selectParent}
+            ></ModalUpdateParent>
         </>
 
     );

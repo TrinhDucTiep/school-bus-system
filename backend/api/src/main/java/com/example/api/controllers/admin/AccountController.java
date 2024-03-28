@@ -31,7 +31,7 @@ public class AccountController {
 
     @GetMapping("/parent/pagination")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<CommonResponse<Object>> getParent(ParentFilterParam filterParam) {
+    public ResponseEntity<CommonResponse<Object>> getParents(ParentFilterParam filterParam) {
         var res = accountService.searchParents(filterParam.toInput());
         return ResponseUtil.toSuccessCommonResponse(res);
     }
@@ -95,6 +95,13 @@ public class AccountController {
         accountService.deleteParent(id);
         return ResponseUtil.toSuccessCommonResponse(null);
     }
+
+    @GetMapping("/parent/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> getParentDetail(@PathVariable(name = "id") Long id) {
+        return ResponseUtil.toSuccessCommonResponse(accountService.getParentDetail(id));
+    }
+
 
 
 }

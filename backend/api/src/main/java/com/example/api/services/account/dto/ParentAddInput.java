@@ -20,5 +20,9 @@ public class ParentAddInput {
 
     private String phoneNumber;
 
+    private String username;
+
+    private String password;
+
     private List<Long> studentIds;
 }

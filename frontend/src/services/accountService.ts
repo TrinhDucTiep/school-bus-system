@@ -14,18 +14,28 @@ export const useGetListParent = (params: IGetListParentParams) => {
         queryFn: () => getListParent(params)
     });
 };
-
+const getParentDetail = async (id: number) => {
+    const response = await apiClient.get<ICommonResponse<IParentDetail>>(`/api/v1/admin/account/parent/${id}`);
+    return response.data;
+}
+export const useGetParentDetail = (id: number) => {
+    return useQuery<ICommonResponse<IParentDetail>, AxiosError>({
+        queryKey: ['parentDetail', id],
+        queryFn: () => getParentDetail(id)
+    });
+};
 const addParent = async (data: IParentAdd) => {
     const response = await apiClient.post('/api/v1/admin/account/parent', data);
     return response.data;
 }
-export const useAddParent = () => {
+export const useAddParent = (callBack: any) => {
     return useMutation(
         {
             mutationFn: (data: IParentAdd) => addParent(data),
             onSuccess: (result) => {
                 queryClient.invalidateQueries({ queryKey: ['parentList'] });
                 toast.success(result.message);
+                callBack();
             },
             onError: (error: any) => {
                 if (error.response && error.response.data && typeof error.response.data === 'object') {
@@ -44,13 +54,14 @@ const updateParent = async (data: IParent) => {
     const response = await apiClient.put('/api/v1/admin/account/parent', data);
     return response.data;
 }
-export const useUpdateParent = () => {
+export const useUpdateParent = (callBackSuccess: any) => {
     return useMutation(
         {
             mutationFn: (data: IParent) => updateParent(data),
             onSuccess: (result) => {
                 queryClient.invalidateQueries({ queryKey: ['busList'] });
                 toast.success(result.message);
+                callBackSuccess();
             },
             onError: (error: any) => {
                 if (error.response && error.response.data && typeof error.response.data === 'object') {
@@ -66,7 +77,7 @@ export const useUpdateParent = () => {
 };
 
 const deleteParent = async (id: number) => {
-    const response = await apiClient.delete(`/api/v1/admin/account/parent`, { data: { id } });
+    const response = await apiClient.delete(`/api/v1/admin/account/parent/${id}`);
     return response.data;
 }
 export const useDeleteParent = () => {
@@ -74,7 +85,7 @@ export const useDeleteParent = () => {
         {
             mutationFn: (id: number) => deleteParent(id),
             onSuccess: (result) => {
-                queryClient.invalidateQueries({ queryKey: ['busList'] });
+                queryClient.invalidateQueries({ queryKey: ['parentList'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {
@@ -155,7 +166,7 @@ export const useUpdateStudent = () => {
 };
 
 const deleteStudent = async (id: number) => {
-    const response = await apiClient.delete(`/api/v1/admin/student/parent`, { data: { id } });
+    const response = await apiClient.delete(`/api/v1/admin/student/student/${id}`);
     return response.data;
 }
 export const useDeleteStudent = () => {
@@ -163,7 +174,7 @@ export const useDeleteStudent = () => {
         {
             mutationFn: (id: number) => deleteParent(id),
             onSuccess: (result) => {
-                queryClient.invalidateQueries({ queryKey: ['busList'] });
+                queryClient.invalidateQueries({ queryKey: ['studentList'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {

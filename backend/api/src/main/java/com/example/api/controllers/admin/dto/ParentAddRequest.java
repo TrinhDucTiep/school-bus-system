@@ -12,6 +12,8 @@ public class ParentAddRequest {
     private String avatar;
     private String dob;
     private String phoneNumber;
+    private String username;
+    private String password;
     private List<Long> studentIds;
 
     public ParentAddInput toInput() {
@@ -21,6 +23,8 @@ public class ParentAddRequest {
             .avatar(this.avatar)
             .dob(dob)
             .phoneNumber(this.phoneNumber)
+            .username(this.username)
+            .password(this.password)
             .studentIds(this.studentIds)
             .build();
     }

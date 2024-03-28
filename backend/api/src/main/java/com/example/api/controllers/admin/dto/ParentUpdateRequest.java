@@ -12,6 +12,8 @@ public class ParentUpdateRequest {
     private String avatar;
     private Instant dob;
     private String phoneNumber;
+    private String username;
+    private String password;
     private List<Long> studentIds;
 
     public ParentUpdateInput toInput() {
@@ -21,6 +23,8 @@ public class ParentUpdateRequest {
             .avatar(this.avatar)
             .dob(this.dob)
             .phoneNumber(this.phoneNumber)
+            .username(this.username)
+            .password(this.password)
             .studentIds(this.studentIds)
             .build();
     }
