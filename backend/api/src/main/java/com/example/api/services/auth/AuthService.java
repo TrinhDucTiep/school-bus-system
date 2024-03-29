@@ -31,12 +31,16 @@ public class AuthService implements UserDetailsService {
         if (accountRepository.findByUsername(input.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username already exists");
         }
-        String encryptedPassword = new BCryptPasswordEncoder().encode(input.getPassword());
+        String encryptedPassword = encodePassword(input.getPassword());
         Account account = Account.builder()
                 .username(input.getUsername())
                 .password(encryptedPassword)
                 .role(input.getRole() == null ? UserRole.CLIENT : input.getRole())
                 .build();
         return accountRepository.save(account);
+    }
+
+    public String encodePassword(String password) {
+        return new BCryptPasswordEncoder().encode(password);
     }
 }

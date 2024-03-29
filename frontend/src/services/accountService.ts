@@ -1,6 +1,6 @@
 import apiClient from "@/config/axiosClient";
 import { queryClient } from "@/providers/TanstackProvider";
-import { useMutation, useQuery, UseMutationOptions } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
@@ -18,10 +18,11 @@ const getParentDetail = async (id: number) => {
     const response = await apiClient.get<ICommonResponse<IParentDetail>>(`/api/v1/admin/account/parent/${id}`);
     return response.data;
 }
-export const useGetParentDetail = (id: number) => {
+export const useGetParentDetail = (id: any) => {
     return useQuery<ICommonResponse<IParentDetail>, AxiosError>({
         queryKey: ['parentDetail', id],
-        queryFn: () => getParentDetail(id)
+        queryFn: () => getParentDetail(id),
+        enabled: !!id
     });
 };
 const addParent = async (data: IParentAdd) => {
@@ -50,16 +51,16 @@ export const useAddParent = (callBack: any) => {
     )
 };
 
-const updateParent = async (data: IParent) => {
-    const response = await apiClient.put('/api/v1/admin/account/parent', data);
+const updateParent = async (data: IParentUpdate) => {
+    const response = await apiClient.put(`/api/v1/admin/account/parent/${data.id}`, data);
     return response.data;
 }
 export const useUpdateParent = (callBackSuccess: any) => {
     return useMutation(
         {
-            mutationFn: (data: IParent) => updateParent(data),
+            mutationFn: (data: IParentUpdate) => updateParent(data),
             onSuccess: (result) => {
-                queryClient.invalidateQueries({ queryKey: ['busList'] });
+                queryClient.invalidateQueries({ queryKey: ['parentList'] });
                 toast.success(result.message);
                 callBackSuccess();
             },
@@ -69,6 +70,8 @@ export const useUpdateParent = (callBackSuccess: any) => {
                     toast.error(error.response.data.message || 'An error occurred')
                 } else {
                     // Handle any other errors
+                    console.log("error: ", error)
+
                     toast.error('An error occurred')
                 }
             }

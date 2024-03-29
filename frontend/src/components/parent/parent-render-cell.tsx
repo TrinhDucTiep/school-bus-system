@@ -1,14 +1,6 @@
 import {
-    Button,
     User,
     Tooltip,
-    Chip,
-    Input,
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
 } from "@nextui-org/react";
 import React from "react";
 import { DeleteIcon } from "../icons/table/delete-icon";
@@ -45,22 +37,14 @@ export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelec
                     </div>
                 </div>
             );
-        case "dob":
+        case "phoneNumber":
             return (
                 <div>
                     <div>
-                        <span>{parent.dob}</span>
+                        <span>{parent.phoneNumber}</span>
                     </div>
                 </div>
             );
-            case "phoneNumber":
-                return (
-                    <div>
-                        <div>
-                            <span>{parent.phoneNumber}</span>
-                        </div>
-                    </div>
-                );
         case "actions":
             return (
                 <div className="flex items-center gap-4 ">

@@ -10,7 +10,6 @@ import ModalUpdateParent from './update-parent';
 
 const columns = [
     { name: 'HỌ VÀ TÊN', uid: 'name' },
-    { name: 'NGÀY SINH', uid: 'dob' },
     { name: "SỐ ĐIỆN THOẠI", uid: "phoneNumber" },
     { name: 'ACTIONS', uid: 'actions' },
 ];

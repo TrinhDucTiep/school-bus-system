@@ -67,8 +67,11 @@ public class AccountServiceImpl implements AccountService {
             .name(parent.getName())
             .dob(parent.getDob())
             .avatar(parent.getAvatar())
+            .username(parent.getAccount().getUsername())
             .phoneNumber(parent.getPhoneNumber())
             .students(students.stream().map(StudentSearchOutput::from).toList())
+            .createdAt(parent.getCreatedAt())
+            .updatedAt(parent.getUpdatedAt())
             .build();
     }
 
@@ -144,16 +147,18 @@ public class AccountServiceImpl implements AccountService {
         parent.setName(input.getName());
         parent.setDob(input.getDob());
         parent.setAvatar(input.getAvatar());
-        parent.setStudents(studentRepository.findAllById(input.getStudentIds()));
         parent.setPhoneNumber(input.getPhoneNumber());
         Account account = parent.getAccount();
-        if(input.getUsername() != null) {
+        if(input.getUsername() != null && !input.getUsername().isEmpty()) {
             account.setUsername(input.getUsername());
         }
-        if(input.getPassword() != null) {
-            account.setPassword(input.getPassword());
+        if(input.getPassword() != null && !input.getPassword().isEmpty()) {
+            account.setPassword(authService.encodePassword(input.getPassword()));
         }
         parent.setAccount(account);
+        if (input.getStudentIds() != null) {
+            parent.setStudents(studentRepository.findAllById(input.getStudentIds()));
+        }
         parentRepository.save(parent);
     }
 
