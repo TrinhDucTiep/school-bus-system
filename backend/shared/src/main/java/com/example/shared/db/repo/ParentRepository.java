@@ -13,13 +13,13 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
     select p
     from Parent p
     left join Account a on a.id = p.account.id
-    inner join Student s on s.parent.id = p.id
+    left join Student s on s.parent.id = p.id
     where (:id is null or p.id = :id)
     and (:role is null or a.role = :role)
     and :searchType is null or :name is null or 
         (CASE 
-            WHEN :searchType = 'PARENT_NAME' THEN lower(p.name) like lower(concat('%', :name, '%'))
-            WHEN :searchType = 'CHILD_NAME' THEN lower(s.name) like lower(concat('%', :name, '%'))
+            WHEN :searchType = 'PARENT_NAME' THEN p.name is null or lower(p.name) like lower(concat('%', :name, '%'))
+            WHEN :searchType = 'CHILD_NAME' THEN s.name is null or lower(s.name) like lower(concat('%', :name, '%'))
             ELSE FALSE 
         END)
     and (:phoneNumber is null or p.phoneNumber like concat(:phoneNumber,'%'))

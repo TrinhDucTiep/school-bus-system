@@ -14,8 +14,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         select s from Student s
         where
         (:id is null or s.id = :id)
-        and (:name is null or lower(s.name) like lower(concat('%', :name, '%')))
-        and (:studentClass is null or lower(s.studentClass) like lower(concat('%', :studentClass, '%')))
+        and (:name is null or s.name is null or lower(s.name) like lower(concat('%', :name, '%')))
+        and (:studentClass is null or s.studentClass is null or lower(s.studentClass) like lower(concat('%', :studentClass, '%')))
         and (:phoneNumber is null or s.phoneNumber like concat(:phoneNumber,'%'))
         """)
     Page<Student> searchPageStudent(

@@ -5,6 +5,7 @@ import { useGetListParent, useGetListStudent } from '@/services/accountService';
 import { StudentRenderCell } from './student-render-cell';
 import { ExportIcon } from '../icons/export-icon';
 import _ from 'lodash';
+import { AddStudent } from './add-student';
 
 const columns = [
     { name: 'HỌ VÀ TÊN', uid: 'name' },
@@ -92,10 +93,7 @@ const StudentTable: React.FC = () => {
                     />
                 </div>
                 <div className="flex flex-row flex-wrap m-1 mb-8">
-
-                    <Button color="primary" startContent={<ExportIcon />}>
-                        Xuất file CSV
-                    </Button>
+                    <AddStudent/>
                 </div>
             </div>
             <Table aria-label="Example table with custom cells"

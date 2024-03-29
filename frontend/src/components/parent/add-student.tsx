@@ -1,4 +1,6 @@
 import {
+    Autocomplete,
+    AutocompleteItem,
     Button,
     Input,
     Modal,
@@ -8,15 +10,21 @@ import {
     ModalHeader,
     Select,
     SelectItem,
+    Skeleton,
     useDisclosure,
 } from "@nextui-org/react";
 import React from "react";
 import { PlusIcon } from "../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useAddParent, useAddStudent, useGetListStudent } from "@/services/accountService";
+import { useAddParent, useAddStudent, useGetListParent, useGetListStudent } from "@/services/accountService";
 import { on } from "events";
+import _ from 'lodash';
 
-export const AddParent = () => {
+export const AddStudent = () => {
+    const [parentSearch, setParentSearch] = React.useState<string>("");
+
+    const debouncedSetParentSearch = _.debounce((value: string) => setParentSearch(value), 500);
+
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const addStudentMutation = useAddStudent(onOpenChange);
@@ -27,7 +35,7 @@ export const AddParent = () => {
         setValue,
         formState: { errors },
     } = useForm<IStudenAdd>();
-    const handAddParent: SubmitHandler<IStudenAdd> = (data) => {
+    const handAddStudent: SubmitHandler<IStudenAdd> = (data) => {
         console.log("data: ", data)
         addStudentMutation.mutate(data)
     };
@@ -45,6 +53,23 @@ export const AddParent = () => {
         sortBy: null
     })
 
+    const { data: parentList, isLoading: parentLoading, error: parentError } = useGetListParent({
+        id: null,
+        name: null,
+        dob: null,
+        page: null,
+        size: null,
+        phoneNumber: null,
+        sort: null,
+        sortBy: null,
+        searchBy: "PARENT_NAME"
+    })
+    if (parentLoading) return (
+        <Skeleton className="rounded-lg">
+            <div className="h-24 rounded-lg bg-default-300"></div>
+        </Skeleton>
+    )
+
     return (
         <div>
             <Button onPress={onOpen} color="primary" endContent={<PlusIcon />}>
@@ -61,7 +86,7 @@ export const AddParent = () => {
                     </ModalHeader>
                     <form
                         className="space-y-4"
-                        onSubmit={handleSubmit(handAddParent)}
+                        onSubmit={handleSubmit(handAddStudent)}
                     >
                         <ModalBody>
 
@@ -103,52 +128,39 @@ export const AddParent = () => {
                             {errors.phoneNumber && errors.phoneNumber.type === "pattern" && (
                                 <p className="text-red-500 text-sm">*Số điện thoại phải là 10 hoặc 11 số</p>
                             )}
+
                             <Input
-                                label="Email đăng nhập"
-                                type="email"
+                                label="Lớp"
                                 variant="bordered"
-                                {...register("username", {
+                                {...register("studentClass", {
                                     required: true,
-                                    pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+                                    maxLength: 20,
                                 })}
+                            />
+                            {errors.studentClass && errors.studentClass.type === "required" && (
+                                <p className="text-red-500 text-sm">*Tên lớp không được để trống</p>
+                            )}
+                            {errors.studentClass && errors.studentClass.type === "maxLength" && (
+                                <p className="text-red-500 text-sm">*Tên lớp không được dài hơn 20 ký tự</p>
+                            )}
+                            <Autocomplete
+                                label="Phụ huynh"
+                                variant="bordered"
+                                {...register("parent_id", {
+                                    required: true,
+                                })}
+                                onChange={(e) => debouncedSetParentSearch(e.target.value)}
+
                             >
-                            </Input>
-                            {errors.username && errors.username.type === "required" && (
-                                <p className="text-red-500 text-sm">*Email không được để trống</p>
-                            )}
-                            {errors.username && errors.username.type === "pattern" && (
-                                <p className="text-red-500 text-sm">*Email không hợp lệ</p>
-                            )}
-                            <Input
-                                label="Mật khẩu"
-                                type="password"
-                                variant="bordered"
-                                {...register("password", {
-                                    required: true,
-                                    minLength: 6
-                                })}
-                            />
-                            {errors.password && errors.password.type === "required" && (
-                                <p className="text-red-500 text-sm">*Mật khẩu không được để trống</p>
-                            )}
-                            {errors.password && errors.password.type === "minLength" && (
-                                <p className="text-red-500 text-sm">*Mật khẩu phải dài hơn 6 ký tự</p>
-                            )}
-                            <Input
-                                label="Nhập lại mật khẩu"
-                                type="password"
-                                variant="bordered"
-                                {...register("confirmPassword", {
-                                    required: true,
-                                    validate: (value) => value === watch("password") || "Mật khẩu không khớp"
-                                })}
-                            />
-                            {errors.confirmPassword && errors.confirmPassword.type === "required" && (
-                                <p className="text-red-500 text-sm">*Mật khẩu không được để trống</p>
-                            )}
-                            {errors.confirmPassword && errors.confirmPassword.type === "validate" && (
-                                <p className="text-red-500 text-sm">*Mật khẩu không khớp</p>
-                            )}
+                                {
+                                    (parentList?.result?.content || []).map((parent) => (
+                                        <AutocompleteItem key={parent.id} value={parent.id}>
+                                            {parent.name}
+                                        </AutocompleteItem>
+                                    ))
+                                }
+
+                            </Autocomplete>
 
                         </ModalBody>
                         <ModalFooter>
