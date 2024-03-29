@@ -40,6 +40,7 @@ public class AccountServiceImpl implements AccountService {
             input.getName(),
             input.getRole(),
             input.getSearchBy().getValue(),
+            input.getPhoneNumber(),
             input.getPageable()
         );
         return res.map(ParentSearchOutput::from);
@@ -50,6 +51,7 @@ public class AccountServiceImpl implements AccountService {
         var res = studentRepository.searchPageStudent(
             input.getId(),
             input.getName(),
+            input.getPhoneNumber(),
             input.getStudentClass(),
             input.getPageable()
         );

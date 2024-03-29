@@ -19,6 +19,8 @@ public class ParentSearchInput {
 
     private String role;
 
+    private String phoneNumber;
+
     private SearchBy searchBy;
 
     private Pageable pageable;
@@ -27,6 +29,7 @@ public class ParentSearchInput {
     public enum SearchBy {
         PARENT_NAME("PARENT_NAME"),
         STUDENT_NAME("STUDENT_NAME"),
+        PARENT_PHONE_NUMBER("PARENT_PHONE_NUMBER"),
         ;
         private final String value;
 

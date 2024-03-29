@@ -118,17 +118,18 @@ export const useGetListStudent = (params: IGetListStudentParams) => {
     });
 };
 
-const addStudent = async (data: IStudent) => {
+const addStudent = async (data: IStudenAdd) => {
     const response = await apiClient.post('/api/v1/admin/account/student', data);
     return response.data;
 }
-export const useAddStudent = () => {
+export const useAddStudent = (callBack:any) => {
     return useMutation(
         {
-            mutationFn: (data: IStudent) => addStudent(data),
+            mutationFn: (data: IStudenAdd) => addStudent(data),
             onSuccess: (result) => {
                 queryClient.invalidateQueries({ queryKey: ['studentList'] });
                 toast.success(result.message);
+                callBack();
             },
             onError: (error: any) => {
                 if (error.response && error.response.data && typeof error.response.data === 'object') {

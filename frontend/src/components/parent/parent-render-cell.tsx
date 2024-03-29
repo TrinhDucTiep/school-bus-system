@@ -13,10 +13,12 @@ interface Props {
     handleOpenChange: () => void;
     setSelectedParent: (parent: IParent) => void;
     handleOpenChangeDelete: () => void;
+    handleOpenChangeView: () => void;
 }
 
 // const { isOpen, onOpen, onOpenChange } = useDisclosure();
 export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelectedParent, handleOpenChangeDelete
+    , handleOpenChangeView
 }: Props) => {
 
     // @ts-ignore
@@ -50,7 +52,10 @@ export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelec
                 <div className="flex items-center gap-4 ">
                     <div>
                         <Tooltip content="Details">
-                            <button onClick={() => console.log("View bus", parent.id)}>
+                            <button onClick={() => {
+                                setSelectedParent(parent);
+                                handleOpenChangeView();
+                            }}>
                                 <EyeIcon size={20} fill="#979797" />
                             </button>
                         </Tooltip>

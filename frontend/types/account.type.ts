@@ -1,4 +1,5 @@
-interface IStudent {
+
+interface IStudentBase {
     id: number;
     name: string | null;
     avatar: string | null;
@@ -8,6 +9,18 @@ interface IStudent {
     parent_id: number;
     created_at: string;
     updated_at: string;
+}
+interface IStudent extends IStudentBase {
+    id: number;
+}
+
+interface IStudenAdd {
+    name: string;
+    avatar: string | null;
+    dob: string;
+    phoneNumber: string;
+    studentClass: string;
+    parent_id: number;
 }
 
 interface IParentBase {

@@ -4,39 +4,47 @@ import { ParentRenderCell } from './parent-render-cell';
 import { useGetListParent, useGetListStudent } from '@/services/accountService';
 import { StudentRenderCell } from './student-render-cell';
 import { ExportIcon } from '../icons/export-icon';
-
+import _ from 'lodash';
 
 const columns = [
     { name: 'HỌ VÀ TÊN', uid: 'name' },
-    { name: 'NGÀY SINH', uid: 'dob' },
+    { name: 'TÊN LỚP', uid: 'studentClass' },
     { name: "SỐ ĐIỆN THOẠI", uid: "phoneNumber" },
     { name: 'ACTIONS', uid: 'actions' },
 ];
 const StudentTable: React.FC = () => {
+    // search field
+    const [name, setName] = React.useState('');
+    const [studentClass, setStudentClass] = React.useState('');
+    const [phoneNumber, setPhoneNumber] = React.useState('');
 
+    const debouncedSetName = _.debounce((value: string) => setName(value), 500);
+    const debouncedSetPhoneNumber = _.debounce((value: string) => setPhoneNumber(value), 500);
+    const debouncedSetStudentClass = _.debounce((value: string) => setStudentClass(value), 500);
 
     const [selectStudent, setSelectedStudent] = React.useState<IStudent | null>(null);
 
+    // handle open modal
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const handleOpenChangeStudent = () => onOpenChange();
 
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const handleOpenChangeDeleteStudent = () => onOpenChangeDelete();
-
+    
+    const [page, setPage] = React.useState(1);
 
     const { data, isLoading, error } = useGetListStudent({
         id: null,
-        name: null,
+        name: name,
         dob: null,
-        phoneNumber: null,
-        studentClass: null,
+        phoneNumber: phoneNumber,
+        studentClass: studentClass,
         parent_id: null,
-        page: null,
-        size: null,
+        page: page - 1,
+        size: 10,
         sort: null,
         sortBy: '-createdAt'
     });
-    const [page, setPage] = React.useState(1);
     const bottomTable = (
         <div className="py-2 px-2 flex w-full justify-center items-center">
             <Pagination
@@ -61,7 +69,8 @@ const StudentTable: React.FC = () => {
                             mainWrapper: "w-full",
                         }}
                         size='sm'
-                        label="Biển số xe"
+                        label="Họ và tên"
+                        onChange={(e) => debouncedSetName(e.target.value)} 
                     />
                     <Input
                         classNames={{
@@ -69,7 +78,17 @@ const StudentTable: React.FC = () => {
                             mainWrapper: "w-full",
                         }}
                         size='sm'
-                        label="Biển số xe"
+                        label="Tên lớp"
+                        onChange={(e) => debouncedSetStudentClass(e.target.value)}
+                    />
+                    <Input
+                        classNames={{
+                            input: "w-full",
+                            mainWrapper: "w-full",
+                        }}
+                        size='sm'
+                        label="Số điện thoại"
+                        onChange={(e) => debouncedSetPhoneNumber(e.target.value)}
                     />
                 </div>
                 <div className="flex flex-row flex-wrap m-1 mb-8">

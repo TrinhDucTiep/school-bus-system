@@ -27,6 +27,10 @@ public class StudentSearchOutput {
 
     private Long parentId;
 
+    private String parentName;
+
+    private String parentPhoneNumber;
+
     private Instant createdAt;
 
     private Instant updatedAt;
@@ -41,8 +45,12 @@ public class StudentSearchOutput {
             .phoneNumber(dto.getPhoneNumber())
             .studentClass(dto.getStudentClass())
             .parentId(dto.getParent() != null ? dto.getParent().getId() : null)
-            .createdAt(Instant.now())
-            .updatedAt(Instant.now())
+            .parentName(dto.getParent() != null ? dto.getParent().getName() : null)
+            .parentPhoneNumber(dto.getParent() != null ? dto.getParent().getPhoneNumber() : null)
+            .createdAt(dto.getCreatedAt() != null ?
+                Instant.ofEpochMilli(dto.getCreatedAt().toEpochMilli()) : null)
+            .updatedAt(dto.getUpdatedAt() != null ?
+                Instant.ofEpochMilli(dto.getUpdatedAt().toEpochMilli()) : null)
             .build();
     }
 }

@@ -18,16 +18,18 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
     and (:role is null or a.role = :role)
     and :searchType is null or :name is null or 
         (CASE 
-            WHEN :searchType = 'PARENT_NAME' THEN p.name like %:name%
-            WHEN :searchType = 'CHILD_NAME' THEN s.name like %:name%
+            WHEN :searchType = 'PARENT_NAME' THEN lower(p.name) like lower(concat('%', :name, '%'))
+            WHEN :searchType = 'CHILD_NAME' THEN lower(s.name) like lower(concat('%', :name, '%'))
             ELSE FALSE 
         END)
+    and (:phoneNumber is null or p.phoneNumber like concat(:phoneNumber,'%'))
         """)
     Page<Parent> searchPageParent(
         @Param("id") Long id,
         @Param("name") String name,
         @Param("role") String role,
         @Param("searchType") String searchType,
+        @Param("phoneNumber") String phoneNumber,
         Pageable pageable
     );
 }

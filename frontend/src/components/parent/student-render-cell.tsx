@@ -45,22 +45,22 @@ export const StudentRenderCell = ({ data, columnKey, handleOpenChange, setSelect
                     </div>
                 </div>
             );
-        case "dob":
+        case "studentClass":
             return (
                 <div>
                     <div>
-                        <span>{data.dob}</span>
+                        <Chip color="success">{data.studentClass}</Chip>
                     </div>
                 </div>
             );
-            case "phoneNumber":
-                return (
+        case "phoneNumber":
+            return (
+                <div>
                     <div>
-                        <div>
-                            <span>{data.phoneNumber}</span>
-                        </div>
+                        <span>{data.phoneNumber}</span>
                     </div>
-                );
+                </div>
+            );
         case "actions":
             return (
                 <div className="flex items-center gap-4 ">

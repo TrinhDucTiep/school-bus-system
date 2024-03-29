@@ -7,6 +7,7 @@ import { AddParent } from './add-parent';
 import ModalDeleteParent from './delete-parent';
 import ModalUpdateParent from './update-parent';
 import _ from 'lodash';
+import ModalViewParent from './view-parent';
 
 
 const columns = [
@@ -29,15 +30,16 @@ const ParentTable: React.FC = () => {
     const handleOpenChangeParent = () => onOpenChange();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const handleOpenChangeDeleteParent = () => onOpenChangeDelete();
-
+    const { isOpen: isOpenView, onOpen: onOpenView, onOpenChange: onOpenChangeView } = useDisclosure();
+    const handleOpenChangeViewParent = () => onOpenChangeView();
 
     const { data: parentList, isLoading: parentLoading, error: parentError } = useGetListParent({
         id: null,
         name: name,
         dob: null,
-        page: null,
+        page: page - 1,
         phoneNumber: phoneNumber,
-        size: null,
+        size: 10,
         sort: null,
         sortBy: null,
         searchBy: 'PARENT_NAME'
@@ -110,6 +112,7 @@ const ParentTable: React.FC = () => {
                                             handleOpenChange: () => { handleOpenChangeParent() },
                                             setSelectedParent: (parent: IParent) => setSelectedParent(parent),
                                             handleOpenChangeDelete: () => { handleOpenChangeDeleteParent() },
+                                            handleOpenChangeView: () => { handleOpenChangeViewParent() }
                                         })}
                                     </TableCell>
 
@@ -131,6 +134,11 @@ const ParentTable: React.FC = () => {
                 onOpenChange={handleOpenChangeParent}
                 selectedParent={selectParent}
             ></ModalUpdateParent>
+            <ModalViewParent
+                isOpen={isOpenView}
+                onOpenChange={handleOpenChangeViewParent}
+                selectedParent={selectParent}
+            ></ModalViewParent>
         </>
 
     );
