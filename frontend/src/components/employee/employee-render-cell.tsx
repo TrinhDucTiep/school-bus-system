@@ -8,6 +8,8 @@ import React from "react";
 import { DeleteIcon } from "../icons/table/delete-icon";
 import { EditIcon } from "../icons/table/edit-icon";
 import { EyeIcon } from "../icons/table/eye-icon";
+import { convertStringInstantToDate } from "@/util/dateConverter";
+import { employee_role_map } from "@/util/constant";
 
 interface Props {
     employeeTable: IEmployeeTable;
@@ -16,6 +18,11 @@ interface Props {
     setSelectedEmployee: (employee: IEmployeeTable) => void;
     handleOpenChangeDelete: () => void;
 }
+
+const getChipColor = (role: string) => {
+    const roleObject = employee_role_map.find((r) => r.value === role);
+    return roleObject ? roleObject.color : 'primary';
+};
 
 export const EmployeeRenderCell = ({
     employeeTable,
@@ -41,7 +48,7 @@ export const EmployeeRenderCell = ({
             return (
                 <div>
                     <div>
-                        <Snippet symbol="" variant="solid" >{employeeTable?.employee.phoneNumber}</Snippet>
+                        <Snippet color="default" symbol="">{employeeTable?.employee.phoneNumber}</Snippet>
                     </div>
                 </div>
             );
@@ -49,7 +56,7 @@ export const EmployeeRenderCell = ({
             return (
                 <div>
                     <div>
-                        <span>{employeeTable?.employee.dob}</span>
+                        <span>{convertStringInstantToDate(employeeTable?.employee.dob)}</span>
                     </div>
                 </div>
             );
@@ -68,8 +75,8 @@ export const EmployeeRenderCell = ({
             );
         case "role":
             return (
-                <Chip color="primary" size="sm">
-                    {employeeTable?.employee.role}
+                <Chip color={getChipColor(employeeTable?.employee.role)} variant="flat" size="sm">
+                    {employee_role_map.find(role => role.value === employeeTable?.employee.role)?.label}
                 </Chip>
             );
         case "actions":

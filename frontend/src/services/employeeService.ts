@@ -68,7 +68,7 @@ export const useUpdateEmployee = (callback: any) => {
 };
 
 const deleteEmployee = async (id: number) => {
-    const response = await apiClient.delete<ICommonResponse<any>>(`/api/v1/admin/employee/${id}`);
+    const response = await apiClient.delete<ICommonResponse<any>>(`/api/v1/admin/employee`, { data: { id } });
     return response.data;
 }
 export const useDeleteEmployee = (callback: any) => {

@@ -28,12 +28,8 @@ import { ExportIcon } from '@/components/icons/export-icon';
 import { useGetListEmployee, useUpdateEmployee, useDeleteEmployee } from '@/services/employeeService';
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SubmitHandler, set, useForm } from 'react-hook-form';
-import { on } from 'events';
-
-const employee_role_map = [
-    { value: 'DRIVER', label: 'Tài xế' },
-    { value: 'DRIVER_MATE', label: 'Phụ xe' },
-]
+import { convertStringInstantToDate } from '@/util/dateConverter';
+import { employee_role_map } from '@/util/constant';
 
 const EmployeePage: React.FC = () => {
     const [page, setPage] = React.useState(1);
@@ -65,7 +61,7 @@ const EmployeePage: React.FC = () => {
     const [dob, setDob] = React.useState<string>('');
     const [busID, setBusID] = React.useState<number | null>(null);
     const [busNumberPlate, setBusNumberPlate] = React.useState<string>('');
-    const [role, setRole] = React.useState<string | null>('');
+    const [roles, setRoles] = React.useState<string | null>('');
 
     const columns = [
         { name: 'Họ tên', uid: 'name' },
@@ -82,7 +78,7 @@ const EmployeePage: React.FC = () => {
         dob: dob ? dob : null,
         busID: busID ? busID : null,
         busNumberPlate: busNumberPlate ? busNumberPlate : null,
-        role: role ? role : null,
+        roles: roles ? roles : null,
         page: page - 1,
         size: 10,
         sort: "-createdAt",
@@ -134,16 +130,6 @@ const EmployeePage: React.FC = () => {
                                 mainWrapper: "w-full",
                             }}
                             size='sm'
-                            label="Ngày sinh"
-                            value={dob}
-                            onValueChange={(newValue) => setDob(newValue)}
-                        />
-                        <Input
-                            classNames={{
-                                input: "w-full",
-                                mainWrapper: "w-full",
-                            }}
-                            size='sm'
                             label="Xe bus hiện tại"
                             value={busNumberPlate}
                             onValueChange={(newValue) => setBusNumberPlate(newValue)}
@@ -152,10 +138,10 @@ const EmployeePage: React.FC = () => {
                             label="Vai trò"
                             placeholder='Chọn vai trò'
                             selectionMode='multiple'
-                            value={role?.split(',')}
+                            value={roles?.split(',')}
                             onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                                 const newValue = event.target.value;
-                                setRole(newValue);
+                                setRoles(newValue);
                             }}
                         >
                             {employee_role_map.map((role) => (
@@ -255,8 +241,9 @@ const EmployeePage: React.FC = () => {
                                     <Input
                                         label="Ngày sinh"
                                         variant="bordered"
+                                        type='date'
                                         {...register("dob", { required: true })}
-                                        defaultValue={selectedEmployee?.employee.dob}
+                                        defaultValue={convertStringInstantToDate(selectedEmployee?.employee.dob)}
                                     />
 
                                     <Input
@@ -271,6 +258,7 @@ const EmployeePage: React.FC = () => {
                                         placeholder='Chọn vai trò'
                                         selectionMode='single'
                                         value={selectedEmployee?.employee.role}
+                                        defaultSelectedKeys={[employee_role_map.find(role => role.value === selectedEmployee?.employee.role)?.value || '']}
                                         {...register("role", { required: true })}
                                     >
                                         {employee_role_map.map((role) => (
@@ -282,7 +270,7 @@ const EmployeePage: React.FC = () => {
 
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button variant="ghost" onPress={onOpenChange}>
+                                    <Button color='danger' variant="flat" onPress={onOpenChange}>
                                         Hủy
                                     </Button>
                                     <Button color="primary" type="submit">

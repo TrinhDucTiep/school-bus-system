@@ -23,7 +23,7 @@ interface IGetListEmployeeParams {
     dob: string | null;
     busID: number | null;
     busNumberPlate: string | null;
-    role: string | null;
+    roles: string | null;
     page: number | null;
     size: number | null;
     sort: string | null;
