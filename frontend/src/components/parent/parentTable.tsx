@@ -6,6 +6,7 @@ import { ExportIcon } from '../icons/export-icon';
 import { AddParent } from './add-parent';
 import ModalDeleteParent from './delete-parent';
 import ModalUpdateParent from './update-parent';
+import _ from 'lodash';
 
 
 const columns = [
@@ -14,10 +15,16 @@ const columns = [
     { name: 'ACTIONS', uid: 'actions' },
 ];
 const ParentTable: React.FC = () => {
+    //search field
+    const [name, setName] = React.useState('');
+    const [phoneNumber, setPhoneNumber] = React.useState('');
 
+    const debouncedSetName = _.debounce((value: string) => setName(value), 500);
+    const debouncedSetPhoneNumber = _.debounce((value: string) => setPhoneNumber(value), 500);
+    // handle pagination
     const [page, setPage] = React.useState(1);
+    // handle open modal
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
     const [selectParent, setSelectedParent] = React.useState<IParent | null>(null);
     const handleOpenChangeParent = () => onOpenChange();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
@@ -26,9 +33,10 @@ const ParentTable: React.FC = () => {
 
     const { data: parentList, isLoading: parentLoading, error: parentError } = useGetListParent({
         id: null,
-        name: null,
+        name: name,
         dob: null,
         page: null,
+        phoneNumber: phoneNumber,
         size: null,
         sort: null,
         sortBy: null,
@@ -59,6 +67,7 @@ const ParentTable: React.FC = () => {
                         }}
                         size='sm'
                         label="Tên phụ huynh"
+                        onChange={(e) => debouncedSetName(e.target.value)} 
                     />
                     <Input
                         classNames={{
@@ -67,6 +76,7 @@ const ParentTable: React.FC = () => {
                         }}
                         size='sm'
                         label="Số điện thoại"
+                        onChange={(e) => debouncedSetPhoneNumber(e.target.value)} 
                     />
                 </div>
                 <div className="flex flex-row flex-wrap m-1 mb-8">

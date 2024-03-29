@@ -50,6 +50,7 @@ interface IGetListParentParams {
     dob: string | null;
     page: number | null;
     size: number | null;
+    phoneNumber: string | null;
     sort: string | null;
     sortBy: '-createdAt' | '-updatedAt' | 'createdAt' | 'updatedAt' | null;
     searchBy: 'PARENT_NAME' | 'STUDENT_NAME';
