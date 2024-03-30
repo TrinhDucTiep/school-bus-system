@@ -6,6 +6,7 @@ import { StudentRenderCell } from './student-render-cell';
 import { ExportIcon } from '../icons/export-icon';
 import _ from 'lodash';
 import { AddStudent } from './add-student';
+import { ModalUpdateStudent } from './update-student';
 
 const columns = [
     { name: 'HỌ VÀ TÊN', uid: 'name' },
@@ -132,6 +133,7 @@ const StudentTable: React.FC = () => {
                     <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
                 )}
             </Table>
+            <ModalUpdateStudent isOpen={isOpen} onOpenChange={onOpenChange} selectedStudent={selectStudent} />
         </>
 
     );

@@ -1,6 +1,8 @@
+"use client";
 import {
     Autocomplete,
     AutocompleteItem,
+    Avatar,
     Button,
     Input,
     Modal,
@@ -13,16 +15,18 @@ import {
     Skeleton,
     useDisclosure,
 } from "@nextui-org/react";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { PlusIcon } from "../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useAddParent, useAddStudent, useGetListParent, useGetListStudent } from "@/services/accountService";
-import { on } from "events";
+import { useAddStudent, useGetListParent, useGetListStudent } from "@/services/accountService";
 import _ from 'lodash';
+import { SearchIcon } from "../icons/searchicon";
 
 export const AddStudent = () => {
     const [parentSearch, setParentSearch] = React.useState<string>("");
-
+    const [searchBy, setSearchBy] = React.useState<any>("PARENT_NAME");
+    const inputRef = useRef(null);
+    
     const debouncedSetParentSearch = _.debounce((value: string) => setParentSearch(value), 500);
 
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -36,53 +40,41 @@ export const AddStudent = () => {
         formState: { errors },
     } = useForm<IStudenAdd>();
     const handAddStudent: SubmitHandler<IStudenAdd> = (data) => {
+        data = {
+            ...data,
+            parent_id: selectedParentId ? selectedParentId : 1
+        }
         console.log("data: ", data)
         addStudentMutation.mutate(data)
     };
 
-    const { data: studentList, isLoading: studentLoading, error: studentError } = useGetListStudent({
-        id: null,
-        name: null,
-        dob: null,
-        phoneNumber: null,
-        studentClass: null,
-        parent_id: null,
-        page: null,
-        size: null,
-        sort: null,
-        sortBy: null
-    })
-
     const { data: parentList, isLoading: parentLoading, error: parentError } = useGetListParent({
         id: null,
-        name: null,
+        name: parentSearch,
         dob: null,
         page: null,
         size: null,
         phoneNumber: null,
         sort: null,
         sortBy: null,
-        searchBy: "PARENT_NAME"
+        searchBy: searchBy
     })
-    if (parentLoading) return (
-        <Skeleton className="rounded-lg">
-            <div className="h-24 rounded-lg bg-default-300"></div>
-        </Skeleton>
-    )
 
+    const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
     return (
         <div>
             <Button onPress={onOpen} color="primary" endContent={<PlusIcon />}>
-                Thêm phụ huynh
+                Thêm học sinh
             </Button>
             <Modal
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
                 placement="top-center"
+                size='2xl'
             >
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">
-                        Thêm phụ huynh
+                        Thêm học sinh
                     </ModalHeader>
                     <form
                         className="space-y-4"
@@ -143,24 +135,93 @@ export const AddStudent = () => {
                             {errors.studentClass && errors.studentClass.type === "maxLength" && (
                                 <p className="text-red-500 text-sm">*Tên lớp không được dài hơn 20 ký tự</p>
                             )}
-                            <Autocomplete
-                                label="Phụ huynh"
-                                variant="bordered"
-                                {...register("parent_id", {
-                                    required: true,
-                                })}
-                                onChange={(e) => debouncedSetParentSearch(e.target.value)}
 
-                            >
-                                {
-                                    (parentList?.result?.content || []).map((parent) => (
-                                        <AutocompleteItem key={parent.id} value={parent.id}>
-                                            {parent.name}
-                                        </AutocompleteItem>
-                                    ))
-                                }
+                            <div className="flex justify-between">
+                                <div className="w-2/3">
+                                    <Autocomplete
+                                        
+                                    
+                                        label="Phụ huynh"
+                                        variant="bordered"
+                                        {...register("parent_id", { required: true })}
+                                        onInputChange={(value) => {
+                                            debouncedSetParentSearch(value);
 
-                            </Autocomplete>
+                                        }}
+                                        onSelectionChange={(value: any) => {
+                                            console.log("value: ", value)
+                                            setSelectedParentId(value)
+                                        }}
+                                        onKeyDown={(e: any) => e.continuePropagation()}
+
+                                        listboxProps={{
+                                            hideSelectedIcon: true,
+                                            itemClasses: {
+                                                base: [
+                                                    "rounded-medium",
+                                                    "text-default-500",
+                                                    "transition-opacity",
+                                                    "data-[hover=true]:text-foreground",
+                                                    "dark:data-[hover=true]:bg-default-50",
+                                                    "data-[pressed=true]:opacity-70",
+                                                    "data-[hover=true]:bg-default-200",
+                                                    "data-[selectable=true]:focus:bg-default-100",
+                                                    "data-[focus-visible=true]:ring-default-500",
+                                                ],
+                                            },
+                                        }}
+                                        popoverProps={{
+                                            offset: 10,
+                                            classNames: {
+                                                base: "rounded-large",
+                                                content: "p-1 border-small border-default-100 bg-background",
+                                            },
+                                        }}
+
+                                        startContent={<SearchIcon />}
+                                        aria-label="Chọn phụ huynh"
+                                        placeholder="Tìm kiếm phụ huynh"
+
+                                    >
+                                        {parentList ? parentList.result.content.map((parent: IParent) => (
+                                            <AutocompleteItem key={parent.id} textValue={parent.name}>
+                                                <div className="flex justify-between items-center">
+                                                    <div className="flex gap-2 items-center">
+                                                        <Avatar alt={parent.name} className="flex-shrink-0" size="sm" src={parent.avatar} />
+                                                        <div className="flex flex-col">
+                                                            <span className="text-small">{parent.name}</span>
+                                                            <span className="text-tiny text-default-400">{parent.phoneNumber}</span>
+                                                        </div>
+                                                    </div>
+                                                    <Button
+                                                        className="border-small mr-0.5 font-medium shadow-small"
+                                                        radius="full"
+                                                        size="sm"
+                                                        variant="bordered"
+                                                    >
+                                                        Add
+                                                    </Button>
+                                                </div>
+                                            </AutocompleteItem>
+
+                                        )) : <AutocompleteItem key={"abc"} textValue="abc"></AutocompleteItem>}
+                                    </Autocomplete>
+                                </div>
+
+                                <div className="w-1/3">
+                                    <div className="ml-1">
+                                        <Select label='Tìm kiếm theo' defaultSelectedKeys={[searchBy]}>
+                                            <SelectItem value="PARENT_NAME" onClick={() => setSearchBy("PARENT_NAME")} key={"PARENT_NAME"}>
+                                                Tên phụ huynh
+                                            </SelectItem>
+                                            <SelectItem value="PARENT_PHONE_NUMBER" onClick={() => setSearchBy("PARENT_PHONE_NUMBER")} key={"PARENT_PHONE_NUMBER"}>
+                                                Số điện thoại
+                                            </SelectItem>
+                                        </Select>
+                                    </div>
+                                </div>
+                            </div>
+
 
                         </ModalBody>
                         <ModalFooter>

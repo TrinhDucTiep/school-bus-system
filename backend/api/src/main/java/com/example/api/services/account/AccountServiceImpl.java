@@ -6,6 +6,7 @@ import com.example.api.services.account.dto.ParentSearchInput;
 import com.example.api.services.account.dto.ParentSearchOutput;
 import com.example.api.services.account.dto.ParentUpdateInput;
 import com.example.api.services.account.dto.StudentAddInput;
+import com.example.api.services.account.dto.StudentDetailOutput;
 import com.example.api.services.account.dto.StudentSearchInput;
 import com.example.api.services.account.dto.StudentSearchOutput;
 import com.example.api.services.account.dto.StudentUpdateInput;
@@ -75,6 +76,14 @@ public class AccountServiceImpl implements AccountService {
             .createdAt(parent.getCreatedAt())
             .updatedAt(parent.getUpdatedAt())
             .build();
+    }
+
+    @Override
+    public StudentDetailOutput getStudentDetail(Long id) {
+        Student student = studentRepository.findById(id)
+            .orElseThrow(() -> new MyException(null, "STUDENT_NOT_FOUND", "Student not found",
+                HttpStatus.NOT_FOUND));
+        return StudentDetailOutput.from(student);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.api.controllers.admin.dto;
 
 import com.example.api.services.account.dto.StudentUpdateInput;
+import com.example.shared.utils.DateConvertUtil;
 import java.time.Instant;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ public class StudentUpdateRequest {
     private Long id;
     private String name;
     private String avatar;
-    private Instant dob;
+    private String dob;
     private String phoneNumber;
     private String studentClass;
     private Long parentId;
@@ -19,7 +20,7 @@ public class StudentUpdateRequest {
             .id(this.id)
             .name(this.name)
             .avatar(this.avatar)
-            .dob(this.dob)
+            .dob(DateConvertUtil.convertStringToInstant(this.dob))
             .phoneNumber(this.phoneNumber)
             .studentClass(this.studentClass)
             .parentId(this.parentId)

@@ -16,13 +16,14 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
     left join Student s on s.parent.id = p.id
     where (:id is null or p.id = :id)
     and (:role is null or a.role = :role)
-    and :searchType is null or :name is null or 
+    and :searchType is null or :name is null or :name = '' or 
         (CASE 
-            WHEN :searchType = 'PARENT_NAME' THEN p.name is null or lower(p.name) like lower(concat('%', :name, '%'))
-            WHEN :searchType = 'CHILD_NAME' THEN s.name is null or lower(s.name) like lower(concat('%', :name, '%'))
-            ELSE FALSE 
+            WHEN :searchType = 'PARENT_NAME' THEN p.name is null or p.name ILIKE %:name%
+            WHEN :searchType = 'STUDENT_NAME' THEN s.name is null or s.name ILIKE %:name%
+            WHEN :searchType = 'PARENT_PHONE_NUMBER' THEN p.phoneNumber is null or p.phoneNumber ILIKE %:name%
+            ELSE FALSE
         END)
-    and (:phoneNumber is null or p.phoneNumber like concat(:phoneNumber,'%'))
+    and (:phoneNumber is null or p.phoneNumber like %:phoneNumber%)
         """)
     Page<Parent> searchPageParent(
         @Param("id") Long id,

@@ -38,9 +38,15 @@ public class AccountController {
 
     @GetMapping("/student/pagination")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<CommonResponse<Object>> getStudent(StudentFilterParam request) {
+    public ResponseEntity<CommonResponse<Object>> getStudents(StudentFilterParam request) {
         var res = accountService.searchStudents(request.toInput());
         return ResponseUtil.toSuccessCommonResponse(res);
+    }
+
+    @GetMapping("/student/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<CommonResponse<Object>> getStudentDetail(@PathVariable(name = "id") Long id) {
+        return ResponseUtil.toSuccessCommonResponse(accountService.getStudentDetail(id));
     }
 
     @PostMapping("/student")

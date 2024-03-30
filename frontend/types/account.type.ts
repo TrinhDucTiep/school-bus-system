@@ -2,7 +2,7 @@
 interface IStudentBase {
     id: number;
     name: string | null;
-    avatar: string | null;
+    avatar: string | undefined;
     dob: string | null;
     phoneNumber: string | null;
     studentClass: string | null;
@@ -15,6 +15,7 @@ interface IStudent extends IStudentBase {
 }
 
 interface IStudenAdd {
+    id: number | string | null;
     name: string;
     avatar: string | null;
     dob: string;
@@ -23,9 +24,25 @@ interface IStudenAdd {
     parent_id: number;
 }
 
+interface IStudentUpdate extends IStudentBase {
+    id: number;
+    name: string;
+    avatar: string | undefined;
+    dob: string;
+    phoneNumber: string;
+    studentClass: string;
+    parent_id: number;
+}
+
+interface IStudentDetail extends IStudentBase {
+    parentName: string | null;
+    parentPhoneNumber: string | null;
+
+}
+
 interface IParentBase {
-    name: string | null;
-    avatar: string | null;
+    name: string | undefined;
+    avatar: string | undefined;
     dob: string | null;
     phoneNumber: string | null;
     created_at: string;
@@ -66,7 +83,7 @@ interface IGetListParentParams {
     phoneNumber: string | null;
     sort: string | null;
     sortBy: '-createdAt' | '-updatedAt' | 'createdAt' | 'updatedAt' | null;
-    searchBy: 'PARENT_NAME' | 'STUDENT_NAME';
+    searchBy: 'PARENT_NAME' | 'STUDENT_NAME' | 'PARENT_PHONE_NUMBER' | 'STUDENT_CLASS' | null;
 }
 
 

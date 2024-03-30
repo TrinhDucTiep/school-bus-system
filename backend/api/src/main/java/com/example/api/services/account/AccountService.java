@@ -6,6 +6,7 @@ import com.example.api.services.account.dto.ParentSearchInput;
 import com.example.api.services.account.dto.ParentSearchOutput;
 import com.example.api.services.account.dto.ParentUpdateInput;
 import com.example.api.services.account.dto.StudentAddInput;
+import com.example.api.services.account.dto.StudentDetailOutput;
 import com.example.api.services.account.dto.StudentSearchInput;
 import com.example.api.services.account.dto.StudentSearchOutput;
 import com.example.api.services.account.dto.StudentUpdateInput;
@@ -16,6 +17,8 @@ public interface AccountService {
 
     Page<StudentSearchOutput> searchStudents(StudentSearchInput input);
     ParentDetailOutput getParentDetail(Long id);
+
+    StudentDetailOutput getStudentDetail(Long id);
     void addStudent(StudentAddInput input);
 
     void updateStudent(StudentUpdateInput input);

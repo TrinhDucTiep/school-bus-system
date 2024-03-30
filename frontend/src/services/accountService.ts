@@ -107,6 +107,19 @@ export const useDeleteParent = () => {
 
 //student 
 
+const getStudentDetail = async (id: number) => {
+    const response = await apiClient.get<ICommonResponse<IStudentDetail>>(`/api/v1/admin/account/student/${id}`);
+    return response.data;
+}
+
+export const useGetStudentDetail = (id: any) => {
+    return useQuery<ICommonResponse<IStudentDetail>, AxiosError>({
+        queryKey: ['studentDetail', id],
+        queryFn: () => getStudentDetail(id),
+        enabled: !!id
+    });
+};
+
 const getListStudent = async (params: IGetListStudentParams) => {
     const response = await apiClient.get<ICommonResponse<Page<IStudent>>>('/api/v1/admin/account/student/pagination', { params });
     return response.data;
@@ -144,17 +157,18 @@ export const useAddStudent = (callBack:any) => {
     )
 };
 
-const updateStudent = async (data: IStudent) => {
-    const response = await apiClient.put('/api/v1/admin/student/parent', data);
+const updateStudent = async (data: IStudentUpdate) => {
+    const response = await apiClient.put(`/api/v1/admin/account/student/${data.id}`, data);
     return response.data;
 }
-export const useUpdateStudent = () => {
+export const useUpdateStudent = (callBackSuccess: any) => {
     return useMutation(
         {
-            mutationFn: (data: IStudent) => updateStudent(data),
+            mutationFn: (data: IStudentUpdate) => updateStudent(data),
             onSuccess: (result) => {
-                queryClient.invalidateQueries({ queryKey: ['busList'] });
+                queryClient.invalidateQueries({ queryKey: ['studentList'] });
                 toast.success(result.message);
+                callBackSuccess();
             },
             onError: (error: any) => {
                 if (error.response && error.response.data && typeof error.response.data === 'object') {

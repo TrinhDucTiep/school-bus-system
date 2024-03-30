@@ -23,7 +23,6 @@ apiClient.interceptors.request.use((config) => {
 // Add a response interceptor
 apiClient.interceptors.response.use((response) => {
   response.data = toCamelCase(response.data);
-  console.log("response: ", response)
   return response;
 }, async (error) => {
 
