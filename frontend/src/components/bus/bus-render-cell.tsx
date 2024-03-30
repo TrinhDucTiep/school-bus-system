@@ -8,6 +8,12 @@ import React from "react";
 import { DeleteIcon } from "../icons/table/delete-icon";
 import { EditIcon } from "../icons/table/edit-icon";
 import { EyeIcon } from "../icons/table/eye-icon";
+import { bus_status_map } from "@/util/constant";
+
+const getBusStatusColor = (status: string) => {
+    const statusObject = bus_status_map.find((s) => s.value === status);
+    return statusObject ? statusObject.color : "primary";
+}
 
 interface Props {
     bus: IBusTable;
@@ -25,7 +31,7 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
             return (
                 <div>
                     <div>
-                        <Snippet symbol="" variant="solid" >{bus?.bus.numberPlate}</Snippet>
+                        <Snippet symbol="" color="default" >{bus?.bus.numberPlate}</Snippet>
                     </div>
                 </div>
             );
@@ -64,13 +70,7 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
                 <Chip
                     size="sm"
                     variant="flat"
-                    color={
-                        bus?.bus?.status === "AVAILABLE"
-                            ? "success"
-                            : bus?.bus?.status === "RUNNING"
-                                ? "warning"
-                                : "danger"
-                    }
+                    color={getBusStatusColor(bus?.bus?.status)}
                 >
                     <span className="capitalize text-xs">{bus?.bus?.status}</span>
                 </Chip>

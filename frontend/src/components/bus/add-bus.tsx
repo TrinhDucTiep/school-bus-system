@@ -6,17 +6,20 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
+    Select,
+    SelectItem,
     useDisclosure,
 } from "@nextui-org/react";
 import React from "react";
 import { PlusIcon } from "../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useAddBus } from "@/services/busService";
+import { bus_status_map } from "@/util/constant";
 
 export const AddBus = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    const addBusMutation = useAddBus();
+    const addBusMutation = useAddBus(onOpenChange);
     const {
         register,
         handleSubmit,
@@ -59,11 +62,19 @@ export const AddBus = () => {
                                 })}
                             />
                             {errors.seatNumber && errors.seatNumber.message && <p className="text-red-500 text-sm">{`*${errors.seatNumber.message}`}</p>}
-                            <Input
+                            
+                            <Select
                                 label="Trạng thái"
-                                variant="bordered"
+                                placeholder="Chọn trạng thái"
+                                selectionMode="single"
                                 {...register("status", { required: true })}
-                            />
+                            >
+                                {bus_status_map.map((status) => (
+                                    <SelectItem key={status.value} value={status.value}>
+                                        {status.label}
+                                    </SelectItem>
+                                ))}
+                            </Select>
                             <Input
                                 label="Tài xế"
                                 variant="bordered"
@@ -80,7 +91,7 @@ export const AddBus = () => {
                             <Button color="danger" variant="flat" onPress={onOpenChange}>
                                 Huỷ
                             </Button>
-                            <Button color="primary" onPress={onOpenChange} type="submit">
+                            <Button color="primary" type="submit">
                                 Thêm xe Bus
                             </Button>
                         </ModalFooter>

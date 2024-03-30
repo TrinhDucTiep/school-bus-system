@@ -19,11 +19,12 @@ const addBus = async (data: IBus) => {
     const response = await apiClient.post('/api/v1/admin/bus', data);
     return response.data;
 }
-export const useAddBus = () => {
+export const useAddBus = (callback: any) => {
     return useMutation(
         {
             mutationFn: (data: IBus) => addBus(data),
             onSuccess: (result) => {
+                callback();
                 queryClient.invalidateQueries({ queryKey: ['busList'] });
                 toast.success(result.message);
             },
@@ -44,11 +45,12 @@ const updateBus = async (data: IBus) => {
     const response = await apiClient.put('/api/v1/admin/bus', data);
     return response.data;
 }
-export const useUpdateBus = () => {
+export const useUpdateBus = (callback: any) => {
     return useMutation(
         {
             mutationFn: (data: IBus) => updateBus(data),
             onSuccess: (result) => {
+                callback();
                 queryClient.invalidateQueries({ queryKey: ['busList'] });
                 toast.success(result.message);
             },
@@ -69,11 +71,12 @@ const deleteBus = async (id: number) => {
     const response = await apiClient.delete(`/api/v1/admin/bus`, { data: { id } });
     return response.data;
 }
-export const useDeleteBus = () => {
+export const useDeleteBus = (callback: any) => {
     return useMutation(
         {
             mutationFn: (id: number) => deleteBus(id),
             onSuccess: (result) => {
+                callback();
                 queryClient.invalidateQueries({ queryKey: ['busList'] });
                 toast.success(result.message);
             },

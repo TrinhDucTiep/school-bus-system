@@ -28,36 +28,28 @@ import { ExportIcon } from '@/components/icons/export-icon';
 import { useGetListBus, useUpdateBus, useDeleteBus } from '@/services/busService';
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SubmitHandler, set, useForm } from "react-hook-form";
-
-const bus_statuses_map = [
-    { value: 'AVAILABLE', label: 'Đang hoạt động' },
-    { value: 'RUNNING', label: 'Đang chạy' },
-    { value: 'BROKEN', label: 'Hỏng hóc' },
-    { value: 'MAINTENANCE', label: 'Bảo Dưỡng' },
-];
-
+import { bus_status_map } from '@/util/constant';
 
 
 const VehiclesPage: React.FC = () => {
     const [page, setPage] = React.useState(1);
 
     // define for bus-render-cell.tsx
-    const updateBusMutation = useUpdateBus();
-    const deleteBusMutation = useDeleteBus();
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const updateBusMutation = useUpdateBus(onOpenChange);
+    const deleteBusMutation = useDeleteBus(onOpenChangeDelete);
     const {
         register,
         handleSubmit,
         watch,
         formState: { errors },
     } = useForm<IBus>();
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const handleUpdateBus: SubmitHandler<IBus> = (data) => updateBusMutation.mutate(data);
     const handleDeleteBus = (id: number) => deleteBusMutation.mutate(id);
-
     const [selectedBus, setSelectedBus] = React.useState<IBusTable | null>(null);
-
     const handleOpenChange = () => onOpenChange();
-    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const handleOpenChangeDelete = () => onOpenChangeDelete();
 
 
@@ -134,24 +126,18 @@ const VehiclesPage: React.FC = () => {
                             value={seatNumber?.toString() || ''}
                             onValueChange={(newValue) => setSeatNumber(newValue ? parseInt(newValue) : null)}
                         />
+
                         <Select
                             label="Trạng thái"
-                            placeholder='Chọn trạng thái'
-                            selectionMode='multiple'
-                            value={statuses?.split(',')}
-                            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                                const newValue = event.target.value;
-                                setStatuses(newValue);
-                            }}
+                            placeholder="Chọn trạng thái"
+                            selectionMode="single"
+                            {...register("status", { required: true })}
                         >
-                            {bus_statuses_map.map((status) => (
-                                <SelectItem key={status.value} value={status.value}
-                                >
+                            {bus_status_map.map((status) => (
+                                <SelectItem key={status.value} value={status.value}>
                                     {status.label}
                                 </SelectItem>
-                            ))
-                            }
-
+                            ))}
                         </Select>
                         <Input
                             classNames={{
@@ -265,12 +251,26 @@ const VehiclesPage: React.FC = () => {
                                         defaultValue={selectedBus?.bus.seatNumber?.toString()}
                                     />
                                     {errors.seatNumber && errors.seatNumber.message && <p className="text-red-500 text-sm">{`*${errors.seatNumber.message}`}</p>}
-                                    <Input
+                                    {/* <Input
                                         label="Trạng thái"
                                         variant="bordered"
                                         {...register("status", { required: true })}
                                         defaultValue={selectedBus?.bus.status}
-                                    />
+                                    /> */}
+                                    <Select
+                                        label="Trạng thái"
+                                        placeholder="Chọn trạng thái"
+                                        selectionMode="single"
+                                        value={selectedBus?.bus.status}
+                                        defaultSelectedKeys={[bus_status_map.find((status) => status.value === selectedBus?.bus.status)?.value || '']}
+                                        {...register("status", { required: true })}
+                                    >
+                                        {bus_status_map.map((status) => (
+                                            <SelectItem key={status.value} value={status.value}>
+                                                {status.label}
+                                            </SelectItem>
+                                        ))}
+                                    </Select>
                                     <Input
                                         label="Tài xế"
                                         variant="bordered"
@@ -288,7 +288,7 @@ const VehiclesPage: React.FC = () => {
                                     <Button variant="ghost" onPress={onOpenChange}>
                                         Hủy
                                     </Button>
-                                    <Button color="primary" onPress={onOpenChange} type="submit">
+                                    <Button color="primary" type="submit">
                                         Cập nhật
                                     </Button>
                                 </ModalFooter>
@@ -315,7 +315,6 @@ const VehiclesPage: React.FC = () => {
                                         <Button color="primary" onPress={() => {
                                             if (selectedBus?.bus.id !== undefined) {
                                                 handleDeleteBus(selectedBus.bus.id);
-                                                onOpenChangeDelete();
                                             } else {
                                                 console.error('selectedBus?.bus.id is undefined');
                                             }

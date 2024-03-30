@@ -16,7 +16,6 @@ import com.example.shared.enumeration.UserRole;
 import com.example.shared.exception.MyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -35,13 +34,17 @@ public class EmployeeServiceImpl implements EmployeeService{
     public Page<GetListEmployeeOutput> getListEmployee(ListEmployeeFilterParam filterParam,
                                                        Pageable pageable) {
         try {
+            if (filterParam.getRoles() != null && filterParam.getRoles().isEmpty()) {
+                filterParam.setRoles(null);
+            }
+
             Page<GetListEmployeeDTO> listEmployeeDTOS = employeeRepository.getListEmployee(
                     filterParam.getId(),
                     filterParam.getName(),
                     filterParam.getPhoneNumber(),
                     filterParam.getBusId(),
                     filterParam.getBusNumberPlate(),
-                    filterParam.getRole(),
+                    filterParam.getRoles(),
                     pageable
             );
             return listEmployeeDTOS.map(GetListEmployeeOutput::fromDto);

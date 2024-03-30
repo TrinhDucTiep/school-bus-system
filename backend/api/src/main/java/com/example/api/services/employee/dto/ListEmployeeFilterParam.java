@@ -2,6 +2,7 @@ package com.example.api.services.employee.dto;
 
 import com.example.shared.enumeration.EmployeeRole;
 import java.time.Instant;
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -14,5 +15,5 @@ public class ListEmployeeFilterParam {
     private Long busId;
     private String busNumberPlate;
     private Long mateId;
-    private EmployeeRole role;
+    private List<EmployeeRole> roles;
 }

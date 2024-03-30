@@ -18,12 +18,12 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
         LEFT JOIN Employee d ON b.driverId = d.id
         LEFT JOIN Employee dm ON b.driverMateId = dm.id
         WHERE
-            (:numberPlate IS NULL OR b.numberPlate LIKE %:numberPlate%)
+            (:numberPlate IS NULL OR b.numberPlate ILIKE %:numberPlate%)
             AND (:seatNumber IS NULL OR b.seatNumber = :seatNumber)
             AND (:statuses IS NULL OR b.status in (:statuses))
-            AND (:driverName IS NULL OR d.name LIKE %:driverName%)
+            AND (:driverName IS NULL OR d.name ILIKE %:driverName%)
             AND (:driverId IS NULL OR d.id = :driverId)
-            AND (:driverMateName IS NULL OR dm.name LIKE %:driverMateName%)
+            AND (:driverMateName IS NULL OR dm.name ILIKE %:driverMateName%)
             AND (:driverMateId IS NULL OR dm.id = :driverMateId)
     """)
     Page<GetListBusDTO> getListBus(
