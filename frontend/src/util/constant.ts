@@ -9,3 +9,8 @@ export const bus_status_map = [
     { value: 'MAINTENANCE', label: 'Bảo dưỡng', color: 'warning' },
     { value: 'BROKEN', label: 'Hỏng hóc', color: 'danger' },
 ];
+
+export enum EmployeeRole {
+    DRIVER = "DRIVER",
+    DRIVER_MATE = "DRIVER_MATE",
+}

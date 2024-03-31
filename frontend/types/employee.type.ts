@@ -46,3 +46,8 @@ interface IAddEmployee {
     password: string;
     confirmPassword: string;
 }
+
+enum EmployeeRole {
+    DRIVER = "DRIVER",
+    DRIVER_MATE = "DRIVER_MATE",
+}

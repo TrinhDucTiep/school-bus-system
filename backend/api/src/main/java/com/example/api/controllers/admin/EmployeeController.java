@@ -5,6 +5,7 @@ import com.example.api.controllers.admin.dto.DeleteEmployeeRequest;
 import com.example.api.controllers.admin.dto.UpdateEmployeeRequest;
 import com.example.api.services.employee.EmployeeService;
 import com.example.api.services.employee.dto.ListEmployeeFilterParam;
+import com.example.shared.enumeration.EmployeeRole;
 import com.example.shared.response.CommonResponse;
 import com.example.shared.utils.PageableUtils;
 import com.example.shared.utils.ResponseUtil;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -60,5 +62,15 @@ public class EmployeeController {
         ) {
         employeeService.deleteEmployee(request.getId());
         return ResponseUtil.toSuccessCommonResponse("Delete employee successfully");
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<CommonResponse<Object>> getAvailableEmployees(
+        @RequestParam(required = false) EmployeeRole role,
+        @RequestParam(required = false) String query
+        ) {
+        return ResponseUtil.toSuccessCommonResponse(
+            employeeService.getAvailableEmployees(role, query)
+        );
     }
 }

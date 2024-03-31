@@ -14,6 +14,7 @@ import com.example.shared.db.repo.EmployeeRepository;
 import com.example.shared.enumeration.EmployeeRole;
 import com.example.shared.enumeration.UserRole;
 import com.example.shared.exception.MyException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -227,5 +228,10 @@ public class EmployeeServiceImpl implements EmployeeService{
             busRepository.save(bus);
         }
         employeeRepository.delete(employee);
+    }
+
+    @Override
+    public List<Employee> getAvailableEmployees(EmployeeRole role, String query) {
+        return employeeRepository.getAvailableEmployees(role, query);
     }
 }

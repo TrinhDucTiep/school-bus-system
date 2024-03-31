@@ -92,3 +92,14 @@ export const useDeleteEmployee = (callback: any) => {
         }
     )
 };
+
+const getAvailableEmployees = async (role: EmployeeRole | null, query: string | null) => {
+    const response = await apiClient.get<ICommonResponse<IEmployee[]>>(`/api/v1/admin/employee/available`, { params: { role, query } });
+    return response.data;
+}
+export const useGetAvailableEmployees = (role: EmployeeRole | null, query: string | null) => {
+    return useQuery<ICommonResponse<IEmployee[]>, AxiosError>({
+        queryKey: ['availableEmployees', role, query],
+        queryFn: () => getAvailableEmployees(role, query)
+    });
+};
