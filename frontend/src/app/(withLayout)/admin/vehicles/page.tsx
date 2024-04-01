@@ -50,6 +50,7 @@ const VehiclesPage: React.FC = () => {
         watch,
         setValue,
         formState: { errors },
+        reset,
     } = useForm<IBus>();
     const handleUpdateBus: SubmitHandler<IBus> = (data) => updateBusMutation.mutate(data);
     const handleDeleteBus = (id: number) => deleteBusMutation.mutate(id);
@@ -215,7 +216,10 @@ const VehiclesPage: React.FC = () => {
                                                             bus: item as IBusTable,
                                                             columnKey: columnKey,
                                                             handleOpenChange: () => { handleOpenChange() },
-                                                            setSelectedBus: (bus: IBusTable) => setSelectedBus(bus),
+                                                            setSelectedBus: (bus: IBusTable) => {
+                                                                setSelectedBus(bus);
+                                                                reset();
+                                                            },
                                                             handleOpenChangeDelete: () => { handleOpenChangeDelete() },
                                                         })}
                                                     </TableCell>
