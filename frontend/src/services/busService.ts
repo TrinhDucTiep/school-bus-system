@@ -26,6 +26,7 @@ export const useAddBus = (callback: any) => {
             onSuccess: (result) => {
                 callback();
                 queryClient.invalidateQueries({ queryKey: ['busList'] });
+                queryClient.invalidateQueries({ queryKey: ['availableEmployees'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {
@@ -52,6 +53,7 @@ export const useUpdateBus = (callback: any) => {
             onSuccess: (result) => {
                 callback();
                 queryClient.invalidateQueries({ queryKey: ['busList'] });
+                queryClient.invalidateQueries({ queryKey: ['availableEmployees'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {
@@ -78,6 +80,7 @@ export const useDeleteBus = (callback: any) => {
             onSuccess: (result) => {
                 callback();
                 queryClient.invalidateQueries({ queryKey: ['busList'] });
+                queryClient.invalidateQueries({ queryKey: ['availableEmployees'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {

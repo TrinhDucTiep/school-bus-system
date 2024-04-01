@@ -86,17 +86,11 @@ export const AddBus = () => {
                                     </SelectItem>
                                 ))}
                             </Select>
-                            {/* <Input
-                                label="Tài xế"
-                                variant="bordered"
-                                {...register("driverId", { required: false })}
-                            /> */}
 
                             <Autocomplete
                                 variant="bordered"
                                 items={isLoadingDrivers ? [] : isErrorDrivers ? [] : availableDrivers?.result || []}
                                 label="Chọn tài xế"
-                                className="max-w-xs"
                                 onInputChange={(value) => {
                                     setQueryDriver(value);
                                 }}
@@ -105,20 +99,12 @@ export const AddBus = () => {
                                         setValue("driverId", Number(selected));
                                     }
                                 }}
-                                // onSelectionChange={
-                                //     (selected) => {
-                                //         if (selected) {
-                                //             register("driverId").ref(selected.id);
-                                //         }
-                                //     }
-
-                                // }
-                                {...register("driverId", { required: false })}
                             >
                                 {(item) =>
                                     <AutocompleteItem
                                         key={item.id}
                                         value={item.id}
+                                        textValue={item.name}
                                     >
                                         <div className="flex gap-2 items-center">
                                             <Avatar alt={item.name} className="flex-shrink-0" size="sm" src={item.avatar} />
@@ -131,11 +117,35 @@ export const AddBus = () => {
                                 }
                             </Autocomplete>
 
-                            <Input
-                                label="Phụ xe"
+                            <Autocomplete
                                 variant="bordered"
-                                {...register("driverMateId", { required: false })}
-                            />
+                                items={isLoadingDriverMates ? [] : isErrorDriverMates ? [] : availableDriverMates?.result || []}
+                                label="Chọn phụ xe"
+                                onInputChange={(value) => {
+                                    setQueryDriverMate(value);
+                                }}
+                                onSelectionChange={(selected) => {
+                                    if (selected) {
+                                        setValue("driverMateId", Number(selected));
+                                    }
+                                }}
+                            >
+                                {(item) =>
+                                    <AutocompleteItem
+                                        key={item.id}
+                                        value={item.id}
+                                        textValue={item.name}
+                                    >
+                                        <div className="flex gap-2 items-center">
+                                            <Avatar alt={item.name} className="flex-shrink-0" size="sm" src={item.avatar} />
+                                            <div className="flex flex-col">
+                                                <span className="text-small">{item.name}</span>
+                                                <span className="text-tiny text-default-400">{item.phoneNumber}</span>
+                                            </div>
+                                        </div>
+                                    </AutocompleteItem>
+                                }
+                            </Autocomplete>
 
                         </ModalBody>
                         <ModalFooter>

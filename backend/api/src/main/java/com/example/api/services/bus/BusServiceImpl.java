@@ -72,6 +72,25 @@ public class BusServiceImpl implements BusService {
             .driverMateId(input.getDriverMateId())
             .build();
         busRepository.save(newBus);
+
+        if (input.getDriverId() != null) {
+            Employee driver = employeeRepository.findById(input.getDriverId())
+                .orElseThrow(() -> new MyException(null,
+                    "DRIVER_NOT_FOUND",
+                    "Driver with id " + input.getDriverId() + " not found",
+                    HttpStatus.NOT_FOUND));
+            driver.setBusId(newBus.getId());
+            employeeRepository.save(driver);
+        }
+        if (input.getDriverMateId() != null) {
+            Employee driverMate = employeeRepository.findById(input.getDriverMateId())
+                .orElseThrow(() -> new MyException(null,
+                    "DRIVER_MATE_NOT_FOUND",
+                    "Driver mate with id " + input.getDriverMateId() + " not found",
+                    HttpStatus.NOT_FOUND));
+            driverMate.setBusId(newBus.getId());
+            employeeRepository.save(driverMate);
+        }
     }
 
     @Override
@@ -90,26 +109,73 @@ public class BusServiceImpl implements BusService {
                     "DRIVER_NOT_FOUND",
                     "Driver with id " + input.getDriverId() + " not found",
                     HttpStatus.NOT_FOUND));
-            if (busRepository.existsByDriverId(input.getDriverId())) {
+            if (busRepository.existsByDriverId(input.getDriverId())
+                && !bus.getDriverId().equals(input.getDriverId())) {
                 throw new MyException(null,
                     "DRIVER_ALREADY_ASSIGNED",
                     "Driver with id " + input.getDriverId() + " already assigned to another bus",
                     HttpStatus.BAD_REQUEST);
-
             }
+
+            // update old driver
+            if (bus.getDriverId() != null && !bus.getDriverId().equals(input.getDriverId())) {
+                Employee oldDriver = employeeRepository.findById(bus.getDriverId())
+                    .orElseThrow(() -> new MyException(null,
+                        "DRIVER_NOT_FOUND",
+                        "Driver with id " + bus.getDriverId() + " not found",
+                        HttpStatus.NOT_FOUND));
+                oldDriver.setBusId(null);
+                employeeRepository.save(oldDriver);
+            }
+
+            // update new driver
+            driver.setBusId(bus.getId());
+            employeeRepository.save(driver);
+        } else if (input.getDriverId() == null && bus.getDriverId() != null) {
+            Employee oldDriver = employeeRepository.findById(bus.getDriverId())
+                .orElseThrow(() -> new MyException(null,
+                    "DRIVER_NOT_FOUND",
+                    "Driver with id " + bus.getDriverId() + " not found",
+                    HttpStatus.NOT_FOUND));
+            oldDriver.setBusId(null);
+            employeeRepository.save(oldDriver);
         }
+
         if (input.getDriverMateId() != null) {
             Employee driverMate = employeeRepository.findById(input.getDriverMateId())
                 .orElseThrow(() -> new MyException(null,
                     "DRIVER_MATE_NOT_FOUND",
                     "Driver mate with id " + input.getDriverMateId() + " not found",
                     HttpStatus.NOT_FOUND));
-            if (busRepository.existsByDriverId(input.getDriverMateId())) {
+            if (busRepository.existsByDriverId(input.getDriverMateId())
+                && !bus.getDriverMateId().equals(input.getDriverMateId())) {
                 throw new MyException(null,
                     "DRIVER_MATE_ALREADY_ASSIGNED",
                     "Driver mate with id " + input.getDriverMateId() + " already assigned to another bus",
                     HttpStatus.BAD_REQUEST);
             }
+
+            // update old driver mate
+            if (bus.getDriverMateId() != null && !bus.getDriverMateId().equals(input.getDriverMateId())) {
+                Employee oldDriverMate = employeeRepository.findById(bus.getDriverMateId())
+                    .orElseThrow(() -> new MyException(null,
+                        "DRIVER_MATE_NOT_FOUND",
+                        "Driver mate with id " + bus.getDriverMateId() + " not found",
+                        HttpStatus.NOT_FOUND));
+                oldDriverMate.setBusId(null);
+                employeeRepository.save(oldDriverMate);
+            }
+            // update new driver mate
+            driverMate.setBusId(bus.getId());
+            employeeRepository.save(driverMate);
+        } else if (input.getDriverMateId() == null && bus.getDriverMateId() != null) {
+            Employee oldDriverMate = employeeRepository.findById(bus.getDriverMateId())
+                .orElseThrow(() -> new MyException(null,
+                    "DRIVER_MATE_NOT_FOUND",
+                    "Driver mate with id " + bus.getDriverMateId() + " not found",
+                    HttpStatus.NOT_FOUND));
+            oldDriverMate.setBusId(null);
+            employeeRepository.save(oldDriverMate);
         }
 
 

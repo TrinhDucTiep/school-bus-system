@@ -9,8 +9,8 @@ interface IBusTable {
     id: number;
     numberPlate: string;
     seatNumber: number;
-    driverId: number;
-    driverMateId: number;
+    driverId: number | null;
+    driverMateId: number | null;
     status: string;
     createdAt: string;
     updatedAt: string;
