@@ -44,6 +44,7 @@ const EmployeePage: React.FC = () => {
         handleSubmit,
         watch,
         formState: { errors },
+        reset,
     } = useForm<IEmployee>();
     const handleUpdateEmployee: SubmitHandler<IEmployee> = (data) => {
         updateEmployeeMutation.mutate(data);
@@ -187,7 +188,10 @@ const EmployeePage: React.FC = () => {
                                                         employeeTable: item as IEmployeeTable,
                                                         columnKey: columnKey,
                                                         handleOpenChange: () => { handleOpenChange() },
-                                                        setSelectedEmployee: (employee: IEmployeeTable) => setSelectedEmployee(employee),
+                                                        setSelectedEmployee: (employee: IEmployeeTable) => {
+                                                            setSelectedEmployee(employee);
+                                                            reset();
+                                                        },
                                                         handleOpenChangeDelete: () => { handleOpenChangeDelete() },
                                                     })}
                                                 </TableCell>
