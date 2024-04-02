@@ -36,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Page<ParentSearchOutput> searchParents(ParentSearchInput input) {
-        var res = parentRepository.searchPageParent(
+            var res = parentRepository.searchPageParent(
             input.getId(),
             input.getName(),
             input.getRole(),

@@ -64,7 +64,7 @@ public class AccountController {
         @PathVariable(name = "id")
         Long id) {
         request.setId(id);
-        accountService.updateStudent(request.toInput());
+            accountService.updateStudent(request.toInput());
         return ResponseUtil.toSuccessCommonResponse(null);
     }
 
