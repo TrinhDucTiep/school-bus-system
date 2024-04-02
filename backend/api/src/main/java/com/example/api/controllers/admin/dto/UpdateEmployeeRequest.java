@@ -16,6 +16,7 @@ public class UpdateEmployeeRequest {
     private String avatar;
     private Long busId;
     private EmployeeRole role;
+    private String busNumberPlate;
 
     public UpdateEmployeeInput toInput() {
         return UpdateEmployeeInput.builder()
@@ -26,6 +27,7 @@ public class UpdateEmployeeRequest {
                 .avatar(avatar)
                 .busId(busId)
                 .role(role)
+                .busNumberPlate((busNumberPlate == null || busNumberPlate.isEmpty()) ? null : busNumberPlate)
                 .build();
     }
 }

@@ -5,6 +5,7 @@ import com.example.api.controllers.admin.dto.DeleteBusRequest;
 import com.example.api.controllers.admin.dto.UpdateBusRequest;
 import com.example.api.services.bus.BusService;
 import com.example.api.services.bus.dto.ListBusFilterParam;
+import com.example.shared.enumeration.EmployeeRole;
 import com.example.shared.response.CommonResponse;
 import com.example.shared.utils.PageableUtils;
 import com.example.shared.utils.ResponseUtil;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -61,5 +63,15 @@ public class BusController {
         ) {
         busService.deleteBus(request.getId());
         return ResponseUtil.toSuccessCommonResponse("Delete bus successfully");
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<CommonResponse<Object>> getAvailableBuses(
+        @RequestParam(required = false) EmployeeRole role,
+        @RequestParam(required = false) String numberPlate
+        ) {
+        return ResponseUtil.toSuccessCommonResponse(
+            busService.getAvailableBuses(role, numberPlate)
+        );
     }
 }

@@ -95,3 +95,14 @@ export const useDeleteBus = (callback: any) => {
         }
     )
 }
+
+const getAvailableBuses = async (role: string | null, numberPlate: String | null) => {
+    const response = await apiClient.get<ICommonResponse<IBus[]>>(`/api/v1/admin/bus/available`, { params: { role, numberPlate } });
+    return response.data;
+}
+export const useGetAvailableBuses = (role: string | null, numberPlate: String | null) => {
+    return useQuery<ICommonResponse<IBus[]>, AxiosError>({
+        queryKey: ['availableBuses', role, numberPlate],
+        queryFn: () => getAvailableBuses(role, numberPlate)
+    });
+};

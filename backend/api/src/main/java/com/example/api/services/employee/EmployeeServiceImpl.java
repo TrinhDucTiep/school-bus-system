@@ -169,7 +169,7 @@ public class EmployeeServiceImpl implements EmployeeService{
                     HttpStatus.NOT_FOUND));
 
         Bus bus = null;
-        if (input.getBusId() != null) {
+        if (input.getBusId() != null && input.getBusNumberPlate() == null) {
             bus = busRepository.findById(input.getBusId())
                 .orElseThrow(() -> new MyException(null,
                     "BUS_NOT_FOUND",
@@ -193,6 +193,58 @@ public class EmployeeServiceImpl implements EmployeeService{
                     "BUS_ALREADY_ASSIGNED",
                     "Bus already assigned to another driver mate",
                     HttpStatus.BAD_REQUEST);
+        }
+
+        if (input.getBusNumberPlate() != null) {
+            bus = busRepository.findByNumberPlate(input.getBusNumberPlate());
+            if (bus == null) {
+                throw new MyException(null,
+                    "BUS_NOT_FOUND",
+                    "Bus not found",
+                    HttpStatus.NOT_FOUND);
+            }
+            if (bus.getDriverId() != null && !bus.getDriverId().equals(input.getId())
+                && input.getRole() != null
+                && input.getRole() == EmployeeRole.DRIVER) {
+                throw new MyException(null,
+                    "BUS_ALREADY_ASSIGNED",
+                    "Bus already assigned to another driver",
+                    HttpStatus.BAD_REQUEST);
+            }
+            if (bus.getDriverMateId() != null && !bus.getDriverMateId().equals(input.getId())
+                && input.getRole() != null
+                && input.getRole() == EmployeeRole.DRIVER_MATE) {
+                throw new MyException(null,
+                    "BUS_ALREADY_ASSIGNED",
+                    "Bus already assigned to another driver mate",
+                    HttpStatus.BAD_REQUEST);
+            }
+            input.setBusId(bus.getId());
+        }
+
+        if (input.getBusId() != null) {
+            if (input.getRole() == EmployeeRole.DRIVER) {
+                bus.setDriverId(input.getId());
+            }
+            if (input.getRole() == EmployeeRole.DRIVER_MATE) {
+                bus.setDriverMateId(input.getId());
+            }
+            busRepository.save(bus);
+        } else {
+            if (employee.getBusId() != null) {
+                bus = busRepository.findById(employee.getBusId())
+                    .orElseThrow(() -> new MyException(null,
+                        "BUS_NOT_FOUND",
+                        "Bus not found",
+                        HttpStatus.NOT_FOUND));
+                if (bus.getDriverId() != null && bus.getDriverId().equals(input.getId())) {
+                    bus.setDriverId(null);
+                }
+                if (bus.getDriverMateId() != null && bus.getDriverMateId().equals(input.getId())) {
+                    bus.setDriverMateId(null);
+                }
+                busRepository.save(bus);
+            }
         }
 
         employee.setName(input.getName());

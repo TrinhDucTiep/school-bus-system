@@ -3,6 +3,7 @@ package com.example.shared.db.repo;
 import com.example.shared.db.dto.GetListBusDTO;
 import com.example.shared.db.entities.Bus;
 import com.example.shared.enumeration.BusStatus;
+import com.example.shared.enumeration.EmployeeRole;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,4 +43,20 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
     Boolean existsByDriverId(Long driverId);
 
     Boolean existsByDriverMateId(Long driverMateId);
+
+    @Query("""
+    SELECT b
+        FROM Bus b
+        WHERE
+            (
+                (:role = 'DRIVER' AND b.driverId IS NULL)
+                OR
+                (:role = 'DRIVER_MATE' AND b.driverMateId IS NULL)
+            )
+            AND (:query IS NULL OR b.numberPlate ILIKE %:query%)
+    """)
+    List<Bus> getAvailableBuses(
+        @Param("role") String role,
+        @Param("query") String numberPlate
+    );
 }

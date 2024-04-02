@@ -66,7 +66,7 @@ export const EmployeeRenderCell = ({
                     <div>
                         {
                             employeeTable?.bus?.numberPlate ?
-                                <Snippet symbol="" variant="solid" >{employeeTable?.bus?.numberPlate}</Snippet>
+                                <Snippet symbol="" color="default" >{employeeTable?.bus?.numberPlate}</Snippet>
                                 : ""
                         }
 

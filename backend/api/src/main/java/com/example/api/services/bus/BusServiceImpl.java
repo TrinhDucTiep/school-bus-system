@@ -10,6 +10,7 @@ import com.example.shared.db.entities.Employee;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.EmployeeRepository;
 import com.example.shared.enumeration.BusStatus;
+import com.example.shared.enumeration.EmployeeRole;
 import com.example.shared.exception.MyException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -205,6 +206,11 @@ public class BusServiceImpl implements BusService {
         }
 
         busRepository.delete(bus);
+    }
+
+    @Override
+    public List<Bus> getAvailableBuses(EmployeeRole role, String query) {
+        return busRepository.getAvailableBuses((role != null) ? role.toString() : null, query);
     }
 
 }

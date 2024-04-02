@@ -131,7 +131,7 @@ const EmployeePage: React.FC = () => {
                                 mainWrapper: "w-full",
                             }}
                             size='sm'
-                            label="Xe bus hiện tại"
+                            label="Biển số xe"
                             value={busNumberPlate}
                             onValueChange={(newValue) => setBusNumberPlate(newValue)}
                         />
@@ -251,7 +251,7 @@ const EmployeePage: React.FC = () => {
                                     />
 
                                     <Input
-                                        label="Xe bus hiện tại"
+                                        label="Biển số xe"
                                         variant="bordered"
                                         {...register("busNumberPlate", { required: false })}
                                         defaultValue={selectedEmployee?.bus?.numberPlate}

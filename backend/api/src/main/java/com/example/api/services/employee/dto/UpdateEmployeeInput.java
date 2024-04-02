@@ -15,4 +15,5 @@ public class UpdateEmployeeInput {
     private String avatar;
     private Long busId;
     private EmployeeRole role;
+    private String busNumberPlate;
 }
