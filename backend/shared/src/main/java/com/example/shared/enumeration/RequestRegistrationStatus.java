@@ -1,9 +1,9 @@
 package com.example.shared.enumeration;
 
 public enum RequestRegistrationStatus {
-    PENDING("Pending"),
-    ACCEPTED("Accepted"),
-    REJECTED("Rejected");
+    PENDING("PENDING"),
+    ACCEPTED("ACCEPTED"),
+    REJECTED("REJECTED"),;
 
     private final String status;
 

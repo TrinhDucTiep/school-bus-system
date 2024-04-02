@@ -40,12 +40,12 @@ public class RequestRegistration {
     @JoinColumn(name = "student_id")
     private Student student;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pickup_point_id")
-    private PickupPoint pickupPoint;
-
     @Enumerated(EnumType.STRING)
     private RequestRegistrationStatus status;
+
+    private String address;
+    private Double longitude;
+    private Double latitude;
 
     @CreatedDate
     @CreationTimestamp
