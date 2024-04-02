@@ -6,7 +6,7 @@ interface IStudentBase {
     dob: string | null;
     phoneNumber: string | null;
     studentClass: string | null;
-    parent_id: number;
+    parentId: number;
     created_at: string;
     updated_at: string;
 }
@@ -21,7 +21,7 @@ interface IStudenAdd {
     dob: string;
     phoneNumber: string;
     studentClass: string;
-    parent_id: number;
+    parentId: number;
 }
 
 interface IStudentUpdate extends IStudentBase {
@@ -31,7 +31,7 @@ interface IStudentUpdate extends IStudentBase {
     dob: string;
     phoneNumber: string;
     studentClass: string;
-    parent_id: number;
+    parentId: number;
 }
 
 interface IStudentDetail extends IStudentBase {

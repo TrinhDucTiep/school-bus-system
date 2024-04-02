@@ -7,6 +7,7 @@ import { ExportIcon } from '../icons/export-icon';
 import _ from 'lodash';
 import { AddStudent } from './add-student';
 import { ModalUpdateStudent } from './update-student';
+import ModalDeleteStudent from './delete-student';
 
 const columns = [
     { name: 'HỌ VÀ TÊN', uid: 'name' },
@@ -133,6 +134,7 @@ const StudentTable: React.FC = () => {
                     <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
                 )}
             </Table>
+            <ModalDeleteStudent isOpenDelete={isOpenDelete} onOpenChangeDelete={onOpenChangeDelete} selectedStudent={selectStudent} />
             <ModalUpdateStudent isOpen={isOpen} onOpenChange={onOpenChange} selectedStudent={selectStudent} />
         </>
 

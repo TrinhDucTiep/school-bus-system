@@ -184,13 +184,13 @@ export const useUpdateStudent = (callBackSuccess: any) => {
 };
 
 const deleteStudent = async (id: number) => {
-    const response = await apiClient.delete(`/api/v1/admin/student/student/${id}`);
+    const response = await apiClient.delete(`/api/v1/admin/account/student/${id}`);
     return response.data;
 }
 export const useDeleteStudent = () => {
     return useMutation(
         {
-            mutationFn: (id: number) => deleteParent(id),
+            mutationFn: (id: number) => deleteStudent(id),
             onSuccess: (result) => {
                 queryClient.invalidateQueries({ queryKey: ['studentList'] });
                 toast.success(result.message);

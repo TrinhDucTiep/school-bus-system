@@ -15,11 +15,11 @@ import {
     Skeleton,
     useDisclosure,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { Key, use, useEffect, useState } from "react";
 import { PlusIcon } from "../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useAddStudent, useGetListParent, useGetListStudent, useGetStudentDetail, useUpdateStudent } from "@/services/accountService";
-import _ from 'lodash';
+import _, { set, toInteger } from 'lodash';
 import { SearchIcon } from "../icons/searchicon";
 import { convertStringInstantToDate } from "@/util/dateConverter";
 interface IProps {
@@ -27,14 +27,13 @@ interface IProps {
     selectedStudent: IStudent | null;
     onOpenChange: () => void;
 }
-export const ModalUpdateStudent = ({isOpen, selectedStudent, onOpenChange}:IProps) => {
+export const ModalUpdateStudent = ({ isOpen, selectedStudent, onOpenChange }: IProps) => {
     const [parentSearch, setParentSearch] = React.useState<string>("");
     const [searchBy, setSearchBy] = React.useState<any>("PARENT_NAME");
 
     const debouncedSetParentSearch = _.debounce((value: string) => setParentSearch(value), 500);
 
-
-    const addStudentMutation = useUpdateStudent(onOpenChange);
+    const updateStudentMutation = useUpdateStudent(onOpenChange);
     const {
         register,
         handleSubmit,
@@ -42,13 +41,8 @@ export const ModalUpdateStudent = ({isOpen, selectedStudent, onOpenChange}:IProp
         setValue,
         formState: { errors },
     } = useForm<IStudentUpdate>();
-    const handAddStudent: SubmitHandler<IStudentUpdate> = (data) => {
-        data = {
-            ...data,
-            parent_id: selectedParentId ? selectedParentId : 1
-        }
-        console.log("data: ", data)
-        addStudentMutation.mutate(data)
+    const handUpdateStudent: SubmitHandler<IStudentUpdate> = (data) => {
+        updateStudentMutation.mutate(data)
     };
 
     const { data: parentList, isLoading: parentLoading, error: parentError } = useGetListParent({
@@ -62,10 +56,13 @@ export const ModalUpdateStudent = ({isOpen, selectedStudent, onOpenChange}:IProp
         sortBy: null,
         searchBy: searchBy
     })
-    const {data: studentDetail, isLoading: studentLoading, error: studentError} = useGetStudentDetail(selectedStudent?.id || null);
-
-    const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
-    if(studentLoading){
+    const { data: studentDetail, isLoading: studentLoading, error: studentError } = useGetStudentDetail(selectedStudent?.id);
+    useEffect(() => {
+        if (studentDetail) {
+            setValue("parentId", studentDetail?.result.parentId)
+        }
+    }, [studentDetail])
+    if (studentLoading) {
         return (
             <Skeleton className="rounded-lg">
                 <div className="h-24 rounded-lg bg-default-300"></div>
@@ -85,7 +82,7 @@ export const ModalUpdateStudent = ({isOpen, selectedStudent, onOpenChange}:IProp
                 </ModalHeader>
                 <form
                     className="space-y-4"
-                    onSubmit={handleSubmit(handAddStudent)}
+                    onSubmit={handleSubmit(handUpdateStudent)}
                 >
                     <ModalBody>
                         <Input
@@ -108,7 +105,7 @@ export const ModalUpdateStudent = ({isOpen, selectedStudent, onOpenChange}:IProp
                         {errors.name && errors.name.type === "maxLength" && (
                             <p className="text-red-500 text-sm">*Tên không được dài hơn 50 ký tự</p>
                         )}
-                        
+
                         <Input
                             label="Ngày sinh"
                             variant="bordered"
@@ -157,53 +154,30 @@ export const ModalUpdateStudent = ({isOpen, selectedStudent, onOpenChange}:IProp
                         <div className="flex justify-between">
                             <div className="w-2/3">
                                 <Autocomplete
-                                    selectedKey={selectedParentId}
-                                
-                                    defaultInputValue={studentDetail?.result.parentName || "1234"}
-                                    defaultSelectedKey={studentDetail?.result.parent_id || 1}
+                                    items={parentList ? parentList?.result?.content : []}
+                                    defaultSelectedKey={studentDetail?.result?.parentId?.toString() || 1}
+                                    allowsCustomValue
+
                                     label="Phụ huynh"
                                     variant="bordered"
-                                    {...register("parent_id", { required: true })}
+
                                     onInputChange={(value) => {
                                         debouncedSetParentSearch(value);
                                     }}
                                     onSelectionChange={(value: any) => {
-                                        console.log("value: ", value)
-                                        setSelectedParentId(value)
+                                        setValue("parentId", value)
                                     }}
                                     onKeyDown={(e: any) => e.continuePropagation()}
+                                    defaultInputValue={studentDetail?.result.parentName || "Nguyễn Văn A"}
 
-                                    listboxProps={{
-                                        hideSelectedIcon: true,
-                                        itemClasses: {
-                                            base: [
-                                                "rounded-medium",
-                                                "text-default-500",
-                                                "transition-opacity",
-                                                "data-[hover=true]:text-foreground",
-                                                "dark:data-[hover=true]:bg-default-50",
-                                                "data-[pressed=true]:opacity-70",
-                                                "data-[hover=true]:bg-default-200",
-                                                "data-[selectable=true]:focus:bg-default-100",
-                                                "data-[focus-visible=true]:ring-default-500",
-                                            ],
-                                        },
-                                    }}
-                                    popoverProps={{
-                                        offset: 10,
-                                        classNames: {
-                                            base: "rounded-large",
-                                            content: "p-1 border-small border-default-100 bg-background",
-                                        },
-                                    }}
 
                                     startContent={<SearchIcon />}
                                     aria-label="Chọn phụ huynh"
                                     placeholder="Tìm kiếm phụ huynh"
 
                                 >
-                                    {parentList ? parentList.result.content.map((parent: IParent) => (
-                                        <AutocompleteItem key={parent.id} textValue={parent.name}>
+                                    {(parent) => (
+                                        <AutocompleteItem key={parent.id.toString()} textValue={parent.name}>
                                             <div className="flex justify-between items-center">
                                                 <div className="flex gap-2 items-center">
                                                     <Avatar alt={parent.name} className="flex-shrink-0" size="sm" src={parent.avatar} />
@@ -212,18 +186,10 @@ export const ModalUpdateStudent = ({isOpen, selectedStudent, onOpenChange}:IProp
                                                         <span className="text-tiny text-default-400">{parent.phoneNumber}</span>
                                                     </div>
                                                 </div>
-                                                <Button
-                                                    className="border-small mr-0.5 font-medium shadow-small"
-                                                    radius="full"
-                                                    size="sm"
-                                                    variant="bordered"
-                                                >
-                                                    Add
-                                                </Button>
                                             </div>
                                         </AutocompleteItem>
 
-                                    )) : <AutocompleteItem key={"abc"} textValue="abc"></AutocompleteItem>}
+                                    )}
                                 </Autocomplete>
                             </div>
 
