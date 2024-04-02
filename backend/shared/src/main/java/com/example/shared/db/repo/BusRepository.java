@@ -40,4 +40,6 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
     Bus findByNumberPlate(String numberPlate);
 
     Boolean existsByDriverId(Long driverId);
+
+    Boolean existsByDriverMateId(Long driverMateId);
 }

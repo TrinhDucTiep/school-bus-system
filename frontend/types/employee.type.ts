@@ -5,7 +5,7 @@ interface IEmployee {
     avatar: string;
     dob: string;
     phoneNumber: string;
-    busID: number;
+    busId: number;
     busNumberPlate: string;
     role: string;
     createdAt: string;

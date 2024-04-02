@@ -147,7 +147,7 @@ public class BusServiceImpl implements BusService {
                     "DRIVER_MATE_NOT_FOUND",
                     "Driver mate with id " + input.getDriverMateId() + " not found",
                     HttpStatus.NOT_FOUND));
-            if (busRepository.existsByDriverId(input.getDriverMateId())
+            if (busRepository.existsByDriverMateId(input.getDriverMateId())
                 && !bus.getDriverMateId().equals(input.getDriverMateId())) {
                 throw new MyException(null,
                     "DRIVER_MATE_ALREADY_ASSIGNED",

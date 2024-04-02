@@ -39,7 +39,7 @@ const VehiclesPage: React.FC = () => {
     const [page, setPage] = React.useState(1);
 
     // define for bus-render-cell.tsx
-
+    const [selectedBus, setSelectedBus] = React.useState<IBusTable | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const updateBusMutation = useUpdateBus(onOpenChange);
@@ -52,9 +52,24 @@ const VehiclesPage: React.FC = () => {
         formState: { errors },
         reset,
     } = useForm<IBus>();
-    const handleUpdateBus: SubmitHandler<IBus> = (data) => updateBusMutation.mutate(data);
+
+    const [queryDriver, setQueryDriver] = React.useState<string | null>(null);
+    const { data: availableDrivers, isLoading: isLoadingDrivers, error: isErrorDrivers } = useGetAvailableEmployees(EmployeeRole.DRIVER, queryDriver);
+
+    const [queryDriverMate, setQueryDriverMate] = React.useState<string | null>(null);
+    const { data: availableDriverMates, isLoading: isLoadingDriverMates, error: isErrorDriverMates } = useGetAvailableEmployees(EmployeeRole.DRIVER_MATE, queryDriverMate);
+
+    const handleUpdateBus: SubmitHandler<IBus> = (data) => {
+        if ((data.driverId == null || data.driverId == undefined) && (queryDriver != null && queryDriver != '' && queryDriver != undefined)) {
+            data.driverId = selectedBus?.driver?.id || null;
+        }
+        if ((data.driverMateId == null || data.driverMateId == undefined) && (queryDriverMate != null && queryDriverMate != '' && queryDriverMate != undefined)) {
+            data.driverMateId = selectedBus?.driverMate?.id || null;
+        }
+        updateBusMutation.mutate(data);
+    }
     const handleDeleteBus = (id: number) => deleteBusMutation.mutate(id);
-    const [selectedBus, setSelectedBus] = React.useState<IBusTable | null>(null);
+
     const handleOpenChange = () => onOpenChange();
     const handleOpenChangeDelete = () => onOpenChangeDelete();
 
@@ -104,11 +119,6 @@ const VehiclesPage: React.FC = () => {
         </div>
     );
 
-    const [queryDriver, setQueryDriver] = React.useState<string | null>(null);
-    const { data: availableDrivers, isLoading: isLoadingDrivers, error: isErrorDrivers } = useGetAvailableEmployees(EmployeeRole.DRIVER, queryDriver);
-
-    const [queryDriverMate, setQueryDriverMate] = React.useState<string | null>(null);
-    const { data: availableDriverMates, isLoading: isLoadingDriverMates, error: isErrorDriverMates } = useGetAvailableEmployees(EmployeeRole.DRIVER_MATE, queryDriverMate);
 
 
     return (
@@ -297,7 +307,6 @@ const VehiclesPage: React.FC = () => {
                                                 setQueryDriver(value);
                                                 if (value === '' || value === null || value === undefined) {
                                                     setValue("driverId", null);
-                                                } else {
                                                 }
                                             }}
                                             onSelectionChange={(selected) => {
@@ -354,7 +363,6 @@ const VehiclesPage: React.FC = () => {
                                                 setQueryDriverMate(value);
                                                 if (value === '' || value === null || value === undefined) {
                                                     setValue("driverMateId", null);
-                                                } else {
                                                 }
                                             }}
                                             onSelectionChange={(selected) => {
@@ -384,7 +392,7 @@ const VehiclesPage: React.FC = () => {
                                                         </AutocompleteItem>
                                                     );
                                                 } else {
-                                                    // Return a default CollectionElement when item is undefined
+
                                                     return (
                                                         <AutocompleteItem
                                                             key="default"
