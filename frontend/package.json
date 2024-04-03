@@ -16,6 +16,7 @@
     "axios": "^1.6.8",
     "framer-motion": "^10.12.16",
     "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
     "lodash": "^4.17.21",
