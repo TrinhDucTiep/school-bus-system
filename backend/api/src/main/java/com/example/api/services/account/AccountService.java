@@ -10,6 +10,7 @@ import com.example.api.services.account.dto.StudentDetailOutput;
 import com.example.api.services.account.dto.StudentSearchInput;
 import com.example.api.services.account.dto.StudentSearchOutput;
 import com.example.api.services.account.dto.StudentUpdateInput;
+import com.example.shared.db.entities.Account;
 import org.springframework.data.domain.Page;
 
 public interface AccountService {
@@ -20,14 +21,22 @@ public interface AccountService {
 
     StudentDetailOutput getStudentDetail(Long id);
     void addStudent(StudentAddInput input);
-
+    void addStudent(StudentAddInput input, Account account);
     void updateStudent(StudentUpdateInput input);
 
+    void updateStudent(StudentUpdateInput input, Account account);
+
     void deleteStudent(Long id);
+
+    void deleteStudent(Long id, Account account);
 
     void addParent(ParentAddInput input);
 
     void updateParent(ParentUpdateInput input);
 
+    void updateParent(ParentUpdateInput input, Account account);
+
     void deleteParent(Long id);
+
+    void deleteParent(Long id, Account account);
 }

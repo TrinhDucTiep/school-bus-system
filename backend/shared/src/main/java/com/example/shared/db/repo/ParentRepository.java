@@ -24,6 +24,7 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
             ELSE FALSE
         END)
     and (:phoneNumber is null or p.phoneNumber like %:phoneNumber%)
+    and (:studentId is null or s.id = :studentId)
         """)
     Page<Parent> searchPageParent(
         @Param("id") Long id,
@@ -31,6 +32,9 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
         @Param("role") String role,
         @Param("searchType") String searchType,
         @Param("phoneNumber") String phoneNumber,
+        @Param("studentId") Long studentId,
         Pageable pageable
     );
+
+    Parent findByAccountId(Long accountId);
 }

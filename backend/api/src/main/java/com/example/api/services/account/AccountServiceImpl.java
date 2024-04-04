@@ -12,6 +12,7 @@ import com.example.api.services.account.dto.StudentSearchOutput;
 import com.example.api.services.account.dto.StudentUpdateInput;
 import com.example.api.services.auth.AuthService;
 import com.example.api.services.auth.dto.SignUpInput;
+import com.example.api.utils.UserContextUtil;
 import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Parent;
 import com.example.shared.db.entities.Student;
@@ -40,8 +41,9 @@ public class AccountServiceImpl implements AccountService {
             input.getId(),
             input.getName(),
             input.getRole(),
-            input.getSearchBy().getValue(),
+            input.getSearchBy() == null ? null : input.getSearchBy().getValue(),
             input.getPhoneNumber(),
+            input.getStudentId(),
             input.getPageable()
         );
         return res.map(ParentSearchOutput::from);
@@ -53,6 +55,7 @@ public class AccountServiceImpl implements AccountService {
             input.getId(),
             input.getName(),
             input.getPhoneNumber(),
+            input.getParentId(),
             input.getStudentClass(),
             input.getPageable()
         );
@@ -103,6 +106,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public void addStudent(StudentAddInput input, Account account) {
+        Parent parent = parentRepository.findById(input.getParentId())
+            .orElseThrow(() -> new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
+                HttpStatus.NOT_FOUND));
+        if (UserContextUtil.isCurrentUser(parent.getAccount().getId())){
+            input.setParentId(parent.getId());
+            addStudent(input);
+        } else {
+            throw new MyException(null, "FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+    @Override
     public void updateStudent(StudentUpdateInput input) {
         Student student = studentRepository.findById(input.getId())
             .orElseThrow(() -> new MyException(null, "STUDENT_NOT_FOUND", "Student not found",
@@ -121,11 +138,36 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public void updateStudent(StudentUpdateInput input, Account account) {
+        Student student = studentRepository.findById(input.getId())
+            .orElseThrow(() -> new MyException(null, "STUDENT_NOT_FOUND", "Student not found",
+                HttpStatus.NOT_FOUND));
+        if (UserContextUtil.isCurrentUser(student.getParent().getId())){
+            updateStudent(input);
+        } else {
+            throw new MyException(null, "FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @Override
     public void deleteStudent(Long id) {
         Student student = studentRepository.findById(id)
             .orElseThrow(() -> new MyException(null, "STUDENT_NOT_FOUND", "Student not found",
                 HttpStatus.NOT_FOUND));
         studentRepository.delete(student);
+    }
+
+    @Override
+    public void deleteStudent(Long id, Account account) {
+        Student student = studentRepository.findById(id)
+            .orElseThrow(() -> new MyException(null, "STUDENT_NOT_FOUND", "Student not found",
+                HttpStatus.NOT_FOUND));
+        Parent parent = student.getParent();
+        if (UserContextUtil.isCurrentUser(parent.getAccount().getId())){
+            deleteStudent(id);
+        } else {
+            throw new MyException(null, "FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN);
+        }
     }
 
     @Override
@@ -174,10 +216,34 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public void updateParent(ParentUpdateInput input, Account account) {
+        Parent parent = parentRepository.findById(input.getId())
+            .orElseThrow(() -> new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
+                HttpStatus.NOT_FOUND));
+        if (UserContextUtil.isCurrentUser(parent.getAccount().getId())){
+            updateParent(input);
+        } else {
+            throw new MyException(null, "FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @Override
     public void deleteParent(Long id) {
         Parent parent = parentRepository.findById(id)
             .orElseThrow(() -> new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
                 HttpStatus.NOT_FOUND));
         parentRepository.delete(parent);
+    }
+
+    @Override
+    public void deleteParent(Long id, Account account) {
+        Parent parent = parentRepository.findById(id)
+            .orElseThrow(() -> new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
+                HttpStatus.NOT_FOUND));
+        if (UserContextUtil.isCurrentUser(parent.getAccount().getId())){
+            deleteParent(id);
+        } else {
+            throw new MyException(null, "FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN);
+        }
     }
 }

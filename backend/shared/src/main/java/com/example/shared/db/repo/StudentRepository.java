@@ -17,11 +17,13 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         and (:name is null or s.name is null or s.name ILIKE %:name%)
         and (:studentClass is null or s.studentClass is null or s.studentClass ILIKE %:studentClass%)
         and (:phoneNumber is null or s.phoneNumber like %:phoneNumber%)
+        and (:parentId is null or s.parent.id = :parentId)
         """)
     Page<Student> searchPageStudent(
         @Param("id") Long id,
         @Param("name") String name,
         @Param("phoneNumber") String phoneNumber,
+        @Param("parentId") Long parentId,
         @Param("studentClass") String studentClass,
         Pageable pageable
     );

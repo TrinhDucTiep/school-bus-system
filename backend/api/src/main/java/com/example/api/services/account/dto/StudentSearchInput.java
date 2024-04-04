@@ -16,6 +16,8 @@ public class StudentSearchInput {
 
     private String name;
 
+    private Long parentId;
+
     private String studentClass;
 
     private String phoneNumber;
