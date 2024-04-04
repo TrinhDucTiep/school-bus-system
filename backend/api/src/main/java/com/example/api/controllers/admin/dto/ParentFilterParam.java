@@ -22,6 +22,8 @@ public class ParentFilterParam {
 
     private String phoneNumber;
 
+    private Long studentId;
+
     private int page;
 
     private int size;
@@ -34,6 +36,7 @@ public class ParentFilterParam {
             .name(this.name)
             .role(this.role)
             .phoneNumber(this.phoneNumber)
+            .studentId(this.studentId)
             .searchBy(ParentSearchInput.SearchBy.fromValue(this.searchBy))
             .pageable(PageableUtils.generate(this.page, this.size, sortBy, "-createdAt"))
             .build();

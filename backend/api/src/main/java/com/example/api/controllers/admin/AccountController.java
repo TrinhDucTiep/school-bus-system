@@ -7,12 +7,14 @@ import com.example.api.controllers.admin.dto.StudentAddRequest;
 import com.example.api.controllers.admin.dto.StudentFilterParam;
 import com.example.api.controllers.admin.dto.StudentUpdateRequest;
 import com.example.api.services.account.AccountService;
+import com.example.shared.db.entities.Account;
 import com.example.shared.response.CommonResponse;
 import com.example.shared.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,7 +54,8 @@ public class AccountController {
     @PostMapping("/student")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> createStudent(
-        @RequestBody StudentAddRequest request) {
+        @RequestBody StudentAddRequest request,
+        @AuthenticationPrincipal Account account) {
         accountService.addStudent(request.toInput());
         return ResponseUtil.toSuccessCommonResponse(null);
     }

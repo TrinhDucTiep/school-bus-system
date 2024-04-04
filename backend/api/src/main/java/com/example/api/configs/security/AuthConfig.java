@@ -45,6 +45,8 @@ public class AuthConfig {
                     .requestMatchers(HttpMethod.GET, "/api/v1/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/public/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/public/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/client/**").permitAll()
+
 //                .requestMatchers(HttpMethod.POST, "/api/v1/admin/*").hasRole("ADMIN") // it will throw error before my exception handler catch it
 //                .requestMatchers(HttpMethod.GET, "/api/v1/admin/*").hasRole("ADMIN")
 //                .requestMatchers(HttpMethod.GET, "/api/v1/client/*").hasRole("CLIENT")

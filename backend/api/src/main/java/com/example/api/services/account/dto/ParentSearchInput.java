@@ -25,6 +25,8 @@ public class ParentSearchInput {
 
     private Pageable pageable;
 
+    private Long studentId;
+
     @Getter
     public enum SearchBy {
         PARENT_NAME("PARENT_NAME"),
