@@ -1,19 +1,13 @@
 import {
-    Button,
     User,
     Tooltip,
     Chip,
-    Input,
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
 } from "@nextui-org/react";
 import React from "react";
 import { DeleteIcon } from "../icons/table/delete-icon";
 import { EditIcon } from "../icons/table/edit-icon";
 import { EyeIcon } from "../icons/table/eye-icon";
+import { convertStringInstantToDate } from "@/util/dateConverter";
 
 interface Props {
     data: IStudent;
@@ -23,10 +17,9 @@ interface Props {
     handleOpenChangeDelete: () => void;
 }
 
-export const StudentRenderCell = ({ data, columnKey, handleOpenChange, setSelectedStudent, handleOpenChangeDelete
+export const ClientStudentRenderCell = ({ data, columnKey, handleOpenChange, setSelectedStudent, handleOpenChangeDelete
 }: Props) => {
 
-    // @ts-ignore
     switch (columnKey) {
         case "name":
             return (
@@ -56,6 +49,14 @@ export const StudentRenderCell = ({ data, columnKey, handleOpenChange, setSelect
                 <div>
                     <div>
                         <span>{data.phoneNumber}</span>
+                    </div>
+                </div>
+            );
+        case "dob":
+            return (
+                <div>
+                    <div>
+                        <span>{convertStringInstantToDate(data.dob)}</span>
                     </div>
                 </div>
             );
