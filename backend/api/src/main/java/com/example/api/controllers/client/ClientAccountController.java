@@ -3,8 +3,10 @@ package com.example.api.controllers.client;
 import com.example.api.controllers.admin.dto.ParentUpdateRequest;
 import com.example.api.controllers.admin.dto.StudentAddRequest;
 import com.example.api.controllers.client.dto.ClientParentAddRequest;
+import com.example.api.controllers.client.dto.ClientStudentFilterParam;
 import com.example.api.controllers.client.dto.ClientStudentUpdateRequest;
 import com.example.api.services.account.AccountService;
+import com.example.api.services.account.dto.StudentSearchInput;
 import com.example.shared.db.entities.Account;
 import com.example.shared.response.CommonResponse;
 import com.example.shared.utils.ResponseUtil;
@@ -29,11 +31,21 @@ public class ClientAccountController {
 
     private final AccountService accountService;
 
-    @GetMapping("/student")
-    public ResponseEntity<CommonResponse<Object>> getStudentDetail(
+    @GetMapping("/student/pagination")
+    public ResponseEntity<CommonResponse<Object>> getStudents(
+         ClientStudentFilterParam request,
         @AuthenticationPrincipal Account account
     ) {
-        return ResponseUtil.toSuccessCommonResponse(accountService.getStudentDetail(account.getId()));
+        return ResponseUtil.toSuccessCommonResponse(
+            accountService.searchStudents(request.toInput(), account));
+    }
+
+    @GetMapping("/student/{id}")
+    public ResponseEntity<CommonResponse<Object>> getStudentDetail(
+        @PathVariable(name = "id") Long id,
+        @AuthenticationPrincipal Account account
+    ) {
+        return ResponseUtil.toSuccessCommonResponse(accountService.getStudentDetail(id, account));
     }
 
     @PostMapping("/student")
@@ -82,7 +94,9 @@ public class ClientAccountController {
     }
 
     @DeleteMapping("/parent/{id}")
-    public ResponseEntity<CommonResponse<Object>> deleteParent(@PathVariable(name = "id") Long id, @AuthenticationPrincipal Account account) {
+    public ResponseEntity<CommonResponse<Object>> deleteParent(@PathVariable(name = "id") Long id,
+                                                               @AuthenticationPrincipal
+                                                               Account account) {
         accountService.deleteParent(id, account);
         return ResponseUtil.toSuccessCommonResponse(null);
     }
@@ -91,7 +105,8 @@ public class ClientAccountController {
     public ResponseEntity<CommonResponse<Object>> getParentDetail(
         @AuthenticationPrincipal Account account
     ) {
-        return ResponseUtil.toSuccessCommonResponse(accountService.getParentDetail(account.getId()));
+        return ResponseUtil.toSuccessCommonResponse(
+            accountService.getParentDetail(account));
     }
 
 }

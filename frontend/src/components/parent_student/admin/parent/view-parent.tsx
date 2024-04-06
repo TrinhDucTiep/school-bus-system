@@ -2,7 +2,7 @@ import { useGetParentDetail } from '@/services/accountService';
 import { convertStringInstantToDate } from '@/util/dateConverter';
 import { Skeleton, Modal, ModalContent, ModalHeader, ModalBody, Accordion, AccordionItem, User, Tooltip, ModalFooter, Button, Input } from '@nextui-org/react';
 import React from 'react';
-import { EyeIcon } from '../icons/table/eye-icon';
+import { EyeIcon } from '../../../icons/table/eye-icon';
 interface IProps {
     isOpen: boolean;
     selectedParent: IParent | null;

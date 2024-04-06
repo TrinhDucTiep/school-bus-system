@@ -16,11 +16,11 @@ import {
     useDisclosure,
 } from "@nextui-org/react";
 import React, { useRef, useState } from "react";
-import { PlusIcon } from "../icons/plus";
+import { PlusIcon } from "../../../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useAddStudent, useGetListParent, useGetListStudent } from "@/services/accountService";
 import _, { set } from 'lodash';
-import { SearchIcon } from "../icons/searchicon";
+import { SearchIcon } from "../../../icons/searchicon";
 
 export const AddStudent = () => {
     const [parentSearch, setParentSearch] = React.useState<string>("");

@@ -11,7 +11,7 @@ import {
     useDisclosure,
 } from "@nextui-org/react";
 import React from "react";
-import { PlusIcon } from "../icons/plus";
+import { PlusIcon } from "../../../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useAddBus } from "@/services/busService";
 import { useAddParent, useGetListStudent } from "@/services/accountService";

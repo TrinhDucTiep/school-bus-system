@@ -17,9 +17,18 @@ public interface AccountService {
     Page<ParentSearchOutput> searchParents(ParentSearchInput input);
 
     Page<StudentSearchOutput> searchStudents(StudentSearchInput input);
+
+    Page<StudentSearchOutput> searchStudents(StudentSearchInput input, Account account);
     ParentDetailOutput getParentDetail(Long id);
 
+    ParentDetailOutput getParentDetail(Account account);
+
+    ParentDetailOutput getParentDetail(Long id, Account account);
+
     StudentDetailOutput getStudentDetail(Long id);
+
+    StudentDetailOutput getStudentDetail(Long id, Account account);
+
     void addStudent(StudentAddInput input);
     void addStudent(StudentAddInput input, Account account);
     void updateStudent(StudentUpdateInput input);

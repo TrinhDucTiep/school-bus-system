@@ -1,7 +1,8 @@
 "use client";
 import { ExportIcon } from '@/components/icons/export-icon';
-import ParentTable from '@/components/parent/parentTable';
-import StudentTable from '@/components/parent/studentTable';
+import ParentTable from '@/components/parent_student/admin/parent/parentTable';
+
+import StudentTable from '@/components/parent_student/admin/student/studentTable';
 import { Button, Input } from '@nextui-org/react';
 import React from 'react';
 
@@ -25,7 +26,4 @@ const ParentsStudentsPage: React.FC = () => {
 
             </div>
         </div>
-    );
-};
-
-export default ParentsStudentsPage;
+  

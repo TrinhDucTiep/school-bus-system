@@ -1,54 +1,50 @@
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, useDisclosure, Button, Input } from '@nextui-org/react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Input, Button, useDisclosure } from '@nextui-org/react';
 import React from 'react';
 import { ParentRenderCell } from './parent-render-cell';
-import { useGetListParent, useGetListStudent } from '@/services/accountService';
-import { StudentRenderCell } from './student-render-cell';
-import { ExportIcon } from '../icons/export-icon';
+import { useGetListParent } from '@/services/accountService';
+import { ExportIcon } from '../../../icons/export-icon';
+import { AddParent } from './add-parent';
+import ModalDeleteParent from './delete-parent';
+import ModalUpdateParent from './update-parent';
 import _ from 'lodash';
-import { AddStudent } from './add-student';
-import { ModalUpdateStudent } from './update-student';
-import ModalDeleteStudent from './delete-student';
+import ModalViewParent from './view-parent';
+
 
 const columns = [
     { name: 'HỌ VÀ TÊN', uid: 'name' },
-    { name: 'TÊN LỚP', uid: 'studentClass' },
     { name: "SỐ ĐIỆN THOẠI", uid: "phoneNumber" },
     { name: 'ACTIONS', uid: 'actions' },
 ];
-const StudentTable: React.FC = () => {
-    // search field
+const ParentTable: React.FC = () => {
+    //search field
     const [name, setName] = React.useState('');
-    const [studentClass, setStudentClass] = React.useState('');
     const [phoneNumber, setPhoneNumber] = React.useState('');
 
     const debouncedSetName = _.debounce((value: string) => setName(value), 500);
     const debouncedSetPhoneNumber = _.debounce((value: string) => setPhoneNumber(value), 500);
-    const debouncedSetStudentClass = _.debounce((value: string) => setStudentClass(value), 500);
-
-    const [selectStudent, setSelectedStudent] = React.useState<IStudent | null>(null);
-
+    // handle pagination
+    const [page, setPage] = React.useState(1);
     // handle open modal
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const handleOpenChangeStudent = () => onOpenChange();
-
+    const [selectParent, setSelectedParent] = React.useState<IParent | null>(null);
+    const handleOpenChangeParent = () => onOpenChange();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
-    const handleOpenChangeDeleteStudent = () => onOpenChangeDelete();
-    
-    const [page, setPage] = React.useState(1);
+    const handleOpenChangeDeleteParent = () => onOpenChangeDelete();
+    const { isOpen: isOpenView, onOpen: onOpenView, onOpenChange: onOpenChangeView } = useDisclosure();
+    const handleOpenChangeViewParent = () => onOpenChangeView();
 
-    const { data, isLoading, error } = useGetListStudent({
+    const { data: parentList, isLoading: parentLoading, error: parentError } = useGetListParent({
         id: null,
         name: name,
         dob: null,
-        phoneNumber: phoneNumber,
-        studentClass: studentClass,
-        parent_id: null,
         page: page - 1,
+        phoneNumber: phoneNumber,
         size: 10,
         sort: null,
-        sortBy: '-createdAt'
+        sortBy: null,
+        searchBy: 'PARENT_NAME'
     });
-    const bottomTable = (
+    const bottomParent = (
         <div className="py-2 px-2 flex w-full justify-center items-center">
             <Pagination
                 isCompact
@@ -56,14 +52,14 @@ const StudentTable: React.FC = () => {
                 showShadow
                 color="primary"
                 page={page}
-                total={data?.result.totalPages || 1}
+                total={parentList?.result.totalPages || 1}
                 onChange={setPage}
             />
         </div>
     );
     return (
         <>
-            <h3 className="text-xl font-semibold">Danh sách Học Sinh</h3>
+            <h3 className="text-xl font-semibold">Danh sách Phụ Huynh</h3>
             <div className="flex justify-between flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-3 flex-wrap md:flex-nowrap w-2/3 m-1 mb-8">
                     <Input
@@ -72,7 +68,7 @@ const StudentTable: React.FC = () => {
                             mainWrapper: "w-full",
                         }}
                         size='sm'
-                        label="Họ và tên"
+                        label="Tên phụ huynh"
                         onChange={(e) => debouncedSetName(e.target.value)} 
                     />
                     <Input
@@ -81,25 +77,18 @@ const StudentTable: React.FC = () => {
                             mainWrapper: "w-full",
                         }}
                         size='sm'
-                        label="Tên lớp"
-                        onChange={(e) => debouncedSetStudentClass(e.target.value)}
-                    />
-                    <Input
-                        classNames={{
-                            input: "w-full",
-                            mainWrapper: "w-full",
-                        }}
-                        size='sm'
                         label="Số điện thoại"
-                        onChange={(e) => debouncedSetPhoneNumber(e.target.value)}
+                        onChange={(e) => debouncedSetPhoneNumber(e.target.value)} 
                     />
                 </div>
                 <div className="flex flex-row flex-wrap m-1 mb-8">
-                    <AddStudent/>
+
+                    <AddParent></AddParent>
                 </div>
             </div>
             <Table aria-label="Example table with custom cells"
-                bottomContent={bottomTable}>
+                bottomContent={bottomParent}
+            >
                 <TableHeader columns={columns}>
                     {(column) => (
                         <TableColumn
@@ -111,18 +100,19 @@ const StudentTable: React.FC = () => {
                         </TableColumn>
                     )}
                 </TableHeader>
-                {data?.result && data.result.content ? (
-                    <TableBody items={data.result.content}>
+                {parentList?.result && parentList.result.content ? (
+                    <TableBody items={parentList.result.content}>
                         {(item) => (
                             <TableRow key={item.id}>
                                 {(columnKey) => (
                                     <TableCell>
-                                        {StudentRenderCell({
-                                            data: item as IStudent,
+                                        {ParentRenderCell({
+                                            parent: item as IParent,
                                             columnKey: columnKey,
-                                            handleOpenChange: () => { handleOpenChangeStudent() },
-                                            setSelectedStudent: (student: IStudent) => setSelectedStudent(student),
-                                            handleOpenChangeDelete: () => { handleOpenChangeDeleteStudent() },
+                                            handleOpenChange: () => { handleOpenChangeParent() },
+                                            setSelectedParent: (parent: IParent) => setSelectedParent(parent),
+                                            handleOpenChangeDelete: () => { handleOpenChangeDeleteParent() },
+                                            handleOpenChangeView: () => { handleOpenChangeViewParent() }
                                         })}
                                     </TableCell>
 
@@ -134,11 +124,24 @@ const StudentTable: React.FC = () => {
                     <TableBody emptyContent={"No rows to display."}>{[]}</TableBody>
                 )}
             </Table>
-            <ModalDeleteStudent isOpenDelete={isOpenDelete} onOpenChangeDelete={onOpenChangeDelete} selectedStudent={selectStudent} />
-            <ModalUpdateStudent isOpen={isOpen} onOpenChange={onOpenChange} selectedStudent={selectStudent} />
+            <ModalDeleteParent
+                isOpenDelete={isOpenDelete}
+                onOpenChangeDelete={handleOpenChangeDeleteParent}
+                selectedParent={selectParent}
+            ></ModalDeleteParent>
+            <ModalUpdateParent
+                isOpen={isOpen}
+                onOpenChange={handleOpenChangeParent}
+                selectedParent={selectParent}
+            ></ModalUpdateParent>
+            <ModalViewParent
+                isOpen={isOpenView}
+                onOpenChange={handleOpenChangeViewParent}
+                selectedParent={selectParent}
+            ></ModalViewParent>
         </>
 
     );
 };
 
-export default StudentTable;
+export default ParentTable;

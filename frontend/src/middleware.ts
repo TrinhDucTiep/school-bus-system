@@ -8,8 +8,13 @@ export function middleware(request: NextRequest) {
     // return NextResponse.redirect('/login')
     return Response.redirect(new URL('/login', request.url));
   }
-  // return Response.redirect(new URL('/admin', request.url))
-  return NextResponse.next();
+  const role = request.cookies.get('role');
+  console.log('role', role)
+  if(role?.value === 'ADMIN'){
+    return Response.redirect(new URL('/admin', request.url));
+  } else {
+    return Response.redirect(new URL('/client', request.url));
+  }
 }
 
 export const config = {

@@ -2,11 +2,13 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagina
 import React from 'react';
 import { useGetListStudent } from '@/services/accountService';
 import _ from 'lodash';
-import { AddStudent } from './add-student';
-import { ModalUpdateStudent } from './update-student';
-import ModalDeleteStudent from './delete-student';
+import { AddStudent } from '../../admin/student/add-student';
+import { ModalUpdateStudent } from '../../admin/student/update-student';
+import ModalDeleteStudent from '../../admin/student/delete-student';
 import { ClientStudentRenderCell } from './client-student-render-cell';
 import { ClientModalUpdateStudent } from './client-update-student-modal';
+import { AddStudentClient } from './add-student-client';
+import { useGetListStudentClient } from '@/services/client/clientAccountService';
 
 const columns = [
     { name: 'HỌ VÀ TÊN', uid: 'name' },
@@ -16,14 +18,6 @@ const columns = [
     { name: 'ACTIONS', uid: 'actions' },
 ];
 const ClientStudentTable: React.FC = () => {
-    // search field
-    const [name, setName] = React.useState('');
-    const [studentClass, setStudentClass] = React.useState('');
-    const [phoneNumber, setPhoneNumber] = React.useState('');
-
-    const debouncedSetName = _.debounce((value: string) => setName(value), 500);
-    const debouncedSetPhoneNumber = _.debounce((value: string) => setPhoneNumber(value), 500);
-    const debouncedSetStudentClass = _.debounce((value: string) => setStudentClass(value), 500);
 
     const [selectStudent, setSelectedStudent] = React.useState<IStudent | null>(null);
 
@@ -36,12 +30,12 @@ const ClientStudentTable: React.FC = () => {
 
     const [page, setPage] = React.useState(1);
 
-    const { data, isLoading, error } = useGetListStudent({
+    const { data, isLoading, error } = useGetListStudentClient({
         id: null,
-        name: name,
+        name: null,
         dob: null,
-        phoneNumber: phoneNumber,
-        studentClass: studentClass,
+        phoneNumber: null,
+        studentClass: null,
         parent_id: null,
         page: page - 1,
         size: 10,
@@ -66,7 +60,7 @@ const ClientStudentTable: React.FC = () => {
             <div className="flex justify-between flex-wrap gap-4 items-left m-4">
                 <h3 className="text-xl font-semibold">Thông tin học sinh</h3>
                 <div className="flex flex-row flex-wrap m-1 mb-4">
-                    <AddStudent />
+                    <AddStudentClient />
                 </div>
             </div>
             <Table aria-label="Example table with custom cells"

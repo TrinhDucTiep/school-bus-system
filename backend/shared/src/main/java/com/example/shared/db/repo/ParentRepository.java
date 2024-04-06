@@ -36,5 +36,10 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
         Pageable pageable
     );
 
+    @Query(value = """
+            select p as parent
+            from Parent p
+            where p.account.id = :accountId
+        """)
     Parent findByAccountId(Long accountId);
 }

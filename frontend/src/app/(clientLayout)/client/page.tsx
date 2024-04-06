@@ -1,11 +1,17 @@
 "use client";
 
-import ClientStudentTable from '@/components/parent/client-student-table';
-import { Avatar, Button, Card, User } from '@nextui-org/react';
+import { Avatar, Button, Card, User, useDisclosure } from '@nextui-org/react';
 import React from 'react';
 import { EditIcon } from "@/components/icons/table/edit-icon";
+import { useGetParentDetailClient } from '@/services/client/clientAccountService';
+import { convertStringInstantToDate } from '@/util/dateConverter';
+import ClientStudentTable from '@/components/parent_student/client/student/client-student-table';
+import ModalUpdateParentClient from '@/components/parent_student/client/parent/update-parent-client';
 
 const ClientPage: React.FC = () => {
+    const {data: parentDetail, isLoading: parentDetailLoading, error: parentDetailError} = useGetParentDetailClient();
+    const { isOpen: isOpenView, onOpen: onOpenView, onOpenChange: onOpenChangeView } = useDisclosure();
+    const handleOpenChangeViewParent = () => onOpenChangeView();
     return (
         <div>
             <div className="flex justify-between flex-wrap gap-4 items-left m-4">
@@ -29,14 +35,14 @@ const ClientPage: React.FC = () => {
                         <div className="flex flex-col gap-2">
                             <div className="flex flex-row gap-4">
                                 <div className="font-semibold">Họ và tên:</div>
-                                <div>Nguyễn Văn A</div>
+                                <div>{parentDetail?.result.name}</div>
                             </div>
                             <div className="flex flex-row gap-4">
                                 <div className="font-semibold">Số điện thoại:</div>
-                                <div>0123456789</div>
+                                <div>{parentDetail?.result.phoneNumber}</div>
                             </div>
                             <div className="flex flex-row gap-4">
-                                <div className="font-semibold">Email:</div>
+                                <div className="font-semibold">Email: {parentDetail?.result.username}</div>
                                 <div>
                                     <a href="mailto:" className="text-blue-500" />
                                 </div>
@@ -45,7 +51,7 @@ const ClientPage: React.FC = () => {
                         <div className="flex flex-col gap-2">
                             <div className="flex flex-row gap-4">
                                 <div className="font-semibold">Ngày sinh:</div>
-                                <div>01/01/2000</div>
+                                <div>{convertStringInstantToDate(parentDetail?.result.dob)}</div>
                             </div>
                             <div className="flex flex-row gap-4">
                                 <div className="font-semibold">Địa chỉ:</div>
@@ -56,7 +62,7 @@ const ClientPage: React.FC = () => {
                 </div>
 
                 <Button
-                    // onPress={onOpen} 
+                    onClick={handleOpenChangeViewParent}
                     color="primary"
                     endContent={
                         <EditIcon size={20} fill="#000000" />
@@ -67,6 +73,10 @@ const ClientPage: React.FC = () => {
             </Card>
 
             <ClientStudentTable />
+            <ModalUpdateParentClient
+                isOpen={isOpenView}
+                onOpenChange={handleOpenChangeViewParent}
+            />
         </div>
     );
 };

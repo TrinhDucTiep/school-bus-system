@@ -1,4 +1,5 @@
 import { useDeleteParent, useDeleteStudent } from '@/services/accountService';
+import { useDeleteStudentClient } from '@/services/client/clientAccountService';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from '@nextui-org/react';
 import React from 'react';
 
@@ -11,7 +12,7 @@ interface IProps{
 const ModalDeleteStudent: React.FC<IProps> = (
     { isOpenDelete, onOpenChangeDelete, selectedStudent}
 ) => {
-    const useDeleteStudentMutation = useDeleteStudent();
+    const useDeleteStudentMutation = useDeleteStudentClient();
 
     const handleDeleteStudent = (id: number) => {
         useDeleteStudentMutation.mutate(id);

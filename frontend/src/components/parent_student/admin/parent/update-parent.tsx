@@ -3,8 +3,8 @@ import { Accordion, AccordionItem, Button, Input, Modal, ModalBody, ModalContent
 import { register } from 'module';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { PlusIcon } from '../icons/plus';
-import { EyeIcon } from '../icons/table/eye-icon';
+import { PlusIcon } from '../../../icons/plus';
+import { EyeIcon } from '../../../icons/table/eye-icon';
 import { convertStringInstantToDate } from '@/util/dateConverter';
 
 interface IProps {
