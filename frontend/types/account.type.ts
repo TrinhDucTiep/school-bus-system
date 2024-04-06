@@ -24,6 +24,17 @@ interface IStudenAdd {
     parentId: number;
 }
 
+
+interface IStudenAddClient {
+    id: number | string | null;
+    name: string;
+    avatar: string | null;
+    dob: string;
+    phoneNumber: string;
+    studentClass: string;
+    parentId: number;
+}
+
 interface IStudentUpdate extends IStudentBase {
     id: number;
     name: string;
