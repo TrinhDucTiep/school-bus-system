@@ -8,7 +8,7 @@ interface ICoordinates {
 }
 
 interface IGeometry {
-    coordinates: ICoordinates;
+    coordinates: number[];
     type: string;
 }
 
@@ -35,6 +35,28 @@ interface IAutoCompleteGetResponse {
 }
 
 interface IAutoCompleteParams {
+    text: string;
+    focus?: {
+        point?: {
+            lon?: number | null;
+            lat?: number | null;
+        } | null;
+    } | null;
+    boundary?: {
+        rect?: {
+            min_lon?: number | null;
+            min_lat?: number | null;
+            max_lon?: number | null;
+        } | null;
+        country?: string | null;
+    } | null;
+}
+
+interface ISearchGetResponse {
+    features: IFeature[];
+    type: string;
+}
+interface ISearchParams {
     text: string;
     focus?: {
         point?: {

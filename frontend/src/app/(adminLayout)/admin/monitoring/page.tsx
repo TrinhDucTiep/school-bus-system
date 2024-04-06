@@ -4,8 +4,9 @@ import { SearchIcon } from '@/components/icons/searchicon';
 import { Autocomplete, AutocompleteItem, Input } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
-import { useGetAutoComplete } from '@/services/mapService';
+import { useGetAutoComplete, useGetSearch } from '@/services/mapService';
 import _ from 'lodash';
+import LocationIcon from '@/components/icons/location-icon';
 
 const MonitoringPage: React.FC = () => {
 
@@ -19,6 +20,8 @@ const MonitoringPage: React.FC = () => {
     const debounceSetAutoCompleteQuery = _.debounce((value: string) => setAutoCompleteQuery(value), 500);
     const { data: autoCompleteData, isLoading: autoCompleteLoading, error: autoCompleteError } = useGetAutoComplete(autoCompleteParams);
 
+    const [selectedAutoCompleteData, setSelectedAutoCompleteData] = React.useState<IFeature | null>(null);
+
     const Map = useMemo(() => dynamic(
         () => import('@/components/map/Map'),
         {
@@ -27,52 +30,52 @@ const MonitoringPage: React.FC = () => {
         }
     ), [])
 
-    console.log(autoCompleteData);
-    console.log(autoCompleteData?.features.map((item) => item.properties) || [])
-
     return (
-        <div className='flex justify-between'>
-            <div className=''>
-                <Input
-                    startContent={<SearchIcon />}
-                    isClearable
-                    className="w-full m-2"
-                    classNames={{
-                        input: "w-full",
-                        mainWrapper: "w-full",
-                    }}
-                    placeholder="Nhập địa điểm..."
-                />
-
+        <div className='flex justify-between w-auto'>
+            <div className='w-2/5 mr-4'>
                 <Autocomplete
-                    label="Favorite Animal"
                     placeholder="Nhập địa điểm"
                     startContent={<SearchIcon />}
-                    // defaultItems={autoCompleteData?.features.map((item) => item.properties) || []}
                     items={autoCompleteData?.features.map((item) => item.properties) || []}
-                    labelPlacement="outside"
-                    className="max-w-xs"
-                    disableSelectorIconRotation
+                    className="m-2 w-full"
                     selectorIcon={false}
                     onInputChange={(value) => debounceSetAutoCompleteQuery(value)}
-                // onInputChange={(value) => setAutoCompleteQuery(value)}
+                    onSelectionChange={
+                        (selectedId) => {
+                            const selectedItem = autoCompleteData?.features.find((item) => item.properties.id === selectedId);
+                            console.log(selectedItem);
+                            setSelectedAutoCompleteData(selectedItem ?? null);
+                        }
+                    }
                 >
                     {(item) =>
                         <AutocompleteItem
                             key={item.id}
-                            value={item.label}
+                            // value={item.label}
+                            textValue={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
+                            value={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
                         >
-                            {/* content: street, county, region, country*/}
-                            {/* {item.street + ', ' + item.county + ', ' + item.region + ', ' + item.country} */}
-                            {`${item.street ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
+                            <div className="flex gap-2 items-center">
+                                <div className='flex-shrink-0'>
+                                    <LocationIcon />
+                                </div>
+
+                                <div className='flex flex-col'>
+                                    {/* {` ${item.street ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`} */}
+                                    {`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
+                                </div>
+                            </div>
+
                         </AutocompleteItem>
                     }
                 </Autocomplete>
             </div>
             <div
-                className="w-3/4"
+                className="w-3/5"
             >
-                <Map />
+                <Map
+                    features={selectedAutoCompleteData ? [selectedAutoCompleteData] : []}
+                />
             </div >
         </div>
 

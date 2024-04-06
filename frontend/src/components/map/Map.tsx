@@ -1,6 +1,13 @@
 import { useState, useEffect, FC } from 'react';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import LocationIcon from '../icons/location-icon';
+import L from 'leaflet';
+
+const locationIcon = L.icon({
+    iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+    iconSize: [38, 38], // size of the icon
+});
 
 interface Coords {
     lat: number;
@@ -17,10 +24,18 @@ export const ChangeView: FC<ChangeViewProps> = ({ coords }) => {
     return null;
 }
 
-export default function Map() {
+interface MapProps {
+    features: IFeature[];
+}
+
+export default function Map({ features }: MapProps) {
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
 
     const center: Coords = { lat: geoData.lat, lng: geoData.lng };
+
+    if (features[0]) {
+        console.log(features[0].geometry.coordinates);
+    }
 
     return (
         <MapContainer
@@ -35,40 +50,14 @@ export default function Map() {
             {geoData.lat && geoData.lng && (
                 <Marker position={center} />
             )}
+            {features.map((feature, index) => (
+                <Marker
+                    key={index}
+                    position={{ lat: feature.geometry.coordinates[1], lng: feature.geometry.coordinates[0] }}
+                    icon={locationIcon}
+                />
+            ))}
             <ChangeView coords={center} />
         </MapContainer>
     );
 }
-
-// "use client";
-// import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-// import "leaflet/dist/leaflet.css";
-// import "leaflet-defaulticon-compatibility";
-// import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-
-// export default function MyMap() {
-//     return (
-//         <MapContainer
-//             center={[51.505, -0.09]}
-//             zoom={7.5}
-//             scrollWheelZoom={false}
-//             style={{ height: "250px", width: "100%" }}
-//         >
-//             <TileLayer
-//                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-//                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-//             />
-//             <Marker position={[51.505, -0.09]}>
-//                 <Popup>
-//                     A pretty CSS3 popup. <br /> Easily customizable.
-//                 </Popup>
-//             </Marker>
-
-//             <Marker position={[51.605, -0.09]}>
-//                 <Popup>
-//                     A pretty CSS3 popup. <br /> Easily customizable.
-//                 </Popup>
-//             </Marker>
-//         </MapContainer>
-//     );
-// }

@@ -26,3 +26,18 @@ export const useGetAutoComplete = (params: IAutoCompleteParams) => {
         queryFn: () => getAutoComplete(params)
     });
 };
+
+// search
+const getSearch = async (params: ISearchParams) => {
+    const response = await apiMap.get<ISearchGetResponse>('/geocode/search', {
+        params,
+        paramsSerializer: params => qs.stringify(params, { allowDots: true })
+    });
+    return response.data;
+}
+export const useGetSearch = (params: ISearchParams) => {
+    return useQuery<ISearchGetResponse, AxiosError>({
+        queryKey: ['search', params],
+        queryFn: () => getSearch(params)
+    });
+};
