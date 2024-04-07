@@ -1,7 +1,8 @@
 import React, { useState, useEffect, FC, RefObject, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline } from 'react-leaflet';
 import L from 'leaflet';
+import polyline from 'polyline';
 
 const locationIcon = L.icon({
     iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
@@ -25,6 +26,7 @@ export const ChangeView: FC<ChangeViewProps> = ({ coords }) => {
 
 interface MapProps {
     features: IFeature[];
+    directionsGetResponse: IDirectionsGetResponse | undefined;
 }
 
 interface MyComponentProps {
@@ -43,10 +45,12 @@ const MyComponent: React.FC<MyComponentProps> = ({ geoData, setGeoData }) => {
     return null;
 }
 
-export default function Map({ features }: MapProps) {
+export default function Map({ features, directionsGetResponse }: MapProps) {
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
 
     const center: Coords = { lat: geoData.lat, lng: geoData.lng };
+
+    console.log('directions get: ', directionsGetResponse)
 
     return (
         <MapContainer
@@ -71,6 +75,26 @@ export default function Map({ features }: MapProps) {
             <ChangeView coords={center} />
 
             <MyComponent geoData={geoData} setGeoData={setGeoData} />
+
+            {
+                (features.length > 0 && geoData.lat && geoData.lng) && (
+                    <Polyline positions={[
+                        [geoData.lat, geoData.lng],
+                        [features[0].geometry.coordinates[1], features[0].geometry.coordinates[0]]
+                    ]} />
+                )
+            }
+
+            {directionsGetResponse?.routes.map((route, routeIndex) => {
+                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude
+                console.log('decodedPolyline:', decodedPolyline);
+                return (
+                    <Polyline
+                        key={`route-${routeIndex}`}
+                        positions={decodedPolyline}
+                    />
+                );
+            })}
         </MapContainer>
     );
 }

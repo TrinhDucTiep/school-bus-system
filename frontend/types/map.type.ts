@@ -3,10 +3,6 @@ interface IPosition {
     longitude: number;
 }
 
-interface ICoordinates {
-    value: number[];
-}
-
 interface IGeometry {
     coordinates: number[];
     type: string;
@@ -72,4 +68,33 @@ interface ISearchParams {
         } | null;
         country?: string | null;
     } | null;
+}
+
+interface IDirectionsParams {
+    coordinates: number[][];
+}
+
+interface IDirectionSummary {
+    distance: number;
+    duration: number;
+}
+
+interface IDirectionsRoute {
+    geometry: string;
+    segments: {
+        distance: number;
+        duration: number;
+        steps: {
+            distance: number;
+            duration: number;
+            type: string;
+            instruction: string;
+            way_points: [number, number][];
+        }[];
+    }[];
+    summary: IDirectionSummary;
+}
+
+interface IDirectionsGetResponse {
+    routes: IDirectionsRoute[];
 }

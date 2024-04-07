@@ -41,3 +41,22 @@ export const useGetSearch = (params: ISearchParams) => {
         queryFn: () => getSearch(params)
     });
 };
+
+// directions
+// const getDirections = async (params: IDirectionsParams) => {
+//     const response = await apiMap.get<IDirectionsGetResponse>('/v2/directions/driving-car', {
+//         params,
+//         paramsSerializer: params => qs.stringify(params, { allowDots: true })
+//     });
+//     return response.data;
+// }
+const getDirections = async (data: IDirectionsParams) => {
+    const response = await apiMap.post<IDirectionsGetResponse>('/v2/directions/driving-car', data);
+    return response.data;
+}
+export const useGetDirections = (params: IDirectionsParams) => {
+    return useQuery<IDirectionsGetResponse, AxiosError>({
+        queryKey: ['directions', params],
+        queryFn: () => getDirections(params)
+    });
+};

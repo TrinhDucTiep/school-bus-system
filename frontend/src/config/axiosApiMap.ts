@@ -10,12 +10,12 @@ const apiMap = axios.create({
 
 apiMap.interceptors.request.use((config) => {
     if (config.method === 'get') {
-        config.params = {
-            ...config.params,
-            api_key: api_key
-        }
+    config.params = {
+        ...config.params,
+        api_key: api_key
+    }
     } else {
-        config.headers['Authorization'] = `${api_key}`;
+    config.headers['Authorization'] = `${api_key}`;
     }
 
     if (config.data) {
