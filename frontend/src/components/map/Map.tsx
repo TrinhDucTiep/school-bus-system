@@ -101,7 +101,7 @@ export default function Map({ features, directionsGetResponse }: MapProps) {
 
             {directionsGetResponse?.routes.map((route, routeIndex) => {
                 const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude
-                console.log('decodedPolyline:', decodedPolyline);
+
                 return (
                     <Polyline
                         key={`route-${routeIndex}`}
