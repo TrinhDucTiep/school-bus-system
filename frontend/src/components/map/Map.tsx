@@ -20,7 +20,9 @@ interface ChangeViewProps {
 
 export const ChangeView: FC<ChangeViewProps> = ({ coords }) => {
     const map = useMap();
-    map.setView(coords, 12);
+    useEffect(() => {
+        map.setView(coords);
+    }, [coords, map]);
     return null;
 }
 
@@ -45,7 +47,19 @@ const MyComponent: React.FC<MyComponentProps> = ({ geoData, setGeoData }) => {
     return null;
 }
 
+function MapEvents() {
+    const map = useMapEvents({
+        zoomend: () => {
+            const zoom = map.getZoom();
+            map.flyTo(map.getCenter(), zoom);
+        },
+    });
+
+    return null;
+}
+
 export default function Map({ features, directionsGetResponse }: MapProps) {
+    const zoomRef = useRef<number>(12);
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
 
     const center: Coords = { lat: geoData.lat, lng: geoData.lng };
@@ -95,6 +109,8 @@ export default function Map({ features, directionsGetResponse }: MapProps) {
                     />
                 );
             })}
+
+            <MapEvents />
         </MapContainer>
     );
 }
