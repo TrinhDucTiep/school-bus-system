@@ -1,13 +1,16 @@
 package com.example.shared.db.entities;
 
-import com.example.shared.enumeration.BusStatus;
+import com.example.shared.enumeration.RideStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
@@ -24,32 +27,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tieptd_194185_bus")
-public class Bus {
+@Table(name = "tieptd_194185_route")
+public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "number_plate")
-    private String numberPlate;
-
-    @Column(name = "seat_number")
-    private Integer seatNumber;
-
-    @Column(name = "driver_id")
-    private Long driverId;
-
-    @Column(name = "driver_mate_id")
-    private Long driverMateId;
-
-    @Enumerated(EnumType.STRING)
-    private BusStatus status;
-
-    @Column(name = "current_latitude")
-    private Double currentLatitude;
-
-    @Column(name = "current_longitude")
-    private Double currentLongitude;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bus_id")
+    private Bus bus;
 
     @CreatedDate
     @CreationTimestamp

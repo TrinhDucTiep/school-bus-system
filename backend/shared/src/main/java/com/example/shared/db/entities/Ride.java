@@ -44,12 +44,6 @@ public class Ride {
     @Column(name = "start_from")
     private String startFrom;
 
-    @Column(name = "current_latitude")
-    private Double currentLatitude;
-
-    @Column(name = "current_longitude")
-    private Double currentLongitude;
-
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
