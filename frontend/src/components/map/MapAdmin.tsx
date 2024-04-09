@@ -27,16 +27,18 @@ export const ChangeView: FC<ChangeViewProps> = ({ coords }) => {
 }
 
 interface MapProps {
-    features: IFeature[];
+    autoCompletePoint: IFeature | null;
+    pickupPoints: IFeature[];
     directionsGetResponse: IDirectionsGetResponse | undefined;
+    enableClickMap: boolean;
 }
 
-interface MyComponentProps {
+interface ClickMapComponentProps {
     geoData: Coords;
     setGeoData: React.Dispatch<React.SetStateAction<Coords>>;
 }
 
-const MyComponent: React.FC<MyComponentProps> = ({ geoData, setGeoData }) => {
+const ClickMapComponent: React.FC<ClickMapComponentProps> = ({ geoData, setGeoData }) => {
     useMapEvents({
         click: (e) => {
             console.log('location clicked:', e.latlng);
@@ -58,13 +60,11 @@ function MapEvents() {
     return null;
 }
 
-export default function MapAdmin({ features, directionsGetResponse }: MapProps) {
+export default function MapAdmin({ autoCompletePoint, pickupPoints, directionsGetResponse, enableClickMap }: MapProps) {
     const zoomRef = useRef<number>(12);
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
 
     const center: Coords = { lat: geoData.lat, lng: geoData.lng };
-
-    console.log('directions get: ', directionsGetResponse)
 
     return (
         <MapContainer
@@ -79,19 +79,31 @@ export default function MapAdmin({ features, directionsGetResponse }: MapProps) 
             {geoData.lat && geoData.lng && (
                 <Marker position={center} icon={locationIcon} />
             )}
-            {features.map((feature, index) => (
+
+            {/* pickup points */}
+            {pickupPoints?.map((pickupPoint, index) => (
                 <Marker
                     key={index}
-                    position={{ lat: feature.geometry.coordinates[1], lng: feature.geometry.coordinates[0] }}
+                    position={{ lat: pickupPoint.geometry.coordinates[1], lng: pickupPoint.geometry.coordinates[0] }}
                     icon={locationIcon}
                 />
             ))}
+
+            {/* autoComplete point */}
+            {autoCompletePoint && (
+                <Marker
+                    key={autoCompletePoint.properties.id}
+                    position={{ lat: autoCompletePoint.geometry.coordinates[1], lng: autoCompletePoint.geometry.coordinates[0] }}
+                    icon={locationIcon}
+                />
+            )}
+
             <ChangeView coords={center} />
 
-            <MyComponent geoData={geoData} setGeoData={setGeoData} />
+            {enableClickMap && <ClickMapComponent geoData={geoData} setGeoData={setGeoData} />}
 
             {directionsGetResponse?.routes.map((route, routeIndex) => {
-                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude
+                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]);
 
                 return (
                     <Polyline

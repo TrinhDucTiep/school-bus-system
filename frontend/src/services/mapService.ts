@@ -43,13 +43,6 @@ export const useGetSearch = (params: ISearchParams) => {
 };
 
 // directions
-// const getDirections = async (params: IDirectionsParams) => {
-//     const response = await apiMap.get<IDirectionsGetResponse>('/v2/directions/driving-car', {
-//         params,
-//         paramsSerializer: params => qs.stringify(params, { allowDots: true })
-//     });
-//     return response.data;
-// }
 const getDirections = async (data: IDirectionsParams) => {
     const response = await apiMap.post<IDirectionsGetResponse>('/v2/directions/driving-car', data);
     return response.data;

@@ -19,7 +19,7 @@ public interface PickupPointRepository extends JpaRepository<PickupPoint, Long> 
     LEFT JOIN FETCH Student s ON s.id = sp.student.id 
     LEFT JOIN FETCH RidePickupPoint rp ON p.id = rp.pickupPoint.id 
     LEFT JOIN FETCH Ride r ON r.id = rp.ride.id 
-    WHERE p.address LIKE %:address%
+    WHERE (:address is NULL or p.address ILIKE %:address%)
     """)
     Page<GetListPickupPointDTO> getListPickupPoint(
         @Param("address") String address,
