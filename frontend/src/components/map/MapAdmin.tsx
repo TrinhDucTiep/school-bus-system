@@ -28,7 +28,7 @@ export const ChangeView: FC<ChangeViewProps> = ({ coords }) => {
 
 interface MapProps {
     autoCompletePoint: IFeature | null;
-    pickupPoints: IFeature[];
+    pickupPoints: IPickupPointTable[];
     directionsGetResponse: IDirectionsGetResponse | undefined;
     enableClickMap: boolean;
 }
@@ -81,10 +81,10 @@ export default function MapAdmin({ autoCompletePoint, pickupPoints, directionsGe
             )}
 
             {/* pickup points */}
-            {pickupPoints?.map((pickupPoint, index) => (
+            {pickupPoints?.map((pickupPointTable, index) => (
                 <Marker
                     key={index}
-                    position={{ lat: pickupPoint.geometry.coordinates[1], lng: pickupPoint.geometry.coordinates[0] }}
+                    position={{ lat: pickupPointTable.pickupPoint.latitude, lng: pickupPointTable.pickupPoint.longitude }} //todo: add detail onclick later when having enough data from client flow
                     icon={locationIcon}
                 />
             ))}

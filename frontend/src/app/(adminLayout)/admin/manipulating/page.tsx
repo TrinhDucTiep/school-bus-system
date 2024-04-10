@@ -103,14 +103,14 @@ const ManipulatingPage: React.FC = () => {
                 >
                     <Map
                         autoCompletePoint={selectedAutoCompleteData}
-                        pickupPoints={[]}
+                        pickupPoints={listPickupPoint?.result.content ?? []}
                         directionsGetResponse={directionsGetResponse}
                         enableClickMap={enableClickMap}
                     />
                 </div >
             </div>
 
-            
+
         </div>
     );
 };

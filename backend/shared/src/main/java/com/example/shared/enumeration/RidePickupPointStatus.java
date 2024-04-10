@@ -1,15 +1,12 @@
 package com.example.shared.enumeration;
 
-public enum RideStatus {
-    PENDING("PENDING"),
-    READY("READY"),
-    RUNNING("RUNNING"),
-    FINISHED("FINISHED");
-
+public enum RidePickupPointStatus {
+    PICKING("PICKING"),
+    PICKED("PICKED");
 
     private final String status;
 
-    RideStatus(String status) {
+    RidePickupPointStatus(String status) {
         this.status = status;
     }
 

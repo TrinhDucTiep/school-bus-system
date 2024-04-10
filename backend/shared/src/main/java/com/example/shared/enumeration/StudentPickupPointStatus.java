@@ -1,9 +1,8 @@
 package com.example.shared.enumeration;
 
 public enum StudentPickupPointStatus {
-    PENDING("Pending"),
-    ACCEPTED("Accepted"),
-    REJECTED("Rejected");
+    PICKING("PICKING"),
+    PICKED("PICKED");
 
     private final String status;
 
