@@ -1,6 +1,6 @@
 package com.example.api.controllers.client;
 
-import com.example.api.controllers.client.dto.CreateRequestRequest;
+import com.example.api.controllers.client.dto.RequestRegistrationCreate;
 import com.example.api.services.request_registration.RequestRegistrationService;
 import com.example.shared.response.CommonResponse;
 import com.example.shared.utils.ResponseUtil;
@@ -20,9 +20,9 @@ public class RequestRegistrationController {
     private final RequestRegistrationService requestRegistrationService;
     @PostMapping("")
     public ResponseEntity<CommonResponse<Object>> requestRegistration(
-        @RequestBody CreateRequestRequest request
+        @RequestBody RequestRegistrationCreate request
         ) {
-        requestRegistrationService.createRequest(request.toInput());
+        requestRegistrationService.upsertRegistration(request.toInput());
         return ResponseUtil.toSuccessCommonResponse("Request registration successfully");
     }
 }

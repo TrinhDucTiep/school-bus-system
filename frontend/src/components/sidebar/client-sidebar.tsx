@@ -53,10 +53,10 @@ export const ClientSidebarWrapper = () => {
                                 href="/client/monitoring"
                             />
                             <SidebarItem
-                                isActive={pathname === "/register"}
+                                isActive={pathname === "/registration"}
                                 title="Đăng ký đón trả"
                                 icon={<ReportsIcon />}
-                                href="/client/register"
+                                href="/client/registration"
                             />
                             <SidebarItem
                                 isActive={pathname === "/history-ride"}

@@ -1,5 +1,6 @@
 package com.example.api.services.request_registration;
 
+import com.example.api.controllers.client.dto.StudentAddress;
 import com.example.api.services.request_registration.dto.CreateRequestInput;
 import com.example.shared.db.entities.Parent;
 import com.example.shared.db.entities.RequestRegistration;
@@ -9,10 +10,12 @@ import com.example.shared.db.repo.RequestRegistrationRepository;
 import com.example.shared.db.repo.StudentRepository;
 import com.example.shared.enumeration.RequestRegistrationStatus;
 import com.example.shared.exception.MyException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -23,40 +26,36 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
     private final StudentRepository studentRepository;
 
     @Override
-    public void createRequest(CreateRequestInput input) {
-        // validate input
-        if (input.getStudentId() == null && input.getParentId() == null) {
-            throw new MyException(null,
-                "CREATE_REQUEST_ERROR",
-                "Invalid input",
-                HttpStatus.BAD_REQUEST);
+    @Transactional
+    public void upsertRegistration(CreateRequestInput input) {
+        Parent parent = parentRepository.findById(input.getParentId()).orElseThrow(
+            () -> new MyException(
+                null,
+                "PARENT_NOT_FOUND",
+                "Parent not found",
+                HttpStatus.NOT_FOUND
+            )
+        );
+        List<RequestRegistration> requestRegistrations = requestRegistrationRepository.findByParentId(input.getParentId());
+        if (!requestRegistrations.isEmpty()) {
+            requestRegistrationRepository.deleteAll(requestRegistrations);
         }
-
-        Student student = null;
-        Parent parent = null;
-        if (input.getStudentId() != null) {
-            student = studentRepository.findById(input.getStudentId())
-                    .orElseThrow(() -> new MyException(null,
-                        "CREATE_REQUEST_ERROR",
-                        "Student not found",
-                        HttpStatus.NOT_FOUND));
-        }
-        if (input.getParentId() != null) {
-            parent = parentRepository.findById(input.getParentId())
-                    .orElseThrow(() -> new MyException(null,
-                        "CREATE_REQUEST_ERROR",
-                        "Parent not found",
-                        HttpStatus.NOT_FOUND));
-        }
-
-        // create request
-        RequestRegistration requestRegistration = RequestRegistration.builder()
-                .student(student)
+        for (StudentAddress studentAddress : input.getStudentAddress()) {
+            Student student = studentRepository.findById(studentAddress.getStudentId()).orElseThrow(
+                () -> new MyException(
+                    null,
+                    "STUDENT_NOT_FOUND",
+                    "Student not found",
+                    HttpStatus.NOT_FOUND
+                )
+            );
+            RequestRegistration requestRegistration = RequestRegistration.builder()
                 .parent(parent)
-                .address(input.getAddress())
-                .longitude(input.getLongitude())
-                .latitude(input.getLatitude())
+                .student(student)
                 .status(RequestRegistrationStatus.PENDING)
                 .build();
+            requestRegistrationRepository.save(requestRegistration);
+        }
+
     }
 }
