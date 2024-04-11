@@ -8,9 +8,11 @@ import com.example.shared.db.entities.Ride;
 import com.example.shared.db.entities.RidePickupPoint;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.PickupPointRepository;
+import com.example.shared.db.repo.RideHistoryRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
 import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
+import com.example.shared.enumeration.RideStatus;
 import com.example.shared.exception.MyException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class RideServiceImpl implements RideService {
     private final BusRepository busRepository;
     private final PickupPointRepository pickupPointRepository;
     private final StudentPickupPointRepository studentPickupPointRepository;
+    private final RideHistoryRepository rideHistoryRepository;
 
     @Override
     @Transactional
@@ -58,8 +61,10 @@ public class RideServiceImpl implements RideService {
                 .startAt(addRideInput.getStartAt())
                 .endAt(addRideInput.getEndAt())
                 .startFrom(addRideInput.getStartFrom())
+                .status(RideStatus.PENDING)
                 .build();
         rideRepository.save(ride);
+        rideHistoryRepository.save(ride.toRideHistory());
 
         // save ride pickup points
         pickupPoints.forEach(pickupPoint -> {
@@ -99,5 +104,6 @@ public class RideServiceImpl implements RideService {
         ride.setStartFrom(updateRideInput.getStartFrom());
         ride.setStatus(updateRideInput.getStatus());
         rideRepository.save(ride);
+        rideHistoryRepository.save(ride.toRideHistory());
     }
 }

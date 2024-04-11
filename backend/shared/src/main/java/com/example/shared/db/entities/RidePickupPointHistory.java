@@ -1,6 +1,6 @@
 package com.example.shared.db.entities;
 
-import com.example.shared.enumeration.RideStatus;
+import com.example.shared.enumeration.RidePickupPointStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,25 +27,29 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tieptd_194185_ride")
-public class Ride {
+@Table(name = "tieptd_194185_ride_pickup_point_history")
+public class RidePickupPointHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bus_id")
-    private Bus bus;
+    @Column(name = "ride_pickup_point_id")
+    private Long ridePickupPointId;
 
-    private Instant startAt;
+    @Column(name = "pickup_point_id")
+    private Long pickupPointId;
 
-    private Instant endAt;
-
-    @Column(name = "start_from")
-    private String startFrom;
+    @Column(name = "ride_id")
+    private Long rideId;
 
     @Enumerated(EnumType.STRING)
-    private RideStatus status;
+    private RidePickupPointStatus status;
+
+    private String address;
+
+    private Double longitude;
+
+    private Double latitude;
 
     @CreatedDate
     @CreationTimestamp
@@ -53,15 +57,4 @@ public class Ride {
     @LastModifiedDate
     @UpdateTimestamp
     private Instant updatedAt;
-
-    public RideHistory toRideHistory() {
-        return RideHistory.builder()
-            .rideId(this.id)
-            .busId(this.bus.getId())
-            .startAt(this.startAt)
-            .endAt(this.endAt)
-            .startFrom(this.startFrom)
-            .status(this.status)
-            .build();
-    }
 }
