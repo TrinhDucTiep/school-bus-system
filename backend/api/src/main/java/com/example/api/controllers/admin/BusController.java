@@ -1,6 +1,7 @@
 package com.example.api.controllers.admin;
 
 import com.example.api.controllers.admin.dto.AddBusRequest;
+import com.example.api.controllers.admin.dto.BusManipulateParam;
 import com.example.api.controllers.admin.dto.DeleteBusRequest;
 import com.example.api.controllers.admin.dto.UpdateBusRequest;
 import com.example.api.services.bus.BusService;
@@ -74,4 +75,14 @@ public class BusController {
             busService.getAvailableBuses(role, numberPlate)
         );
     }
+
+    @GetMapping("/manipulate")
+    public ResponseEntity<CommonResponse<Object>> getListManipulateBus(
+        BusManipulateParam param
+        ) {
+        return ResponseUtil.toSuccessCommonResponse(
+            busService.getListManipulateBus(param)
+        );
+    }
+
 }

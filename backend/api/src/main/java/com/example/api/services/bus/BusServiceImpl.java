@@ -1,17 +1,25 @@
 package com.example.api.services.bus;
 
+import com.example.api.controllers.admin.dto.BusManipulateParam;
 import com.example.api.services.bus.dto.GetListBusOutput;
+import com.example.api.services.bus.dto.GetListManipulateBusOutPut;
 import com.example.api.services.bus.dto.ListBusFilterParam;
 import com.example.api.services.bus.dto.AddBusInput;
 import com.example.api.services.bus.dto.UpdateBusInput;
 import com.example.shared.db.dto.GetListBusDTO;
 import com.example.shared.db.entities.Bus;
 import com.example.shared.db.entities.Employee;
+import com.example.shared.db.entities.Ride;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.EmployeeRepository;
+import com.example.shared.db.repo.PickupPointRepository;
+import com.example.shared.db.repo.RidePickupPointRepository;
+import com.example.shared.db.repo.RideRepository;
 import com.example.shared.enumeration.BusStatus;
 import com.example.shared.enumeration.EmployeeRole;
+import com.example.shared.enumeration.RideStatus;
 import com.example.shared.exception.MyException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class BusServiceImpl implements BusService {
     private final BusRepository busRepository;
     private final EmployeeRepository employeeRepository;
+    private final RideRepository rideRepository;
+    private final PickupPointRepository pickupPointRepository;
+    private final RidePickupPointRepository ridePickupPointRepository;
 
     @Override
     public Page<GetListBusOutput> getListBus(ListBusFilterParam filterParam, Pageable pageable) {
@@ -211,6 +222,32 @@ public class BusServiceImpl implements BusService {
     @Override
     public List<Bus> getAvailableBuses(EmployeeRole role, String query) {
         return busRepository.getAvailableBuses((role != null) ? role.toString() : null, query);
+    }
+
+    @Override
+    public List<GetListManipulateBusOutPut> getListManipulateBus(BusManipulateParam param) {
+        List<GetListManipulateBusOutPut> result = new ArrayList<>();
+
+        List<Bus> buses = busRepository.findAll();
+        for (Bus bus : buses) {
+            List<Ride> rides = rideRepository.findByBusIdAndStatus(bus.getId(), RideStatus.PENDING);
+
+            if (rides.size() > 1) {
+                throw new MyException(null,
+                    "BUS_HAS_MULTIPLE_PENDING_RIDES",
+                    "Bus with id " + bus.getId() + " has multiple pending rides",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            Ride ride = rides.isEmpty() ? null : rides.get(0);
+            result.add(GetListManipulateBusOutPut.builder()
+                .bus(bus)
+                .ride(ride)
+                .pickupPoints(ride == null ? null : pickupPointRepository.findByRideId(ride.getId()))
+                .build());
+        }
+
+        return result;
     }
 
 }

@@ -1,6 +1,8 @@
 package com.example.api.services.bus;
 
+import com.example.api.controllers.admin.dto.BusManipulateParam;
 import com.example.api.services.bus.dto.GetListBusOutput;
+import com.example.api.services.bus.dto.GetListManipulateBusOutPut;
 import com.example.api.services.bus.dto.ListBusFilterParam;
 import com.example.api.services.bus.dto.AddBusInput;
 import com.example.api.services.bus.dto.UpdateBusInput;
@@ -20,4 +22,6 @@ public interface BusService {
     void deleteBus(Long id);
 
     List<Bus> getAvailableBuses(EmployeeRole role, String numberPlate);
+
+    List<GetListManipulateBusOutPut> getListManipulateBus(BusManipulateParam param);
 }

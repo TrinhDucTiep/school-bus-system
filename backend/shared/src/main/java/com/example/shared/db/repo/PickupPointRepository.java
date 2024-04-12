@@ -2,6 +2,7 @@ package com.example.shared.db.repo;
 
 import com.example.shared.db.dto.GetListPickupPointDTO;
 import com.example.shared.db.entities.PickupPoint;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,12 @@ public interface PickupPointRepository extends JpaRepository<PickupPoint, Long> 
     );
 
     boolean existsByAddress(String address);
+
+    @Query("""
+    SELECT p
+    FROM PickupPoint p
+    JOIN RidePickupPoint rp ON p.id = rp.pickupPoint.id
+    WHERE rp.ride.id = :rideId
+    """)
+    List<PickupPoint> findByRideId(Long rideId);
 }
