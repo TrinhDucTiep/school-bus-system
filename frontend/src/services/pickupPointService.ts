@@ -15,6 +15,18 @@ export const useGetListPickupPoint = (params: IGetListPickupPointParams) => {
     });
 };
 
+const getListStudentPickupPointClient = async (params: IGetListPickupPointParams) => {
+    const response = await apiClient.get<ICommonResponse<Page<IStudentPickupPoint>>>('/api/v1/client/pickup-point/pagination', { params });
+    return response.data;
+}
+export const useGetListStudentPickupPointClient = (params: IGetListPickupPointParams) => {
+    return useQuery<ICommonResponse<Page<IStudentPickupPoint>>, AxiosError>({
+        queryKey: ['getListPickupPointClient', params],
+        queryFn: () => getListStudentPickupPointClient(params)
+    });
+};
+
+
 const createPickupPoint = async (data: IPickupPoint) => {
     const response = await apiClient.post<ICommonResponse<IPickupPoint>>('/api/v1/admin/pickup-point', data);
     return response.data;
