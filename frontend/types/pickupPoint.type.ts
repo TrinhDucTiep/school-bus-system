@@ -11,6 +11,12 @@ interface IPickupPointTable {
     rides: IRide[];
 }
 
+interface IStudentPickupPoint {
+    pickupPoint: IPickupPoint;
+    student: IStudent;
+    parent: IParent;
+}
+
 interface IGetListPickupPointParams {
     address?: string;
 }

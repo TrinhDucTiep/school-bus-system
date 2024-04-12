@@ -8,6 +8,7 @@ import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/m
 import _ from 'lodash';
 import LocationIcon from '@/components/icons/location-icon';
 import { useGetListStudentClient } from '@/services/client/clientAccountService';
+import { useGetListPickupPoint, useGetListStudentPickupPointClient } from '@/services/pickupPointService';
 
 
 
@@ -21,18 +22,8 @@ const ClientRegistration: React.FC = () => {
         }
     }
     const debounceSetAutoCompleteQuery = _.debounce((value: string) => setAutoCompleteQuery(value), 500);
-    const { data: studentList, isLoading: studentListLoading, error: studentListError } = useGetListStudentClient({
-        id: null,
-        name: null,
-        dob: null,
-        phoneNumber: null,
-        studentClass: null,
-        parent_id: null,
-        page: null,
-        size: null,
-        sort: null,
-        sortBy: null
-    });
+    const { data: pickupPointData, isLoading: pickupPointLoading, error: pickupPointError } =
+    useGetListStudentPickupPointClient({});
     const { data: autoCompleteData, isLoading: autoCompleteLoading, error: autoCompleteError } = useGetAutoComplete(autoCompleteParams);
 
     const useGetDirectionsParams: IDirectionsParams = {
@@ -72,12 +63,12 @@ const ClientRegistration: React.FC = () => {
                                 <TableColumn>Lớp</TableColumn>
 
                             </TableHeader>
-                            <TableBody items={studentList?.result.content || []}
+                            <TableBody items={pickupPointData?.result.content || []}
                                 emptyContent={"No rows to display."}>
                                 {(item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>{item.name}</TableCell>
-                                        <TableCell>{item.studentClass}</TableCell>
+                                    <TableRow key={item?.student?.id}>
+                                        <TableCell>{item?.student?.name}</TableCell>
+                                        <TableCell>{item?.student?.studentClass}</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>

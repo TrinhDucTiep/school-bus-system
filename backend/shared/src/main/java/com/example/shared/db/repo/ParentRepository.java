@@ -2,6 +2,7 @@ package com.example.shared.db.repo;
 
 import com.example.shared.db.dto.GetParentAndChildDTO;
 import com.example.shared.db.entities.Parent;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,5 +42,5 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
             from Parent p
             where p.account.id = :accountId
         """)
-    Parent findByAccountId(Long accountId);
+    Optional<Parent> findByAccountId(Long accountId);
 }

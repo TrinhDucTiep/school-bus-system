@@ -64,11 +64,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Page<StudentSearchOutput> searchStudents(StudentSearchInput input, Account account) {
-        Parent parent = parentRepository.findByAccountId(account.getId());
-        if (parent == null) {
-            throw new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
-                HttpStatus.BAD_REQUEST);
-        }
+        Parent parent = parentRepository.findByAccountId(account.getId())
+            .orElseThrow(() -> new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
+                HttpStatus.BAD_REQUEST));
+
         StudentSearchInput newInput = StudentSearchInput.builder()
             .id(input.getId())
             .name(input.getName())
@@ -102,11 +101,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public ParentDetailOutput getParentDetail(Account account) {
-        Parent parent = parentRepository.findByAccountId(account.getId());
-        if (parent == null) {
-            throw new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
-                HttpStatus.BAD_REQUEST);
-        }
+        Parent parent = parentRepository.findByAccountId(account.getId())
+            .orElseThrow(() -> new MyException(null, "PARENT_NOT_FOUND", "Parent not found",
+                HttpStatus.BAD_REQUEST));
         return getParentDetail(parent.getId());
     }
 

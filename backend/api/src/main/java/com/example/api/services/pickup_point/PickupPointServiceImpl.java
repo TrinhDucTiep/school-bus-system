@@ -2,10 +2,15 @@ package com.example.api.services.pickup_point;
 
 import com.example.api.controllers.admin.dto.PickupPointFilterParam;
 import com.example.api.services.pickup_point.dto.AddPickupPointInput;
+import com.example.api.services.pickup_point.dto.GetStudentPickupPointOutput;
 import com.example.api.services.pickup_point.dto.GetListPickupPointOutput;
 import com.example.api.services.pickup_point.dto.UpdatePickupPointInput;
 import com.example.shared.db.dto.GetListPickupPointDTO;
+import com.example.shared.db.dto.GetStudentPickupPointDTO;
+import com.example.shared.db.entities.Account;
+import com.example.shared.db.entities.Parent;
 import com.example.shared.db.entities.PickupPoint;
+import com.example.shared.db.repo.ParentRepository;
 import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
 import com.example.shared.db.repo.RoutePickupPointRepository;
@@ -27,6 +32,7 @@ public class PickupPointServiceImpl implements PickupPointService {
     private final StudentPickupPointRepository studentPickupPointRepository;
     private final RidePickupPointRepository ridePickupPointRepository;
     private final RoutePickupPointRepository routePickupPointRepository;
+    private final ParentRepository parentRepository;
 
     @Override
     public Page<GetListPickupPointOutput> getListPickupPoint(PickupPointFilterParam filterParam,
@@ -38,9 +44,27 @@ public class PickupPointServiceImpl implements PickupPointService {
     }
 
     @Override
+    public Page<GetStudentPickupPointOutput> getListStudentPickupPoint(Account account, Pageable pageable) {
+        Parent parent = parentRepository.findByAccountId(account.getId())
+            .orElseThrow(() -> new MyException(
+                null,
+                "PARENT_NOT_FOUND",
+                "Parent with account id " + account.getId() + " not found",
+                HttpStatus.NOT_FOUND
+            ));
+
+        Page<GetStudentPickupPointDTO> pickupPointPage = pickupPointRepository.getListStudentPickupPointByParentId(
+            parent.getId(),
+            pageable
+        );
+        return pickupPointPage.map(GetStudentPickupPointOutput::fromDto);
+    }
+
+    @Override
     @Transactional
     public void addPickupPoint(AddPickupPointInput input) {
-        if (input.getAddress() == null || input.getLatitude() == null || input.getLongitude() == null) {
+        if (input.getAddress() == null || input.getLatitude() == null ||
+            input.getLongitude() == null) {
             throw new MyException(
                 null,
                 "INVALID_INPUT",

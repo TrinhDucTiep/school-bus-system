@@ -2,6 +2,7 @@ package com.example.api.services.request_registration;
 
 import com.example.api.controllers.client.dto.StudentAddress;
 import com.example.api.services.request_registration.dto.CreateRequestInput;
+import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Parent;
 import com.example.shared.db.entities.RequestRegistration;
 import com.example.shared.db.entities.Student;
@@ -27,8 +28,9 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
 
     @Override
     @Transactional
-    public void upsertRegistration(CreateRequestInput input) {
-        Parent parent = parentRepository.findById(input.getParentId()).orElseThrow(
+    public void upsertRegistration(CreateRequestInput input, Account account) {
+
+        Parent parent = parentRepository.findByAccountId(account.getId()).orElseThrow(
             () -> new MyException(
                 null,
                 "PARENT_NOT_FOUND",
