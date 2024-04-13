@@ -29,8 +29,10 @@ export const ChangeView: FC<ChangeViewProps> = ({ coords }) => {
 interface MapProps {
     autoCompletePoint: IFeature | null;
     pickupPoints: IPickupPointTable[];
-    directionsGetResponse: IDirectionsGetResponse | undefined;
+    manipulatePickupPointsDirections: IDirectionsGetResponse | undefined;
     enableClickMap: boolean;
+    manipulatePickupPoints: IPickupPoint[];
+    setManipulatePickupPoints: React.Dispatch<React.SetStateAction<IPickupPoint[]>>;
 }
 
 interface ClickMapComponentProps {
@@ -60,7 +62,7 @@ function MapEvents() {
     return null;
 }
 
-export default function MapAdmin({ autoCompletePoint, pickupPoints, directionsGetResponse, enableClickMap }: MapProps) {
+export default function MapAdmin({ autoCompletePoint, pickupPoints, manipulatePickupPointsDirections, enableClickMap, manipulatePickupPoints, setManipulatePickupPoints }: MapProps) {
     const zoomRef = useRef<number>(12);
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
 
@@ -86,6 +88,16 @@ export default function MapAdmin({ autoCompletePoint, pickupPoints, directionsGe
                     key={index}
                     position={{ lat: pickupPointTable.pickupPoint.latitude, lng: pickupPointTable.pickupPoint.longitude }} //todo: add detail onclick later when having enough data from client flow
                     icon={locationIcon}
+                    eventHandlers={{
+                        click: () => {
+                            if (manipulatePickupPoints.some(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id)) {
+                                const index = manipulatePickupPoints.findIndex(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id);
+                                setManipulatePickupPoints(manipulatePickupPoints.slice(0, index + 1));
+                            } else {
+                                setManipulatePickupPoints([...manipulatePickupPoints, pickupPointTable.pickupPoint]);
+                            }
+                        }
+                    }}
                 />
             ))}
 
@@ -102,13 +114,15 @@ export default function MapAdmin({ autoCompletePoint, pickupPoints, directionsGe
 
             {enableClickMap && <ClickMapComponent geoData={geoData} setGeoData={setGeoData} />}
 
-            {directionsGetResponse?.routes.map((route, routeIndex) => {
+            {manipulatePickupPointsDirections?.routes.map((route, routeIndex) => {
                 const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]);
 
                 return (
                     <Polyline
                         key={`route-${routeIndex}`}
                         positions={decodedPolyline}
+                        color="#910322"
+                        weight={6}
                     />
                 );
             })}

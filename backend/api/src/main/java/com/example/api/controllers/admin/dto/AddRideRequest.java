@@ -17,8 +17,8 @@ public class AddRideRequest {
     public AddRideInput toInput() {
         return AddRideInput.builder()
                 .busId(busId)
-                .startAt(DateConvertUtil.convertStringToInstant(startAt))
-                .endAt(DateConvertUtil.convertStringToInstant(endAt))
+                .startAt(DateConvertUtil.convertStringTimeStampToInstant(startAt))
+                .endAt(DateConvertUtil.convertStringTimeStampToInstant(endAt))
                 .startFrom(startFrom)
                 .pickupPointIds(pickupPointIds)
                 .build();

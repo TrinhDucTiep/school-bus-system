@@ -1,9 +1,9 @@
 package com.example.api.services.pickup_point.dto;
 
+import com.example.api.services.common_dto.PickupPointOutput;
+import com.example.api.services.common_dto.RideOutput;
+import com.example.api.services.common_dto.StudentOutput;
 import com.example.shared.db.dto.GetListPickupPointDTO;
-import com.example.shared.db.entities.PickupPoint;
-import com.example.shared.db.entities.Ride;
-import com.example.shared.db.entities.Student;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -11,15 +11,22 @@ import lombok.Data;
 @Data
 @Builder
 public class GetListPickupPointOutput {
-    private PickupPoint pickupPoint;
-    private List<Student> students;
-    private List<Ride> rides;
+    private PickupPointOutput pickupPoint;
+    private List<StudentOutput> students;
+    private List<RideOutput> rides;
+
 
     public static GetListPickupPointOutput fromDto(GetListPickupPointDTO dto) {
         return GetListPickupPointOutput.builder()
-            .pickupPoint(dto.getPickupPoint())
-            .students(dto.getStudents())
-            .rides(dto.getRides())
+            .pickupPoint(PickupPointOutput.fromEntity(dto.getPickupPoint()))
+            .students(
+                (dto.getStudents() == null) ? null :
+                    dto.getStudents().stream().map(StudentOutput::fromEntity).toList()
+            )
+            .rides(
+                (dto.getRides() == null) ? null :
+                    dto.getRides().stream().map(RideOutput::fromEntity).toList()
+            )
             .build();
     }
 }

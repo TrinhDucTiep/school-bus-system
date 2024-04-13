@@ -6,12 +6,15 @@ import com.example.shared.db.entities.Bus;
 import com.example.shared.db.entities.PickupPoint;
 import com.example.shared.db.entities.Ride;
 import com.example.shared.db.entities.RidePickupPoint;
+import com.example.shared.db.entities.RidePickupPointHistory;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RideHistoryRepository;
+import com.example.shared.db.repo.RidePickupPointHistoryRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
 import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
+import com.example.shared.enumeration.RidePickupPointStatus;
 import com.example.shared.enumeration.RideStatus;
 import com.example.shared.exception.MyException;
 import java.util.List;
@@ -31,10 +34,36 @@ public class RideServiceImpl implements RideService {
     private final PickupPointRepository pickupPointRepository;
     private final StudentPickupPointRepository studentPickupPointRepository;
     private final RideHistoryRepository rideHistoryRepository;
+    private final RidePickupPointHistoryRepository ridePickupPointHistoryRepository;
 
     @Override
     @Transactional
     public void addRide(AddRideInput addRideInput) {
+        // validate input
+        if (addRideInput.getBusId() == null || addRideInput.getStartFrom() == null || addRideInput.getStartAt() == null || addRideInput.getPickupPointIds() == null) {
+            throw new MyException(
+                null,
+                "missing_required_fields",
+                "Missing required fields",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+        if (addRideInput.getPickupPointIds().isEmpty()) {
+            throw new MyException(
+                null,
+                "pickup_point_required",
+                "Pickup points are required",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+        if (addRideInput.getEndAt() != null && addRideInput.getStartAt().isAfter(addRideInput.getEndAt())) {
+            throw new MyException(
+                null,
+                "invalid_time",
+                "Start time must be before end time",
+                HttpStatus.BAD_REQUEST
+            );
+        }
         // validate bus
         Bus bus = busRepository.findById(addRideInput.getBusId())
                 .orElseThrow(() -> new MyException(
@@ -68,10 +97,22 @@ public class RideServiceImpl implements RideService {
 
         // save ride pickup points
         pickupPoints.forEach(pickupPoint -> {
-            ridePickupPointRepository.save(
+            RidePickupPoint ridePickupPoint = ridePickupPointRepository.save(
                 RidePickupPoint.builder()
                     .ride(ride)
                     .pickupPoint(pickupPoint)
+                    .status(RidePickupPointStatus.PICKING)
+                    .build()
+            );
+            ridePickupPointHistoryRepository.save(
+                RidePickupPointHistory.builder()
+                    .ridePickupPointId(ridePickupPoint.getId())
+                    .rideId(ride.getId())
+                    .pickupPointId(pickupPoint.getId())
+                    .status(RidePickupPointStatus.PICKING)
+                    .address(pickupPoint.getAddress())
+                    .latitude(pickupPoint.getLatitude())
+                    .longitude(pickupPoint.getLongitude())
                     .build()
             );
         });

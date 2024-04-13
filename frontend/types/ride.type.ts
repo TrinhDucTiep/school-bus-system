@@ -8,3 +8,11 @@ interface IRide {
     createdAt: string;
     updatedAt: string;
 }
+
+interface IAddRideRequest {
+    busId: number | null;
+    startAt: string | null;
+    endAt: string | null;
+    startFrom: string | null;
+    pickupPointIds: number[] | null;
+}

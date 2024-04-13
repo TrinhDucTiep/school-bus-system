@@ -28,3 +28,13 @@ interface IBusTable {
     size: number | null;
     sort: string | null;
   }
+
+  interface IGetListManipulateBusParams {
+
+  }
+
+  interface IManipulateBus {
+    bus: IBus;
+    ride: IRide;
+    pickupPoints: IPickupPoint[];
+  }

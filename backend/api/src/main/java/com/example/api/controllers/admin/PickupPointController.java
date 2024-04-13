@@ -34,7 +34,7 @@ public class PickupPointController {
         Pageable pageable = PageableUtils.generate(page, size, sort);
 
         return ResponseUtil.toSuccessCommonResponse(
-                pickupPointService.getListPickupPoint(filterParam, pageable)
+            pickupPointService.getListPickupPoint(filterParam, pageable)
         );
     }
 

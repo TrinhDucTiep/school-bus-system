@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -228,7 +229,8 @@ public class BusServiceImpl implements BusService {
     public List<GetListManipulateBusOutPut> getListManipulateBus(BusManipulateParam param) {
         List<GetListManipulateBusOutPut> result = new ArrayList<>();
 
-        List<Bus> buses = busRepository.findAll();
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        List<Bus> buses = busRepository.findAll(sort);
         for (Bus bus : buses) {
             List<Ride> rides = rideRepository.findByBusIdAndStatus(bus.getId(), RideStatus.PENDING);
 

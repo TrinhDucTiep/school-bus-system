@@ -44,6 +44,10 @@ export const useGetSearch = (params: ISearchParams) => {
 
 // directions
 const getDirections = async (data: IDirectionsParams) => {
+    // check has at least 2 points
+    if (data.coordinates.length < 2) {
+        return { routes: [] };
+    }
     const response = await apiMap.post<IDirectionsGetResponse>('/v2/directions/driving-car', data);
     return response.data;
 }
