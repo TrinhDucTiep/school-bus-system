@@ -1,11 +1,16 @@
 import React, { useState, useEffect, FC, RefObject, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import polyline from 'polyline';
 
 const locationIcon = L.icon({
     iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+    iconSize: [38, 38],
+});
+
+const manipulateLocationIcon = L.icon({
+    iconUrl: 'https://cdn4.iconfinder.com/data/icons/BRILLIANT/transportation/png/256/school_bus.png',
     iconSize: [38, 38],
 });
 
@@ -62,7 +67,16 @@ function MapEvents() {
     return null;
 }
 
-export default function MapAdmin({ autoCompletePoint, pickupPoints, manipulatePickupPointsDirections, enableClickMap, manipulatePickupPoints, setManipulatePickupPoints }: MapProps) {
+export default function MapAdmin(
+    {
+        autoCompletePoint,
+        pickupPoints,
+        manipulatePickupPointsDirections,
+        enableClickMap,
+        manipulatePickupPoints,
+        setManipulatePickupPoints
+    }: MapProps
+) {
     const zoomRef = useRef<number>(12);
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
 
@@ -87,7 +101,9 @@ export default function MapAdmin({ autoCompletePoint, pickupPoints, manipulatePi
                 <Marker
                     key={index}
                     position={{ lat: pickupPointTable.pickupPoint.latitude, lng: pickupPointTable.pickupPoint.longitude }} //todo: add detail onclick later when having enough data from client flow
-                    icon={locationIcon}
+                    icon={
+                        manipulatePickupPoints.some(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id) ? manipulateLocationIcon : locationIcon
+                    }
                     eventHandlers={{
                         click: () => {
                             if (manipulatePickupPoints.some(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id)) {
@@ -119,6 +135,10 @@ export default function MapAdmin({ autoCompletePoint, pickupPoints, manipulatePi
 
             {manipulatePickupPointsDirections?.routes.map((route, routeIndex) => {
                 const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]);
+                const distance = (route.summary.distance / 1000).toFixed(2); // convert distance to km
+                const durationInSeconds = route.summary.duration;
+                const hours = Math.floor(durationInSeconds / 3600);
+                const minutes = Math.floor((durationInSeconds % 3600) / 60);
 
                 return (
                     <Polyline
@@ -126,7 +146,19 @@ export default function MapAdmin({ autoCompletePoint, pickupPoints, manipulatePi
                         positions={decodedPolyline}
                         color="#910322"
                         weight={6}
-                    />
+                        eventHandlers={{
+                            mouseover: (e) => {
+                                e.target.openTooltip();
+                            },
+                            mouseout: (e) => {
+                                e.target.closeTooltip();
+                            },
+                        }}
+                    >
+                        <Tooltip permanent>
+                            {`Khoảng cách: ${distance} km, Thời gian: ${hours > 0 ? `${hours} giờ ` : ''}${minutes} phút`}
+                        </Tooltip>
+                    </Polyline>
                 );
             })}
 
