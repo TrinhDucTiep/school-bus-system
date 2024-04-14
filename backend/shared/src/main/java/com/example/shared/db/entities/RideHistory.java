@@ -48,6 +48,9 @@ public class RideHistory {
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
+    @Column(name = "is_to_school")
+    private Boolean isToSchool;
+
     @CreatedDate
     @CreationTimestamp
     private Instant createdAt;

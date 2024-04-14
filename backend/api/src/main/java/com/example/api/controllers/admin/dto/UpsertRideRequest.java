@@ -12,6 +12,7 @@ public class UpsertRideRequest {
     private String startAt;
     private String endAt;
     private String startFrom;
+    private Boolean isToSchool;
 
     private List<Long> pickupPointIds;
 
@@ -23,6 +24,7 @@ public class UpsertRideRequest {
                 .endAt(DateConvertUtil.convertStringTimeStampToInstant(endAt))
                 .startFrom(startFrom)
                 .pickupPointIds(pickupPointIds)
+                .isToSchool(isToSchool)
                 .build();
     }
 }

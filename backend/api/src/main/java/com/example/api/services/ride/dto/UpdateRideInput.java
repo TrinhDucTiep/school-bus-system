@@ -6,6 +6,9 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Dont allow to update isToSchool field
+ */
 @Data
 @Builder
 public class UpdateRideInput {

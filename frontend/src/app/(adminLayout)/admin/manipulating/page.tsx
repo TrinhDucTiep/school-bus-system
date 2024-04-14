@@ -1,7 +1,7 @@
 "use client";
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SearchIcon } from '@/components/icons/searchicon';
-import { Autocomplete, AutocompleteItem, Button, Input, Table, TableHeader, TableColumn, TableRow, TableCell, TableBody, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Button, Input, Table, TableHeader, TableColumn, TableRow, TableCell, TableBody, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Switch } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/mapService';
@@ -41,17 +41,13 @@ const ManipulatingPage: React.FC = () => {
     }
     const { data: listPickupPoint, isLoading: listPickupPointLoading, error: listPickupPointError } = useGetListPickupPoint(pickupPointParams);
 
-    // get list manipulate bus
-    let manipulateBusParams: IGetListManipulateBusParams = {
-    }
-    const { data: listManipulateBus, isLoading: listManipulateBusLoading, error: listManipulateBusError } = useGetListManipulateBus(manipulateBusParams);
-
     // form to create a ride with pickup points
     const [manipulateRideId, setManipulateRideId] = React.useState<number | null>(null);
     const [manipulateBusId, setManipulateBusId] = React.useState<number | null>(null);
     const [manipulateStartAt, setManipulateStartAt] = React.useState<string | null>(null);
     const [manipulateStartFrom, setManipulateStartFrom] = React.useState<string | null>(null);
     const [manipulatePickupPoints, setManipulatePickupPoints] = React.useState<IPickupPoint[]>([]);
+    const [manipulateIsToSchool, setManipulateIsToSchool] = React.useState<boolean>(true);
     const { isOpen: isOpenAddRideConfirm, onOpen: onOpenAddRideConfirm, onOpenChange: onOpenChangeAddRideConfirm } = useDisclosure();
 
     let addRideRequest: IUpsertRideRequest = {
@@ -60,7 +56,8 @@ const ManipulatingPage: React.FC = () => {
         startAt: manipulateStartAt,
         endAt: null,
         startFrom: manipulateStartFrom,
-        pickupPointIds: manipulatePickupPoints.map((item) => item.id)
+        pickupPointIds: manipulatePickupPoints.map((item) => item.id),
+        isToSchool: manipulateIsToSchool
     }
     const addRideMutation = useAddRide(() => {
         setManipulateRideId(null);
@@ -73,6 +70,16 @@ const ManipulatingPage: React.FC = () => {
     const handleAddRide = () => {
         addRideMutation.mutate(addRideRequest);
     }
+
+    // get list manipulate bus
+    // const [manipulateDate, setManipulateDate] = React.useState<string>((new Date()).toISOString());
+    const [manipulateDate, setManipulateDate] = React.useState(new Date().toISOString().split('T')[0]);
+    let manipulateBusParams: IGetListManipulateBusParams = {
+        isToSchool: manipulateIsToSchool,
+        date: manipulateDate
+    }
+    const { data: listManipulateBus, isLoading: listManipulateBusLoading, error: listManipulateBusError } = useGetListManipulateBus(manipulateBusParams);
+
     // search manipulate pickup points direction
     const useGetManipulatePickupPointsDirectionsParams: IDirectionsParams = {
         coordinates: manipulatePickupPoints.map((item) => [item.longitude, item.latitude])
@@ -135,7 +142,26 @@ const ManipulatingPage: React.FC = () => {
                         }
                     </Autocomplete>
 
-                    <div className='flex justify-end'>
+                    <div className='flex justify-between'>
+                        <Switch
+                            className='mx-2'
+                            isSelected={manipulateIsToSchool}
+                            color='primary'
+                            onClick={() => setManipulateIsToSchool(!manipulateIsToSchool)}
+                        >
+                            {manipulateIsToSchool ? 'Đi học' : 'Về nhà'}
+                        </Switch>
+
+                        <Input
+                            placeholder="Ngày"
+                            type='date'
+                            className='m-2 w-1/3'
+                            variant='bordered'
+                            size='sm'
+                            onChange={(e) => setManipulateDate(e.target.value)}
+                            defaultValue={convertStringInstantToDate(manipulateDate)}
+                        />
+
                         <Button
                             color={enableClickMap ? 'primary' : 'default'}
                             onClick={() => setEnableClickMap(!enableClickMap)}
@@ -182,6 +208,7 @@ const ManipulatingPage: React.FC = () => {
                     <div className='mx-2'>
                         <Input
                             placeholder="Thời gian khởi hành"
+                            label='Thời gian khởi hành'
                             type='datetime-local'
                             className='m-2'
                             variant='bordered'
@@ -194,6 +221,7 @@ const ManipulatingPage: React.FC = () => {
                         />
                         <Input
                             placeholder="Địa điểm xuất phát"
+                            label='Địa điểm xuất phát'
                             className='m-2'
                             variant='bordered'
                             onChange={(e) => setManipulateStartFrom(e.target.value)}

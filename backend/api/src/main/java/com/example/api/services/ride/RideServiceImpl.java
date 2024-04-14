@@ -39,7 +39,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     @Transactional
-    public void upsertRide(UpsertRideInput upsertRideInput) {//todo: thiếu thứ tự, thiếu invalidate query, thiếu highlight, thiếu more info in map, thiếu summary
+    public void upsertRide(UpsertRideInput upsertRideInput) {
         // validate input
         if (upsertRideInput.getBusId() == null || upsertRideInput.getStartFrom() == null || upsertRideInput.getStartAt() == null || upsertRideInput.getPickupPointIds() == null) {
             throw new MyException(
@@ -107,6 +107,24 @@ public class RideServiceImpl implements RideService {
             }
         }
 
+        // validate that a bus only has one pending ride at a time (to school or from school)
+        List<Ride> rides = rideRepository.findByManipulateRide(
+            bus.getId(),
+            RideStatus.PENDING,
+            upsertRideInput.getIsToSchool(),
+            upsertRideInput.getStartAt()
+        );
+        if (rides.size() == 1) {
+            if (upsertRideInput.getId() == null || !rides.get(0).getId().equals(upsertRideInput.getId())) {
+                throw new MyException(
+                    null,
+                    "bus_already_had_pending_ride",
+                    "Bus already had pending ride",
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+        }
+
         // save ride
         Ride ride = rideRepository.save(
             Ride.builder()
@@ -116,6 +134,7 @@ public class RideServiceImpl implements RideService {
             .endAt(upsertRideInput.getEndAt())
             .startFrom(upsertRideInput.getStartFrom())
             .status(RideStatus.PENDING)
+            .isToSchool(upsertRideInput.getIsToSchool())
             .build()
         );
         rideHistoryRepository.save(ride.toRideHistory());

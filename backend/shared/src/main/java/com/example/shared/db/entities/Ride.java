@@ -47,6 +47,9 @@ public class Ride {
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
+    @Column(name = "is_to_school", columnDefinition = "boolean default true")
+    private Boolean isToSchool;
+
     @CreatedDate
     @CreationTimestamp
     private Instant createdAt;
@@ -62,6 +65,7 @@ public class Ride {
             .endAt(this.endAt)
             .startFrom(this.startFrom)
             .status(this.status)
+            .isToSchool(this.isToSchool)
             .build();
     }
 }
