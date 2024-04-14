@@ -16,4 +16,5 @@ interface IUpsertRideRequest {
     endAt: string | null;
     startFrom: string | null;
     pickupPointIds: number[] | null;
+    isToSchool: boolean;
 }

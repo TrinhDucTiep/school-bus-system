@@ -19,6 +19,7 @@ import com.example.shared.enumeration.BusStatus;
 import com.example.shared.enumeration.EmployeeRole;
 import com.example.shared.enumeration.RideStatus;
 import com.example.shared.exception.MyException;
+import com.example.shared.utils.DateConvertUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -232,12 +233,20 @@ public class BusServiceImpl implements BusService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         List<Bus> buses = busRepository.findAll(sort);
         for (Bus bus : buses) {
-            List<Ride> rides = rideRepository.findByBusIdAndStatus(bus.getId(), RideStatus.PENDING);
+//            List<Ride> rides = rideRepository.findByBusIdAndStatus(bus.getId(), RideStatus.PENDING);
+            List<Ride> rides = rideRepository.findByManipulateRide(
+                bus.getId(),
+                RideStatus.PENDING,
+                param.getIsToSchool(),
+                DateConvertUtil.convertStringToInstant(param.getDate())
+            );
 
             if (rides.size() > 1) {
                 throw new MyException(null,
-                    "BUS_HAS_MULTIPLE_PENDING_RIDES",
-                    "Bus with id " + bus.getId() + " has multiple pending rides",
+                    "MULTIPLE_PENDING_RIDES",
+                    "Multiple pending rides found for bus with id " + bus.getId()
+                        + " on date " + param.getDate()
+                        + " and isToSchool " + param.getIsToSchool(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
             }
 

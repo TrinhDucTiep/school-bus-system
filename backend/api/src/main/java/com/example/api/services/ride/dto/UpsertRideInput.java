@@ -13,6 +13,7 @@ public class UpsertRideInput {
     private Instant startAt;
     private Instant endAt;
     private String startFrom;
+    private Boolean isToSchool;
 
     private List<Long> pickupPointIds;
 }
