@@ -5,17 +5,18 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 // add ride
-export const addRide = async (data: IAddRideRequest) => {
-    const response = await apiClient.post('/api/v1/admin/ride', data);
+export const addRide = async (data: IUpsertRideRequest) => {
+    const response = await apiClient.post('/api/v1/admin/ride/upsert', data);
     return response.data;
 }
 export const useAddRide = (callback: any) => {
     return useMutation(
         {
-            mutationFn: (data: IAddRideRequest) => addRide(data),
+            mutationFn: (data: IUpsertRideRequest) => addRide(data),
             onSuccess: (result) => {
                 callback();
-                queryClient.invalidateQueries({ queryKey: ['rideList'] });
+                queryClient.invalidateQueries({ queryKey: ['rideList', 'manipulateBusList'] });
+                queryClient.invalidateQueries({ queryKey: ['manipulateBusList'] });
                 toast.success(result.message);
             },
             onError: (error: any) => {

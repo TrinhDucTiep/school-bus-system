@@ -7,7 +7,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AddRideInput {
+public class UpsertRideInput {
+    private Long id;
     private Long busId;
     private Instant startAt;
     private Instant endAt;

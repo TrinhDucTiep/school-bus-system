@@ -2,6 +2,7 @@ package com.example.shared.db.entities;
 
 
 import com.example.shared.enumeration.RidePickupPointStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -40,6 +41,9 @@ public class RidePickupPoint {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pickup_point_id")
     private PickupPoint pickupPoint;
+
+    @Column(name = "order_index")
+    private Integer orderIndex;
 
     @Enumerated(EnumType.STRING)
     private RidePickupPointStatus status;

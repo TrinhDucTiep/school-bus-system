@@ -1,6 +1,6 @@
 package com.example.api.controllers.admin;
 
-import com.example.api.controllers.admin.dto.AddRideRequest;
+import com.example.api.controllers.admin.dto.UpsertRideRequest;
 import com.example.api.controllers.admin.dto.UpdateRideRequest;
 import com.example.api.services.ride.RideService;
 import com.example.shared.response.CommonResponse;
@@ -8,7 +8,6 @@ import com.example.shared.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,11 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class RideController {
     private final RideService rideService;
 
-    @PostMapping()
-    public ResponseEntity<CommonResponse<Object>> addRide(
-            @RequestBody AddRideRequest addRideRequest
+    @PostMapping("/upsert")
+    public ResponseEntity<CommonResponse<Object>> upsertRide(
+            @RequestBody UpsertRideRequest upsertRideRequest
     ) {
-        rideService.addRide(addRideRequest.toInput());
+        rideService.upsertRide(upsertRideRequest.toInput());
 
         return ResponseUtil.toSuccessCommonResponse("Ride added successfully" );
     }

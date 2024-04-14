@@ -1,6 +1,6 @@
 package com.example.api.services.ride;
 
-import com.example.api.services.ride.dto.AddRideInput;
+import com.example.api.services.ride.dto.UpsertRideInput;
 import com.example.api.services.ride.dto.UpdateRideInput;
 import com.example.shared.db.entities.Bus;
 import com.example.shared.db.entities.PickupPoint;
@@ -17,6 +17,7 @@ import com.example.shared.db.repo.StudentPickupPointRepository;
 import com.example.shared.enumeration.RidePickupPointStatus;
 import com.example.shared.enumeration.RideStatus;
 import com.example.shared.exception.MyException;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +39,9 @@ public class RideServiceImpl implements RideService {
 
     @Override
     @Transactional
-    public void addRide(AddRideInput addRideInput) {
+    public void upsertRide(UpsertRideInput upsertRideInput) {//todo: thiếu thứ tự, thiếu invalidate query, thiếu highlight, thiếu more info in map, thiếu summary
         // validate input
-        if (addRideInput.getBusId() == null || addRideInput.getStartFrom() == null || addRideInput.getStartAt() == null || addRideInput.getPickupPointIds() == null) {
+        if (upsertRideInput.getBusId() == null || upsertRideInput.getStartFrom() == null || upsertRideInput.getStartAt() == null || upsertRideInput.getPickupPointIds() == null) {
             throw new MyException(
                 null,
                 "missing_required_fields",
@@ -48,7 +49,7 @@ public class RideServiceImpl implements RideService {
                 HttpStatus.BAD_REQUEST
             );
         }
-        if (addRideInput.getPickupPointIds().isEmpty()) {
+        if (upsertRideInput.getPickupPointIds().isEmpty()) {
             throw new MyException(
                 null,
                 "pickup_point_required",
@@ -56,7 +57,8 @@ public class RideServiceImpl implements RideService {
                 HttpStatus.BAD_REQUEST
             );
         }
-        if (addRideInput.getEndAt() != null && addRideInput.getStartAt().isAfter(addRideInput.getEndAt())) {
+        if (upsertRideInput.getEndAt() != null && upsertRideInput.getStartAt().isAfter(
+            upsertRideInput.getEndAt())) {
             throw new MyException(
                 null,
                 "invalid_time",
@@ -65,17 +67,17 @@ public class RideServiceImpl implements RideService {
             );
         }
         // validate bus
-        Bus bus = busRepository.findById(addRideInput.getBusId())
+        Bus bus = busRepository.findById(upsertRideInput.getBusId())
                 .orElseThrow(() -> new MyException(
                     null,
                     "bus_not_found",
-                    "Bus not found with id: " + addRideInput.getBusId(),
+                    "Bus not found with id: " + upsertRideInput.getBusId(),
                     HttpStatus.BAD_REQUEST
                 ));
 
         // validate pickup points
-        List<PickupPoint> pickupPoints = pickupPointRepository.findAllById(addRideInput.getPickupPointIds());
-        if (pickupPoints.size() != addRideInput.getPickupPointIds().size()) {
+        List<PickupPoint> pickupPoints = pickupPointRepository.findAllById(upsertRideInput.getPickupPointIds());
+        if (pickupPoints.size() != upsertRideInput.getPickupPointIds().size()) {
             throw new MyException(
                 null,
                 "pickup_point_not_found",
@@ -83,24 +85,52 @@ public class RideServiceImpl implements RideService {
                 HttpStatus.BAD_REQUEST
             );
         }
+        // sort to the right order from request
+        pickupPoints.sort(Comparator.comparing(pickupPoint -> upsertRideInput.getPickupPointIds().indexOf(pickupPoint.getId())));
+
+        // validate ride
+        if (upsertRideInput.getId() != null) {
+            Ride ride = rideRepository.findById(upsertRideInput.getId())
+                    .orElseThrow(() -> new MyException(
+                        null,
+                        "ride_not_found",
+                        "Ride not found with id: " + upsertRideInput.getId(),
+                        HttpStatus.BAD_REQUEST
+                    ));
+            if (ride.getStatus() != RideStatus.PENDING) {
+                throw new MyException(
+                    null,
+                    "ride_not_pending_to_update",
+                    "Ride is not pending to update",
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+        }
 
         // save ride
-        Ride ride = Ride.builder()
-                .bus(bus)
-                .startAt(addRideInput.getStartAt())
-                .endAt(addRideInput.getEndAt())
-                .startFrom(addRideInput.getStartFrom())
-                .status(RideStatus.PENDING)
-                .build();
-        rideRepository.save(ride);
+        Ride ride = rideRepository.save(
+            Ride.builder()
+            .id(upsertRideInput.getId())
+            .bus(bus)
+            .startAt(upsertRideInput.getStartAt())
+            .endAt(upsertRideInput.getEndAt())
+            .startFrom(upsertRideInput.getStartFrom())
+            .status(RideStatus.PENDING)
+            .build()
+        );
         rideHistoryRepository.save(ride.toRideHistory());
 
         // save ride pickup points
+        if (upsertRideInput.getId() != null) {
+            ridePickupPointRepository.deleteAllByRideId(upsertRideInput.getId());
+            ridePickupPointHistoryRepository.deleteAllByRideId(upsertRideInput.getId());
+        }
         pickupPoints.forEach(pickupPoint -> {
             RidePickupPoint ridePickupPoint = ridePickupPointRepository.save(
                 RidePickupPoint.builder()
                     .ride(ride)
                     .pickupPoint(pickupPoint)
+                    .orderIndex(pickupPoints.indexOf(pickupPoint))
                     .status(RidePickupPointStatus.PICKING)
                     .build()
             );
@@ -109,6 +139,7 @@ public class RideServiceImpl implements RideService {
                     .ridePickupPointId(ridePickupPoint.getId())
                     .rideId(ride.getId())
                     .pickupPointId(pickupPoint.getId())
+                    .orderIndex(pickupPoints.indexOf(pickupPoint))
                     .status(RidePickupPointStatus.PICKING)
                     .address(pickupPoint.getAddress())
                     .latitude(pickupPoint.getLatitude())
@@ -119,6 +150,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public void updateRide(UpdateRideInput updateRideInput) {
         // validate ride
         Ride ride = rideRepository.findById(updateRideInput.getId())

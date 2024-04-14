@@ -9,7 +9,8 @@ interface IRide {
     updatedAt: string;
 }
 
-interface IAddRideRequest {
+interface IUpsertRideRequest {
+    id: number | null;
     busId: number | null;
     startAt: string | null;
     endAt: string | null;

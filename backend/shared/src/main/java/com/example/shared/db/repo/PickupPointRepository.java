@@ -45,6 +45,7 @@ public interface PickupPointRepository extends JpaRepository<PickupPoint, Long> 
     FROM PickupPoint p
     JOIN RidePickupPoint rp ON p.id = rp.pickupPoint.id
     WHERE rp.ride.id = :rideId
+    ORDER BY rp.orderIndex ASC
     """)
     List<PickupPoint> findByRideId(Long rideId);
 }

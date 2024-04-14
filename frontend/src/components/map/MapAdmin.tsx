@@ -92,7 +92,10 @@ export default function MapAdmin({ autoCompletePoint, pickupPoints, manipulatePi
                         click: () => {
                             if (manipulatePickupPoints.some(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id)) {
                                 const index = manipulatePickupPoints.findIndex(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id);
-                                setManipulatePickupPoints(manipulatePickupPoints.slice(0, index + 1));
+                                if (manipulatePickupPoints.length > 1)
+                                    setManipulatePickupPoints(manipulatePickupPoints.slice(0, index + 1));
+                                else
+                                    setManipulatePickupPoints([]);
                             } else {
                                 setManipulatePickupPoints([...manipulatePickupPoints, pickupPointTable.pickupPoint]);
                             }

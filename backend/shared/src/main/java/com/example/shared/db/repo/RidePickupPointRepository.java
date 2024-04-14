@@ -2,6 +2,7 @@ package com.example.shared.db.repo;
 
 import com.example.shared.db.dto.GetListRidePickupPointDTO;
 import com.example.shared.db.entities.PickupPoint;
+import com.example.shared.db.entities.Ride;
 import com.example.shared.db.entities.RidePickupPoint;
 import com.example.shared.enumeration.RidePickupPointStatus;
 import org.springframework.data.domain.Page;
@@ -32,4 +33,10 @@ public interface RidePickupPointRepository extends JpaRepository<RidePickupPoint
     void deleteAllByPickupPoint(PickupPoint pickupPoint);
 
     boolean existsByRideIdAndPickupPointId(Long rideId, Long pickupPointId);
+
+    // deleteAllByRide
+    void deleteAllByRide(Ride ride);
+
+    // deleteAllByRideId
+    void deleteAllByRideId(Long rideId);
 }

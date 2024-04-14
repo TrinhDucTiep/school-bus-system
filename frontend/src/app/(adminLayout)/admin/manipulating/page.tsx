@@ -11,6 +11,7 @@ import { useGetListPickupPoint } from '@/services/pickupPointService';
 import { useGetListManipulateBus } from '@/services/busService';
 import { useAddRide } from '@/services/rideService';
 import { on } from 'events';
+import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
 
 const ManipulatingPage: React.FC = () => {
 
@@ -46,13 +47,15 @@ const ManipulatingPage: React.FC = () => {
     const { data: listManipulateBus, isLoading: listManipulateBusLoading, error: listManipulateBusError } = useGetListManipulateBus(manipulateBusParams);
 
     // form to create a ride with pickup points
+    const [manipulateRideId, setManipulateRideId] = React.useState<number | null>(null);
     const [manipulateBusId, setManipulateBusId] = React.useState<number | null>(null);
     const [manipulateStartAt, setManipulateStartAt] = React.useState<string | null>(null);
     const [manipulateStartFrom, setManipulateStartFrom] = React.useState<string | null>(null);
     const [manipulatePickupPoints, setManipulatePickupPoints] = React.useState<IPickupPoint[]>([]);
     const { isOpen: isOpenAddRideConfirm, onOpen: onOpenAddRideConfirm, onOpenChange: onOpenChangeAddRideConfirm } = useDisclosure();
 
-    let addRideRequest: IAddRideRequest = {
+    let addRideRequest: IUpsertRideRequest = {
+        id: manipulateRideId,
         busId: manipulateBusId,
         startAt: manipulateStartAt,
         endAt: null,
@@ -60,6 +63,7 @@ const ManipulatingPage: React.FC = () => {
         pickupPointIds: manipulatePickupPoints.map((item) => item.id)
     }
     const addRideMutation = useAddRide(() => {
+        setManipulateRideId(null);
         setManipulateBusId(null);
         setManipulateStartAt(null);
         setManipulateStartFrom(null);
@@ -144,15 +148,16 @@ const ManipulatingPage: React.FC = () => {
                         <Table
                             aria-label="List manipulate bus"
                             selectionMode='single'
-                            // selectedKeys={listManipulateBus?.result.map((item) => item.bus.id) || []}
                             onSelectionChange={(selectedKeys) => {
                                 const keysArray = Array.from(selectedKeys);
                                 const selectedKey = Number(keysArray[0]);
-                                console.log(selectedKey);
 
                                 const selectedManipulateBus = listManipulateBus?.result.find((item) => item.bus.id === selectedKey);
+                                setManipulateRideId(selectedManipulateBus?.ride?.id ?? null);
                                 setManipulateBusId(selectedManipulateBus?.bus.id ?? null);
                                 setManipulatePickupPoints(selectedManipulateBus?.pickupPoints ?? []);
+                                setManipulateStartAt(convertStringInstantToDateTime(listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startAt));
+                                setManipulateStartFrom(selectedManipulateBus?.ride?.startFrom ?? null);
                             }}
                         >
                             <TableHeader columns={[
@@ -181,12 +186,20 @@ const ManipulatingPage: React.FC = () => {
                             className='m-2'
                             variant='bordered'
                             onChange={(e) => setManipulateStartAt(e.target.value)}
+                            value={
+                                (listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startAt) ?
+                                    convertStringInstantToDateTime(listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startAt)
+                                    : undefined
+                            }
                         />
                         <Input
                             placeholder="Địa điểm xuất phát"
                             className='m-2'
                             variant='bordered'
                             onChange={(e) => setManipulateStartFrom(e.target.value)}
+                            value={
+                                listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startFrom ?? undefined
+                            }
                         />
                     </div>
 
