@@ -195,6 +195,12 @@ export default function MapAdmin(
                 return (
                     <>
                         <Polyline
+                            key={`route-border-${routeIndex}`}
+                            positions={decodedPolyline}
+                            color="blue" // Border color
+                            weight={8} // Border width
+                        />
+                        <Polyline
                             key={`route-${routeIndex}`}
                             positions={decodedPolyline}
                             color="#910322"
@@ -206,17 +212,6 @@ export default function MapAdmin(
                                 mouseout: (e) => {
                                     e.target.closeTooltip();
                                 },
-                                // add: (e) => {
-                                //     const decorator = L.polylineDecorator(e.target, {
-                                //         patterns: [
-                                //             { offset: '5%', repeat: '10%', symbol: L.Symbol.arrowHead({ pixelSize: 15, polygon: false, pathOptions: { stroke: true } }) }
-                                //         ]
-                                //     }).addTo(map);
-                                //     e.target.decorator = decorator;
-                                // },
-                                // remove: (e) => {
-                                //     map.removeLayer(e.target.decorator);
-                                // }
                             }}
                         >
                             <Tooltip>

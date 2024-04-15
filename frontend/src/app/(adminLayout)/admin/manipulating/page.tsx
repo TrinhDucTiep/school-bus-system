@@ -1,7 +1,25 @@
 "use client";
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SearchIcon } from '@/components/icons/searchicon';
-import { Autocomplete, AutocompleteItem, Button, Input, Table, TableHeader, TableColumn, TableRow, TableCell, TableBody, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Switch } from '@nextui-org/react';
+import {
+    Autocomplete,
+    AutocompleteItem,
+    Button,
+    Input,
+    Table,
+    TableHeader,
+    TableColumn,
+    TableRow,
+    TableCell,
+    TableBody,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    useDisclosure,
+    Switch
+} from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/mapService';
@@ -60,11 +78,11 @@ const ManipulatingPage: React.FC = () => {
         isToSchool: manipulateIsToSchool
     }
     const addRideMutation = useAddRide(() => {
-        setManipulateRideId(null);
-        setManipulateBusId(null);
-        setManipulateStartAt(null);
-        setManipulateStartFrom(null);
-        setManipulatePickupPoints([]);
+        // setManipulateRideId(null);
+        // setManipulateBusId(null);
+        // setManipulateStartAt(null);
+        // setManipulateStartFrom(null);
+        // setManipulatePickupPoints([]);
         onOpenChangeAddRideConfirm();
     });
     const handleAddRide = () => {
@@ -257,6 +275,9 @@ const ManipulatingPage: React.FC = () => {
                     />
                 </div >
             </div>
+
+            {/* table for list ride */}
+
 
             {/* modal xác nhận tạo chuyến, nếu xác nhận => handle add ride */}
             <div className='relative z-10'>
