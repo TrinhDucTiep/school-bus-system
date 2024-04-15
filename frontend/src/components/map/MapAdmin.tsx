@@ -1,8 +1,10 @@
 import React, { useState, useEffect, FC, RefObject, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline, Tooltip } from 'react-leaflet';
-import L from 'leaflet';
+import L, { LatLngExpression, LatLngTuple } from 'leaflet';
 import polyline from 'polyline';
+// import { PolylineDecorator } from 'leaflet-polylinedecorator';
+import 'leaflet-polylinedecorator';
 
 const locationIcon = L.icon({
     iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
@@ -11,6 +13,11 @@ const locationIcon = L.icon({
 
 const manipulateLocationIcon = L.icon({
     iconUrl: 'https://cdn4.iconfinder.com/data/icons/BRILLIANT/transportation/png/256/school_bus.png',
+    iconSize: [38, 38],
+});
+
+const schoolIcon = L.icon({
+    iconUrl: 'https://cdn4.iconfinder.com/data/icons/education-738/64/college-school-university-education-building-architecture-256.png',
     iconSize: [38, 38],
 });
 
@@ -67,6 +74,39 @@ function MapEvents() {
     return null;
 }
 
+
+// arrow decorator for polyline
+const ArrowDecorator = ({ positions }: { positions: LatLngExpression[] }) => {
+    const map = useMap();
+
+    useEffect(() => {
+        const polyline = L.polyline(positions);
+        const decorator = L.polylineDecorator(polyline, {
+            patterns: [
+                {
+                    offset: '2%',
+                    repeat: '5%',
+                    symbol: L.Symbol.arrowHead({
+                        pixelSize: 10,
+                        polygon: false,
+                        pathOptions: {
+                            stroke: true,
+                            color: '#f54242',
+                            weight: 2
+                        }
+                    })
+                }
+            ]
+        }).addTo(map);
+
+        return () => {
+            map.removeLayer(decorator);
+        };
+    }, [map, positions]);
+
+    return null;
+};
+
 export default function MapAdmin(
     {
         autoCompletePoint,
@@ -102,7 +142,9 @@ export default function MapAdmin(
                     key={index}
                     position={{ lat: pickupPointTable.pickupPoint.latitude, lng: pickupPointTable.pickupPoint.longitude }} //todo: add detail onclick later when having enough data from client flow
                     icon={
-                        manipulatePickupPoints.some(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id) ? manipulateLocationIcon : locationIcon
+                        pickupPointTable.pickupPoint.address === 'SCHOOL' ? schoolIcon
+                            : manipulatePickupPoints.some(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id) ? manipulateLocationIcon
+                                : locationIcon
                     }
                     eventHandlers={{
                         click: () => {
@@ -117,7 +159,17 @@ export default function MapAdmin(
                             }
                         }
                     }}
-                />
+                >
+                    {/* tooltip for address when hover */}
+                    <Tooltip>
+                        {pickupPointTable.pickupPoint.address}
+                    </Tooltip>
+
+                    {/* tooltip for order number based on index from manipulatePickupPoints (always show)*/}
+                    {/* <Tooltip permanent>
+                        {manipulatePickupPoints.findIndex(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id) + 1}
+                    </Tooltip> */}
+                </Marker>
             ))}
 
             {/* autoComplete point */}
@@ -141,24 +193,39 @@ export default function MapAdmin(
                 const minutes = Math.floor((durationInSeconds % 3600) / 60);
 
                 return (
-                    <Polyline
-                        key={`route-${routeIndex}`}
-                        positions={decodedPolyline}
-                        color="#910322"
-                        weight={6}
-                        eventHandlers={{
-                            mouseover: (e) => {
-                                e.target.openTooltip();
-                            },
-                            mouseout: (e) => {
-                                e.target.closeTooltip();
-                            },
-                        }}
-                    >
-                        <Tooltip permanent>
-                            {`Khoảng cách: ${distance} km, Thời gian: ${hours > 0 ? `${hours} giờ ` : ''}${minutes} phút`}
-                        </Tooltip>
-                    </Polyline>
+                    <>
+                        <Polyline
+                            key={`route-${routeIndex}`}
+                            positions={decodedPolyline}
+                            color="#910322"
+                            weight={6}
+                            eventHandlers={{
+                                mouseover: (e) => {
+                                    e.target.openTooltip();
+                                },
+                                mouseout: (e) => {
+                                    e.target.closeTooltip();
+                                },
+                                // add: (e) => {
+                                //     const decorator = L.polylineDecorator(e.target, {
+                                //         patterns: [
+                                //             { offset: '5%', repeat: '10%', symbol: L.Symbol.arrowHead({ pixelSize: 15, polygon: false, pathOptions: { stroke: true } }) }
+                                //         ]
+                                //     }).addTo(map);
+                                //     e.target.decorator = decorator;
+                                // },
+                                // remove: (e) => {
+                                //     map.removeLayer(e.target.decorator);
+                                // }
+                            }}
+                        >
+                            <Tooltip>
+                                {`Khoảng cách: ${distance} km, Thời gian: ${hours > 0 ? `${hours} giờ ` : ''}${minutes} phút`}
+                            </Tooltip>
+                        </Polyline>
+                        <ArrowDecorator positions={polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]] as LatLngTuple)} />
+                    </>
+
                 );
             })}
 

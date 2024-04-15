@@ -26,7 +26,7 @@ const ManipulatingPage: React.FC = () => {
     const debounceSetAutoCompleteQuery = _.debounce((value: string) => setAutoCompleteQuery(value), 500);
     const { data: autoCompleteData, isLoading: autoCompleteLoading, error: autoCompleteError } = useGetAutoComplete(autoCompleteParams);
 
-    // get drirections
+    // get directions
     const useGetDirectionsParams: IDirectionsParams = {
         coordinates: [[105.804817, 21.028511], [105.803577, 21.03422], [105.80325113694303, 21.03586062789824]]
     }
@@ -72,7 +72,6 @@ const ManipulatingPage: React.FC = () => {
     }
 
     // get list manipulate bus
-    // const [manipulateDate, setManipulateDate] = React.useState<string>((new Date()).toISOString());
     const [manipulateDate, setManipulateDate] = React.useState(new Date().toISOString().split('T')[0]);
     let manipulateBusParams: IGetListManipulateBusParams = {
         isToSchool: manipulateIsToSchool,
@@ -95,9 +94,11 @@ const ManipulatingPage: React.FC = () => {
         }
     ), [])
 
-    console.log('manipulatePickupPoints', manipulatePickupPoints);
+    // console.log('manipulatePickupPoints', manipulatePickupPoints);
 
     const [enableClickMap, setEnableClickMap] = React.useState<boolean>(false);
+
+    // console.log('manipulateStartAt', manipulateStartAt);
 
     return (
         <div className='flex flex-col'>
@@ -182,7 +183,7 @@ const ManipulatingPage: React.FC = () => {
                                 setManipulateRideId(selectedManipulateBus?.ride?.id ?? null);
                                 setManipulateBusId(selectedManipulateBus?.bus.id ?? null);
                                 setManipulatePickupPoints(selectedManipulateBus?.pickupPoints ?? []);
-                                setManipulateStartAt(convertStringInstantToDateTime(listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startAt));
+                                setManipulateStartAt(convertStringInstantToDateTime(listManipulateBus?.result.find((item) => item.bus.id === selectedManipulateBus?.bus.id)?.ride?.startAt));
                                 setManipulateStartFrom(selectedManipulateBus?.ride?.startFrom ?? null);
                             }}
                         >
@@ -212,11 +213,11 @@ const ManipulatingPage: React.FC = () => {
                             type='datetime-local'
                             className='m-2'
                             variant='bordered'
-                            onChange={(e) => setManipulateStartAt(e.target.value)}
+                            onChange={(e) => {
+                                setManipulateStartAt(e.target.value)
+                            }}
                             value={
-                                (listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startAt) ?
-                                    convertStringInstantToDateTime(listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startAt)
-                                    : undefined
+                                convertStringInstantToDateTime(manipulateStartAt)
                             }
                         />
                         <Input
@@ -226,7 +227,8 @@ const ManipulatingPage: React.FC = () => {
                             variant='bordered'
                             onChange={(e) => setManipulateStartFrom(e.target.value)}
                             value={
-                                listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startFrom ?? undefined
+                                // listManipulateBus?.result.find((item) => item.bus.id === manipulateBusId)?.ride?.startFrom ?? undefined
+                                manipulateStartFrom ?? undefined
                             }
                         />
                     </div>
@@ -236,7 +238,7 @@ const ManipulatingPage: React.FC = () => {
                             color='primary'
                             onClick={onOpenAddRideConfirm}
                         >
-                            Tạo chuyến
+                            Lưu điều phối
                         </Button>
                     </div>
 
