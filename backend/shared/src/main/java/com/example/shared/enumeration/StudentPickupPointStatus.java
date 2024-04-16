@@ -2,7 +2,8 @@ package com.example.shared.enumeration;
 
 public enum StudentPickupPointStatus {
     PICKING("PICKING"),
-    PICKED("PICKED");
+    PICKED("PICKED"),
+    MISSED("MISSED"),;
 
     private final String status;
 

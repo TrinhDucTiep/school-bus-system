@@ -9,6 +9,16 @@ const locationIcon = L.icon({
     iconSize: [38, 38],
 });
 
+const manipulateLocationIcon = L.icon({
+    iconUrl: 'https://cdn4.iconfinder.com/data/icons/BRILLIANT/transportation/png/256/school_bus.png',
+    iconSize: [38, 38],
+});
+
+const schoolIcon = L.icon({
+    iconUrl: 'https://cdn4.iconfinder.com/data/icons/education-738/64/college-school-university-education-building-architecture-256.png',
+    iconSize: [38, 38],
+});
+
 interface Coords {
     lat: number;
     lng: number;
@@ -29,6 +39,7 @@ export const ChangeView: FC<ChangeViewProps> = ({ coords }) => {
 interface MapProps {
     features: IFeature[];
     directionsGetResponse: IDirectionsGetResponse | undefined;
+    enableClickMap: boolean;
 }
 
 interface MyComponentProps {
@@ -36,7 +47,7 @@ interface MyComponentProps {
     setGeoData: React.Dispatch<React.SetStateAction<Coords>>;
 }
 
-const MyComponent: React.FC<MyComponentProps> = ({ geoData, setGeoData }) => {
+const MapClick: React.FC<MyComponentProps> = ({ geoData, setGeoData }) => {
     useMapEvents({
         click: (e) => {
             console.log('location clicked:', e.latlng);
@@ -47,7 +58,7 @@ const MyComponent: React.FC<MyComponentProps> = ({ geoData, setGeoData }) => {
     return null;
 }
 
-function MapEvents() {
+function MapZoom() {
     const map = useMapEvents({
         zoomend: () => {
             const zoom = map.getZoom();
@@ -58,7 +69,7 @@ function MapEvents() {
     return null;
 }
 
-export default function MapClient({ features, directionsGetResponse }: MapProps) {
+export default function MapClient({ features, directionsGetResponse, enableClickMap }: MapProps) {
     const zoomRef = useRef<number>(12);
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
 
@@ -86,18 +97,10 @@ export default function MapClient({ features, directionsGetResponse }: MapProps)
                     icon={locationIcon}
                 />
             ))}
+
             <ChangeView coords={center} />
 
-            <MyComponent geoData={geoData} setGeoData={setGeoData} />
-
-            {
-                (features.length > 0 && geoData.lat && geoData.lng) && (
-                    <Polyline positions={[
-                        [geoData.lat, geoData.lng],
-                        [features[0].geometry.coordinates[1], features[0].geometry.coordinates[0]]
-                    ]} />
-                )
-            }
+            {enableClickMap && <MapClick geoData={geoData} setGeoData={setGeoData} />}
 
             {directionsGetResponse?.routes.map((route, routeIndex) => {
                 const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude
@@ -110,7 +113,7 @@ export default function MapClient({ features, directionsGetResponse }: MapProps)
                 );
             })}
 
-            <MapEvents />
+            <MapZoom />
         </MapContainer>
     );
 }

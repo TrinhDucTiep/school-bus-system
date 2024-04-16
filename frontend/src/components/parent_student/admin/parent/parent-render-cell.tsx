@@ -16,13 +16,10 @@ interface Props {
     handleOpenChangeView: () => void;
 }
 
-// const { isOpen, onOpen, onOpenChange } = useDisclosure();
 export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelectedParent, handleOpenChangeDelete
     , handleOpenChangeView
 }: Props) => {
 
-    // @ts-ignore
-    // const cellValue = bus[columnKey];
     switch (columnKey) {
         case "name":
             return (
@@ -51,7 +48,7 @@ export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelec
             return (
                 <div className="flex items-center gap-4 ">
                     <div>
-                        <Tooltip content="Details">
+                        <Tooltip content="Chi tiết">
                             <button onClick={() => {
                                 setSelectedParent(parent);
                                 handleOpenChangeView();
@@ -61,7 +58,7 @@ export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelec
                         </Tooltip>
                     </div>
                     <div>
-                        <Tooltip content="Edit bus" color="secondary">
+                        <Tooltip content="Chỉnh sửa" color="secondary">
                             <button onClick={
                                 () => {
                                     setSelectedParent(parent);
@@ -73,7 +70,7 @@ export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelec
                     </div>
                     <div>
                         <Tooltip
-                            content="Delete bus" color="danger" >
+                            content="Xoá" color="danger" >
                             <button onClick={
                                 () => {
                                     setSelectedParent(parent);

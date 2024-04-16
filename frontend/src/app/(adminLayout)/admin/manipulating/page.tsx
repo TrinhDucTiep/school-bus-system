@@ -78,11 +78,6 @@ const ManipulatingPage: React.FC = () => {
         isToSchool: manipulateIsToSchool
     }
     const addRideMutation = useAddRide(() => {
-        // setManipulateRideId(null);
-        // setManipulateBusId(null);
-        // setManipulateStartAt(null);
-        // setManipulateStartFrom(null);
-        // setManipulatePickupPoints([]);
         onOpenChangeAddRideConfirm();
     });
     const handleAddRide = () => {
@@ -114,6 +109,7 @@ const ManipulatingPage: React.FC = () => {
 
     // console.log('manipulatePickupPoints', manipulatePickupPoints);
 
+    // enable click point to map
     const [enableClickMap, setEnableClickMap] = React.useState<boolean>(false);
 
     // console.log('manipulateStartAt', manipulateStartAt);

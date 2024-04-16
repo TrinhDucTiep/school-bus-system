@@ -164,11 +164,6 @@ export default function MapAdmin(
                     <Tooltip>
                         {pickupPointTable.pickupPoint.address}
                     </Tooltip>
-
-                    {/* tooltip for order number based on index from manipulatePickupPoints (always show)*/}
-                    {/* <Tooltip permanent>
-                        {manipulatePickupPoints.findIndex(pickupPoint => pickupPoint.id === pickupPointTable.pickupPoint.id) + 1}
-                    </Tooltip> */}
                 </Marker>
             ))}
 

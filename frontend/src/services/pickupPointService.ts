@@ -15,6 +15,7 @@ export const useGetListPickupPoint = (params: IGetListPickupPointParams) => {
     });
 };
 
+
 const getListStudentPickupPointClient = async (params: IGetListPickupPointParams) => {
     const response = await apiClient.get<ICommonResponse<Page<IStudentPickupPoint>>>('/api/v1/client/pickup-point/pagination', { params });
     return response.data;

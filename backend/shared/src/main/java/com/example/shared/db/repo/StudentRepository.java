@@ -1,5 +1,6 @@
 package com.example.shared.db.repo;
 
+import com.example.shared.db.dto.GetStudentRideDTO;
 import com.example.shared.db.entities.Student;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -29,5 +30,27 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     );
 
     List<Student> findByParent_Id(Long id);
+
+    //findStudentIdsByParentId
+    @Query("select s.id from Student s where s.parent.id = :parentId")
+    List<Long> findStudentIdsByParentId(@Param("parentId") Long parentId);
+
+    // getStudentRides
+//    @Query("""
+//        select new com.example.shared.db.dto.GetStudentRideDTO(
+//            s,
+//            pp,
+//            e
+//        )
+//        from Student s
+//        join s.
+//        join spp.pickupPoint pp
+//        join pp.ridePickupPoints rpp
+//        join rpp.ride r
+//        join r.executions e
+//        where s.id in :studentIds
+//        order by e.ride.startTime desc
+//        """)
+    List<GetStudentRideDTO> getStudentRides(Long studentIds);
 
 }

@@ -1,19 +1,17 @@
 "use client";
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SearchIcon } from '@/components/icons/searchicon';
-import { Autocomplete, AutocompleteItem, Input, RadioGroup, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Button, Input, RadioGroup, Switch, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/mapService';
 import _ from 'lodash';
-import LocationIcon from '@/components/icons/location-icon';
-import { useGetListStudentClient } from '@/services/client/clientAccountService';
-import { useGetListPickupPoint, useGetListStudentPickupPointClient } from '@/services/pickupPointService';
 
 
 
 const ClientRegistration: React.FC = () => {
 
+    // get auto complete
     const [autoCompleteQuery, setAutoCompleteQuery] = React.useState('');
     let autoCompleteParams: IAutoCompleteParams = {
         text: autoCompleteQuery,
@@ -22,107 +20,107 @@ const ClientRegistration: React.FC = () => {
         }
     }
     const debounceSetAutoCompleteQuery = _.debounce((value: string) => setAutoCompleteQuery(value), 500);
-    const { data: pickupPointData, isLoading: pickupPointLoading, error: pickupPointError } =
-    useGetListStudentPickupPointClient({});
     const { data: autoCompleteData, isLoading: autoCompleteLoading, error: autoCompleteError } = useGetAutoComplete(autoCompleteParams);
+    const [selectedAutoCompleteData, setSelectedAutoCompleteData] = React.useState<IFeature | null>(null);
 
+    // get directions
     const useGetDirectionsParams: IDirectionsParams = {
         coordinates: [[105.804817, 21.028511], [105.803577, 21.03422], [105.80325113694303, 21.03586062789824]]
     }
     const { data: directionsGetResponse, isLoading: directionsLoading, error: directionsError } = useGetDirections(useGetDirectionsParams);
 
-    const [selectedAutoCompleteData, setSelectedAutoCompleteData] = React.useState<IFeature | null>(null);
-
-    const [selectRow, setSelectRow] = React.useState(new Set(['']));
-
     const Map = useMemo(() => dynamic(
-        () => import('@/components/map/Map'),
+        () => import('@/components/map/MapClient'),
         {
             loading: () => <CustomSkeleton />,
             ssr: false
         }
     ), [])
 
+    // enable click point to map
+    const [enableClickMap, setEnableClickMap] = React.useState<boolean>(false);
+
     return (
-        <div className='flex justify-between w-auto'>
-            <div className='w-1/2 mr-4'>
-                <div className=''>
-                    <div className="flex flex-col gap-3">
-                        <Table
-                            selectionMode="multiple"
-                            selectedKeys={selectRow}
+        <div className='flex flex-col'>
+            <div className='flex justify-between w-auto'>
+                <div className='w-2/5 mr-4'>
+                    <Autocomplete
+                        placeholder="Nhập địa điểm"
+                        startContent={<SearchIcon />}
+                        items={autoCompleteData?.features.map((item) => item.properties) || []}
+                        className="m-2 w-full"
+                        selectorIcon={false}
+                        onInputChange={(value) => debounceSetAutoCompleteQuery(value)}
+                        onSelectionChange={
+                            (selectedId) => {
+                                const selectedItem = autoCompleteData?.features.find((item) => item.properties.id === selectedId);
+                                console.log(selectedItem);
+                                setSelectedAutoCompleteData(selectedItem ?? null);
+                            }
+                        }
+                    >
+                        {(item) =>
+                            <AutocompleteItem
+                                key={item.id}
+                                textValue={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
+                                value={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
+                            >
+                                <div className="flex gap-2 items-center">
+                                    <div className='flex-shrink-0'>
+                                        <LocationIcon />
+                                    </div>
 
-                            onSelectionChange={(selectedKeys: any) => {
-                                console.log(selectedKeys);
-                                setSelectRow(selectedKeys);
-                            }}
-                            aria-label="Example static collection table"
+                                    <div className='flex flex-col'>
+                                        {`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
+                                    </div>
+                                </div>
+
+                            </AutocompleteItem>
+                        }
+                    </Autocomplete>
+
+                    <div className='flex justify-between'>
+                        <div></div>
+                        {/* <Switch
+                            className='mx-2'
+                            isSelected={manipulateIsToSchool}
+                            color='primary'
+                            onClick={() => setManipulateIsToSchool(!manipulateIsToSchool)}
                         >
-                            <TableHeader>
-                                <TableColumn>Tên Học Sinh</TableColumn>
-                                <TableColumn>Lớp</TableColumn>
+                            {manipulateIsToSchool ? 'Đi học' : 'Về nhà'}
+                        </Switch> */}
 
-                            </TableHeader>
-                            <TableBody items={pickupPointData?.result.content || []}
-                                emptyContent={"No rows to display."}>
-                                {(item) => (
-                                    <TableRow key={item?.student?.id}>
-                                        <TableCell>{item?.student?.name}</TableCell>
-                                        <TableCell>{item?.student?.studentClass}</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
+                        {/* <Input
+                            placeholder="Ngày"
+                            type='date'
+                            className='m-2 w-1/3'
+                            variant='bordered'
+                            size='sm'
+                            // onChange={(e) => setManipulateDate(e.target.value)}
+                            // defaultValue={convertStringInstantToDate(manipulateDate)}
+                        /> */}
 
-                        </Table>
+                        <Button
+                            color={enableClickMap ? 'primary' : 'default'}
+                            onClick={() => setEnableClickMap(!enableClickMap)}
+                        >
+                            Chấm điểm
+                        </Button>
                     </div>
                 </div>
-                <Autocomplete
-                    placeholder="Nhập địa điểm"
-                    startContent={<SearchIcon />}
-                    items={autoCompleteData?.features.map((item) => item.properties) || []}
-                    className="m-2 w-full"
-                    selectorIcon={false}
-                    onInputChange={(value) => debounceSetAutoCompleteQuery(value)}
-                    onSelectionChange={
-                        (selectedId) => {
-                            const selectedItem = autoCompleteData?.features.find((item) => item.properties.id === selectedId);
-                            console.log(selectedItem);
-                            setSelectedAutoCompleteData(selectedItem ?? null);
-                        }
-                    }
+
+                {/* map */}
+                <div
+                    className="w-3/5 z-50"
                 >
-                    {(item) =>
-                        <AutocompleteItem
-                            key={item.id}
-                            // value={item.label}
-                            textValue={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
-                            value={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
-                        >
-                            <div className="flex gap-2 items-center">
-                                <div className='flex-shrink-0'>
-                                    <LocationIcon />
-                                </div>
-
-                                <div className='flex flex-col'>
-                                    {/* {` ${item.street ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`} */}
-                                    {`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
-                                </div>
-                            </div>
-
-                        </AutocompleteItem>
-                    }
-                </Autocomplete>
+                    <Map
+                        features={selectedAutoCompleteData ? [selectedAutoCompleteData] : []}
+                        directionsGetResponse={directionsGetResponse}
+                        enableClickMap={enableClickMap}
+                    />
+                </div >
             </div>
-            <div
-                className="w-1/2"
-            >
-                <Map
-                    features={selectedAutoCompleteData ? [selectedAutoCompleteData] : []}
-                    directionsGetResponse={directionsGetResponse}
-                />
-            </div >
         </div>
-
     );
 };
 

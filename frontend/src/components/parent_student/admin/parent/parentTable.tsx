@@ -2,7 +2,6 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagina
 import React from 'react';
 import { ParentRenderCell } from './parent-render-cell';
 import { useGetListParent } from '@/services/accountService';
-import { ExportIcon } from '../../../icons/export-icon';
 import { AddParent } from './add-parent';
 import ModalDeleteParent from './delete-parent';
 import ModalUpdateParent from './update-parent';
