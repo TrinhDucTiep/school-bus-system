@@ -1,7 +1,7 @@
 "use client";
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SearchIcon } from '@/components/icons/searchicon';
-import { Autocomplete, AutocompleteItem, Input, RadioGroup, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Button, Input, RadioGroup, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/mapService';
@@ -23,7 +23,8 @@ const ClientRegistration: React.FC = () => {
     }
     const debounceSetAutoCompleteQuery = _.debounce((value: string) => setAutoCompleteQuery(value), 500);
     const { data: pickupPointData, isLoading: pickupPointLoading, error: pickupPointError } =
-    useGetListStudentPickupPointClient({});
+        useGetListStudentPickupPointClient({});
+
     const { data: autoCompleteData, isLoading: autoCompleteLoading, error: autoCompleteError } = useGetAutoComplete(autoCompleteParams);
 
     const useGetDirectionsParams: IDirectionsParams = {
@@ -45,9 +46,15 @@ const ClientRegistration: React.FC = () => {
 
     return (
         <div className='flex justify-between w-auto'>
-            <div className='w-1/2 mr-4'>
+            <div className='w-1/2 m-3'>
                 <div className=''>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col ">
+                        <div className='flex justify-end'>
+
+                            <Button color='primary'>
+                                Thay đổi toàn bộ
+                            </Button>
+                        </div>
                         <Table
                             selectionMode="multiple"
                             selectedKeys={selectRow}
@@ -61,7 +68,7 @@ const ClientRegistration: React.FC = () => {
                             <TableHeader>
                                 <TableColumn>Tên Học Sinh</TableColumn>
                                 <TableColumn>Lớp</TableColumn>
-
+                                <TableColumn>Điểm đón</TableColumn>
                             </TableHeader>
                             <TableBody items={pickupPointData?.result.content || []}
                                 emptyContent={"No rows to display."}>
@@ -69,6 +76,7 @@ const ClientRegistration: React.FC = () => {
                                     <TableRow key={item?.student?.id}>
                                         <TableCell>{item?.student?.name}</TableCell>
                                         <TableCell>{item?.student?.studentClass}</TableCell>
+                                        <TableCell>{item?.pickupPoint ? item.pickupPoint.address : "Chưa có"}</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -80,7 +88,7 @@ const ClientRegistration: React.FC = () => {
                     placeholder="Nhập địa điểm"
                     startContent={<SearchIcon />}
                     items={autoCompleteData?.features.map((item) => item.properties) || []}
-                    className="m-2 w-full"
+                    className="w-full"
                     selectorIcon={false}
                     onInputChange={(value) => debounceSetAutoCompleteQuery(value)}
                     onSelectionChange={
@@ -112,7 +120,14 @@ const ClientRegistration: React.FC = () => {
                         </AutocompleteItem>
                     }
                 </Autocomplete>
+                <div className='flex justify-end'>
+
+                    <Button color='primary'>
+                        Lưu
+                    </Button>
+                </div>
             </div>
+
             <div
                 className="w-1/2"
             >
