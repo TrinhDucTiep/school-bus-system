@@ -1,15 +1,15 @@
 package com.example.api.services.request_registration.dto;
 
-import com.example.shared.db.entities.Parent;
-import com.example.shared.db.entities.RequestRegistration;
-import com.example.shared.db.entities.Student;
+import com.example.api.services.common_dto.ParentOutput;
+import com.example.api.services.common_dto.RequestRegistrationOutput;
+import com.example.api.services.common_dto.StudentOutput;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class GetListRequestRegistrationOutput {
-    private Parent parent;
-    private Student student;
-    private RequestRegistration requestRegistration;
+    private ParentOutput parent;
+    private StudentOutput student;
+    private RequestRegistrationOutput requestRegistration;
 }

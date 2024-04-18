@@ -1,6 +1,9 @@
 package com.example.api.services.request_registration;
 
 import com.example.api.controllers.client.dto.StudentAddress;
+import com.example.api.services.common_dto.ParentOutput;
+import com.example.api.services.common_dto.RequestRegistrationOutput;
+import com.example.api.services.common_dto.StudentOutput;
 import com.example.api.services.request_registration.dto.CreateRequestInput;
 import com.example.api.services.request_registration.dto.GetListRequestRegistrationOutput;
 import com.example.shared.db.entities.Account;
@@ -30,11 +33,13 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
     @Override
     @Transactional
     public void upsertRegistration(CreateRequestInput input, Account account) {
-        if (input.getStudentIds() == null || input.getStudentIds().isEmpty()) {
+        if (input.getStudentIds() == null || input.getStudentIds().isEmpty()
+            || input.getAddress() == null || input.getAddress().isBlank()
+            || input.getLongitude() == null || input.getLatitude() == null) {
             throw new MyException(
                 null,
-                "STUDENT_IDS_EMPTY",
-                "Student ids empty",
+                "INVALID_INPUT",
+                "Invalid input",
                 HttpStatus.BAD_REQUEST
             );
         }
@@ -106,9 +111,9 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
         return requestRegistrations.stream().map(requestRegistration -> {
             Student student = requestRegistration.getStudent();
             return GetListRequestRegistrationOutput.builder()
-                .parent(parent)
-                .student(student)
-                .requestRegistration(requestRegistration)
+                .parent(ParentOutput.fromEntity(parent))
+                .student(StudentOutput.fromEntity(student))
+                .requestRegistration(RequestRegistrationOutput.fromEntity(requestRegistration))
                 .build();
         }).toList();
     }

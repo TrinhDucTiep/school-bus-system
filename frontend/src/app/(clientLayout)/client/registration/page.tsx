@@ -77,9 +77,11 @@ const ClientRegistration: React.FC = () => {
     const { isOpen: isOpenAddRegistrationConfirm, onOpen: onOpenAddRegistrationConfirm, onOpenChange: onOpenChangeAddRegistrationConfirm } = useDisclosure();
     let addRequestRegistrationParams: IAddRequestRegistrationRequest = {
         studentIds: studentIds,
-        address: autoCompleteData?.features[0]?.properties?.name ?? '',
-        latitude: autoCompleteData?.features[0]?.geometry?.coordinates[1] ?? null,
-        longitude: autoCompleteData?.features[0]?.geometry?.coordinates[0] ?? null
+        address: selectedAutoCompleteData?.properties?.name ?
+            `${selectedAutoCompleteData?.properties?.name}, ${selectedAutoCompleteData?.properties?.county}, ${selectedAutoCompleteData?.properties?.region}, ${selectedAutoCompleteData?.properties?.country}`
+            : '',
+        latitude: selectedAutoCompleteData?.geometry?.coordinates[1] ?? null,
+        longitude: selectedAutoCompleteData?.geometry?.coordinates[0] ?? null
     }
     const addRequestRegistrationMutation = useAddRequestRegistration(() => {
         onOpenChangeAddRegistrationConfirm();
