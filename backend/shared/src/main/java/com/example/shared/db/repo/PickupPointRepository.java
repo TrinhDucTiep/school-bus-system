@@ -4,6 +4,7 @@ import com.example.shared.db.dto.GetListPickupPointDTO;
 import com.example.shared.db.dto.GetStudentPickupPointDTO;
 import com.example.shared.db.entities.PickupPoint;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,4 +49,12 @@ public interface PickupPointRepository extends JpaRepository<PickupPoint, Long> 
     ORDER BY rp.orderIndex ASC
     """)
     List<PickupPoint> findByRideId(Long rideId);
+
+    @Query("""
+    SELECT p
+    FROM PickupPoint p
+    JOIN StudentPickupPoint spp ON p.id = spp.pickupPoint.id
+    WHERE spp.student.id = :studentId
+    """)
+    Optional<PickupPoint> findByStudentId(Long studentId);
 }

@@ -1,9 +1,12 @@
 package com.example.shared.db.repo;
 
 import com.example.shared.db.entities.RequestRegistration;
+import com.example.shared.enumeration.RequestRegistrationStatus;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RequestRegistrationRepository extends JpaRepository<RequestRegistration, Long> {
     List<RequestRegistration> findByParentId(Long parentId);
+
+    List<RequestRegistration> findByParentIdAndStudentIdInAndStatus(Long parentId, List<Long> studentIds, RequestRegistrationStatus status);
 }

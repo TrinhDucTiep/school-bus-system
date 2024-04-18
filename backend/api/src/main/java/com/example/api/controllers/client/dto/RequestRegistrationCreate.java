@@ -6,13 +6,17 @@ import lombok.Data;
 
 @Data
 public class RequestRegistrationCreate {
-    private Long parentId;
-    private List<StudentAddress> studentAddress;
+    private List<Long> studentIds;
+    private String address;
+    private Double longitude;
+    private Double latitude;
 
     public CreateRequestInput toInput() {
         return CreateRequestInput.builder()
-            .studentAddress(studentAddress)
-            .parentId(parentId)
+            .studentIds(studentIds)
+            .address(address)
+            .longitude(longitude)
+            .latitude(latitude)
             .build();
     }
 }

@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 @Builder
 public class CreateRequestInput {
-    private Long parentId;
-    private List<StudentAddress> studentAddress;
+    private List<Long> studentIds;
+    private String address;
+    private Double longitude;
+    private Double latitude;
 }

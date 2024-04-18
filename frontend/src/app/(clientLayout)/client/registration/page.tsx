@@ -1,11 +1,35 @@
 "use client";
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SearchIcon } from '@/components/icons/searchicon';
-import { Autocomplete, AutocompleteItem, Button, Input, RadioGroup, Switch, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from '@nextui-org/react';
+import {
+    Autocomplete,
+    AutocompleteItem,
+    Button,
+    Input,
+    RadioGroup,
+    Switch,
+    Tab,
+    Table,
+    TableBody,
+    TableCell,
+    TableColumn,
+    TableHeader,
+    TableRow,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    useDisclosure,
+} from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/mapService';
 import _ from 'lodash';
+import LocationIcon from '@/components/icons/location-icon';
+import { useGetStudentRides } from '@/services/client/parentStudentService';
+import { useAddRequestRegistration, useGetRequestRegistration } from '@/services/client/clientRequestRegistrationService';
+import { on } from 'events';
 
 
 
@@ -29,6 +53,11 @@ const ClientRegistration: React.FC = () => {
     }
     const { data: directionsGetResponse, isLoading: directionsLoading, error: directionsError } = useGetDirections(useGetDirectionsParams);
 
+    // get student rides
+    const getStudentRidesParams: IGetStudentRidesParams = {
+    }
+    const { data: studentRidesData, isLoading: studentRidesLoading, error: studentRidesError } = useGetStudentRides(getStudentRidesParams);
+
     const Map = useMemo(() => dynamic(
         () => import('@/components/map/MapClient'),
         {
@@ -37,8 +66,32 @@ const ClientRegistration: React.FC = () => {
         }
     ), [])
 
+    // get request registration
+    const getRequestRegistrationParams: IGetRequestRegistrationParams = {
+
+    }
+    const { data: requestRegistrationData, isLoading: requestRegistrationLoading, error: requestRegistrationError } = useGetRequestRegistration(getRequestRegistrationParams);
+
+    // add request registration
+    const [studentIds, setStudentIds] = React.useState<number[]>([]);
+    const { isOpen: isOpenAddRegistrationConfirm, onOpen: onOpenAddRegistrationConfirm, onOpenChange: onOpenChangeAddRegistrationConfirm } = useDisclosure();
+    let addRequestRegistrationParams: IAddRequestRegistrationRequest = {
+        studentIds: studentIds,
+        address: autoCompleteData?.features[0]?.properties?.name ?? '',
+        latitude: autoCompleteData?.features[0]?.geometry?.coordinates[1] ?? null,
+        longitude: autoCompleteData?.features[0]?.geometry?.coordinates[0] ?? null
+    }
+    const addRequestRegistrationMutation = useAddRequestRegistration(() => {
+        onOpenChangeAddRegistrationConfirm();
+    });
+    const handleAddRequestRegistration = () => {
+        addRequestRegistrationMutation.mutate(addRequestRegistrationParams);
+    }
+
     // enable click point to map
     const [enableClickMap, setEnableClickMap] = React.useState<boolean>(false);
+
+    console.log('autoCompleteData', autoCompleteData);
 
     return (
         <div className='flex flex-col'>
@@ -46,24 +99,28 @@ const ClientRegistration: React.FC = () => {
                 <div className='w-2/5 mr-4'>
                     <Autocomplete
                         placeholder="Nhập địa điểm"
+                        allowsCustomValue
                         startContent={<SearchIcon />}
                         items={autoCompleteData?.features.map((item) => item.properties) || []}
                         className="m-2 w-full"
                         selectorIcon={false}
-                        onInputChange={(value) => debounceSetAutoCompleteQuery(value)}
+                        onInputChange={(value) => {
+                            debounceSetAutoCompleteQuery(value);
+                        }}
                         onSelectionChange={
                             (selectedId) => {
                                 const selectedItem = autoCompleteData?.features.find((item) => item.properties.id === selectedId);
-                                console.log(selectedItem);
-                                setSelectedAutoCompleteData(selectedItem ?? null);
+                                if (selectedItem) {
+                                    setSelectedAutoCompleteData(selectedItem);
+                                }
                             }
                         }
+                        isClearable={false}
                     >
                         {(item) =>
                             <AutocompleteItem
                                 key={item.id}
                                 textValue={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
-                                value={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
                             >
                                 <div className="flex gap-2 items-center">
                                     <div className='flex-shrink-0'>
@@ -107,6 +164,57 @@ const ClientRegistration: React.FC = () => {
                             Chấm điểm
                         </Button>
                     </div>
+
+                    {/* table student rides */}
+                    <div className='m-2'>
+                        <Table
+                            aria-label="List student"
+                            selectionMode='multiple'
+                            onSelectionChange={(selectedKeys) => {
+                                if (selectedKeys === 'all') {
+                                    const keysArray = studentRidesData?.result?.map(item => item.student.id) ?? [];
+                                    setStudentIds(keysArray);
+                                } else {
+                                    const keysArray = Array.from(selectedKeys).map(Number);
+                                    setStudentIds(keysArray);
+                                }
+                            }}
+                        >
+                            <TableHeader columns={[
+                                { key: 'student', label: 'Học sinh' },
+                                { key: 'ride-bus', label: 'Chuyến - Xe' }
+                            ]}>
+                                {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                            </TableHeader>
+
+                            <TableBody items={studentRidesData?.result ?? []}>
+                                {(item) => (
+                                    <TableRow key={item.student.id}>
+                                        <TableCell>{item.student.name}</TableCell>
+                                        <TableCell>
+                                            {/* {item.executions.map(execution => `${execution.ride.id} - ${execution.bus.numberPlate}`).join(' ')} */}
+                                            {item.executions.map((execution, index) =>
+                                                <React.Fragment key={index}>
+                                                    {`${execution.ride.id} - ${execution.bus.numberPlate}`}
+                                                    {index < item.executions.length - 1 && <br />}
+                                                </React.Fragment>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    <div className='flex justify-end'>
+                        <Button
+                            color='primary'
+                            onClick={onOpenAddRegistrationConfirm}
+                        >
+                            Đăng ký
+                        </Button>
+                    </div>
+
                 </div>
 
                 {/* map */}
@@ -119,6 +227,68 @@ const ClientRegistration: React.FC = () => {
                         enableClickMap={enableClickMap}
                     />
                 </div >
+            </div>
+
+
+            {/* table registration */}
+            <div className='m-4'>
+                <Table
+                    aria-label="List registration"
+                    // selectionMode='multiple'
+                    onSelectionChange={(selectedKeys) => {
+
+                    }}
+                >
+                    <TableHeader columns={[
+                        { key: 'student', label: 'Học sinh' },
+                        { key: 'address', label: 'Địa điểm đăng ký' },
+                        { key: 'status', label: 'Trạng thái' }
+                    ]}>
+                        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                    </TableHeader>
+
+                    <TableBody items={requestRegistrationData?.result ?? []}>
+                        {(item) => (
+                            <TableRow key={item.requestRegistration.studentId}>
+                                <TableCell>{item.student.name}</TableCell>
+                                <TableCell>{item.requestRegistration.address}</TableCell>
+                                <TableCell>{item.requestRegistration.status}</TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+
+
+            {/* modal confirm adding request registration */}
+            <div className='relative z-10'>
+                <Modal isOpen={isOpenAddRegistrationConfirm} onOpenChange={onOpenChangeAddRegistrationConfirm}
+                >
+                    <ModalContent>
+                        {(onOpenAddRegistrationConfirm) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Xác nhận thêm chuyến</ModalHeader>
+                                <ModalBody>
+                                    <p>
+                                        Bạn có muốn đăng ký địa điểm này không?
+                                    </p>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light"
+                                        onPress={onOpenChangeAddRegistrationConfirm}
+                                    >
+                                        Huỷ
+                                    </Button>
+                                    <Button color="primary" onPress={() => {
+                                        handleAddRequestRegistration();
+                                    }}>
+                                        Xác nhận
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
             </div>
         </div>
     );

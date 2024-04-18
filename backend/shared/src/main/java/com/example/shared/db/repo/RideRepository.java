@@ -24,4 +24,12 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         @Param("status") RideStatus status,
         @Param("isToSchool") Boolean isToSchool,
         @Param("date") Instant date);
+
+    @Query("""
+            SELECT r
+            FROM Ride r
+            JOIN RidePickupPoint rpp ON r.id = rpp.ride.id
+            WHERE rpp.pickupPoint.id = :pickupPointId
+    """)
+    List<Ride> findByPickupPointId(Long pickupPointId);
 }

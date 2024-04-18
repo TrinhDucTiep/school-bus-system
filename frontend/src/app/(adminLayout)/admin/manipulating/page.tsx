@@ -43,14 +43,14 @@ const ManipulatingPage: React.FC = () => {
     }
     const debounceSetAutoCompleteQuery = _.debounce((value: string) => setAutoCompleteQuery(value), 500);
     const { data: autoCompleteData, isLoading: autoCompleteLoading, error: autoCompleteError } = useGetAutoComplete(autoCompleteParams);
+    const [selectedAutoCompleteData, setSelectedAutoCompleteData] = React.useState<IFeature | null>(null);
 
+    
     // get directions
     const useGetDirectionsParams: IDirectionsParams = {
         coordinates: [[105.804817, 21.028511], [105.803577, 21.03422], [105.80325113694303, 21.03586062789824]]
     }
     const { data: directionsGetResponse, isLoading: directionsLoading, error: directionsError } = useGetDirections(useGetDirectionsParams);
-
-    const [selectedAutoCompleteData, setSelectedAutoCompleteData] = React.useState<IFeature | null>(null);
 
     // get list pickup point
     const [addressQuery, setAddressQuery] = React.useState('');
@@ -275,17 +275,17 @@ const ManipulatingPage: React.FC = () => {
             {/* table for list ride */}
 
 
-            {/* modal xác nhận tạo chuyến, nếu xác nhận => handle add ride */}
+            {/* modal confirm adding ride */}
             <div className='relative z-10'>
                 <Modal isOpen={isOpenAddRideConfirm} onOpenChange={onOpenChangeAddRideConfirm}
                 >
                     <ModalContent>
                         {(onOpenAddRideConfirm) => (
                             <>
-                                <ModalHeader className="flex flex-col gap-1">Xác nhận thêm chuyến</ModalHeader>
+                                <ModalHeader className="flex flex-col gap-1">Xác nhận lưu chuyến</ModalHeader>
                                 <ModalBody>
                                     <p>
-                                        Bạn có muốn thêm chuyến không?
+                                        Bạn có muốn lưu chuyến không?
                                     </p>
                                 </ModalBody>
                                 <ModalFooter>

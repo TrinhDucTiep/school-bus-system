@@ -51,6 +51,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 //        where s.id in :studentIds
 //        order by e.ride.startTime desc
 //        """)
-    List<GetStudentRideDTO> getStudentRides(Long studentIds);
+//    List<GetStudentRideDTO> getStudentRides(Long studentIds);
 
 }

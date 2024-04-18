@@ -2,6 +2,7 @@ package com.example.api.services.request_registration;
 
 import com.example.api.controllers.client.dto.StudentAddress;
 import com.example.api.services.request_registration.dto.CreateRequestInput;
+import com.example.api.services.request_registration.dto.GetListRequestRegistrationOutput;
 import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Parent;
 import com.example.shared.db.entities.RequestRegistration;
@@ -29,6 +30,14 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
     @Override
     @Transactional
     public void upsertRegistration(CreateRequestInput input, Account account) {
+        if (input.getStudentIds() == null || input.getStudentIds().isEmpty()) {
+            throw new MyException(
+                null,
+                "STUDENT_IDS_EMPTY",
+                "Student ids empty",
+                HttpStatus.BAD_REQUEST
+            );
+        }
 
         Parent parent = parentRepository.findByAccountId(account.getId()).orElseThrow(
             () -> new MyException(
@@ -38,12 +47,29 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
                 HttpStatus.NOT_FOUND
             )
         );
-        List<RequestRegistration> requestRegistrations = requestRegistrationRepository.findByParentId(input.getParentId());
+
+        // validate student is children of parent
+        List<Long> studentIds = studentRepository.findStudentIdsByParentId(parent.getId());
+        for (Long studentId : input.getStudentIds()) {
+            if (!studentIds.contains(studentId)) {
+                throw new MyException(
+                    null,
+                    "STUDENT_NOT_CHILDREN_OF_PARENT",
+                    "Student not children of parent",
+                    HttpStatus.NOT_FOUND
+                );
+            }
+        }
+
+        // validate if exist request registration for those students => delete them to add new one
+        List<RequestRegistration> requestRegistrations = requestRegistrationRepository
+            .findByParentIdAndStudentIdInAndStatus(parent.getId(), studentIds, RequestRegistrationStatus.PENDING);
         if (!requestRegistrations.isEmpty()) {
             requestRegistrationRepository.deleteAll(requestRegistrations);
         }
-        for (StudentAddress studentAddress : input.getStudentAddress()) {
-            Student student = studentRepository.findById(studentAddress.getStudentId()).orElseThrow(
+
+        for (Long studentId : input.getStudentIds()) {
+            Student student = studentRepository.findById(studentId).orElseThrow(
                 () -> new MyException(
                     null,
                     "STUDENT_NOT_FOUND",
@@ -55,9 +81,35 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
                 .parent(parent)
                 .student(student)
                 .status(RequestRegistrationStatus.PENDING)
+                .address(input.getAddress())
+                .longitude(input.getLongitude())
+                .latitude(input.getLatitude())
                 .build();
             requestRegistrationRepository.save(requestRegistration);
         }
 
+    }
+
+    @Override
+    public List<GetListRequestRegistrationOutput> getListRequestRegistration(Account account) {
+        Parent parent = parentRepository.findByAccountId(account.getId()).orElseThrow(
+            () -> new MyException(
+                null,
+                "PARENT_NOT_FOUND",
+                "Parent not found",
+                HttpStatus.NOT_FOUND
+            )
+        );
+
+        List<RequestRegistration> requestRegistrations = requestRegistrationRepository.findByParentId(parent.getId());
+
+        return requestRegistrations.stream().map(requestRegistration -> {
+            Student student = requestRegistration.getStudent();
+            return GetListRequestRegistrationOutput.builder()
+                .parent(parent)
+                .student(student)
+                .requestRegistration(requestRegistration)
+                .build();
+        }).toList();
     }
 }

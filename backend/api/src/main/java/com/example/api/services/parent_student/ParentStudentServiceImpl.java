@@ -1,8 +1,16 @@
 package com.example.api.services.parent_student;
 
+import com.example.api.services.common_dto.BusOutput;
+import com.example.api.services.common_dto.PickupPointOutput;
+import com.example.api.services.common_dto.RideOutput;
+import com.example.api.services.common_dto.RidePickupPointOutput;
+import com.example.api.services.common_dto.StudentOutput;
 import com.example.api.services.parent_student.dto.GetStudentRideOutput;
 import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Parent;
+import com.example.shared.db.entities.PickupPoint;
+import com.example.shared.db.entities.Ride;
+import com.example.shared.db.entities.Student;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.ParentRepository;
 import com.example.shared.db.repo.PickupPointRepository;
@@ -51,9 +59,52 @@ public class ParentStudentServiceImpl implements ParentStudentService{
         List<GetStudentRideOutput> result = new ArrayList<>();
 
         for (Long studentId : studentIds) {
+            Student student = studentRepository.findById(studentId).orElseThrow(
+                () -> new MyException(
+                    null,
+                    "student_not_found",
+                    "Student not found for id: " + studentId,
+                    HttpStatus.BAD_REQUEST
+                )
+            );
+            PickupPoint pickupPoint = pickupPointRepository.findByStudentId(studentId)
+                .orElse(null);
 
+
+            StudentOutput studentOutput = StudentOutput.fromEntity(student);
+            PickupPointOutput pickupPointOutput = pickupPoint == null ? null :
+                PickupPointOutput.fromEntity(pickupPoint);
+            List<GetStudentRideOutput.ExecutionOutput> executionOutputs = new ArrayList<>();
+
+            if (pickupPoint != null) {
+                List<Ride> rides = rideRepository.findByPickupPointId(pickupPoint.getId());
+
+                for (Ride ride: rides) {
+                    GetStudentRideOutput.ExecutionOutput executionOutput = new GetStudentRideOutput.ExecutionOutput();
+                    executionOutput.setRide(RideOutput.fromEntity(ride));
+                    executionOutput.setBus(BusOutput.fromEntity(ride.getBus()));
+                    executionOutput.setPickupPoints(
+                        ridePickupPointRepository.findPickupPointsByRideId( ride.getId() ).stream()
+                            .map(PickupPointOutput::fromEntity)
+                            .toList()
+                    );
+                    executionOutput.setRidePickupPoints(
+                        ridePickupPointRepository.findByRideId(ride.getId()).stream()
+                            .map(RidePickupPointOutput::fromEntity)
+                            .toList()
+                    );
+                    executionOutputs.add(executionOutput);
+                }
+            }
+
+            GetStudentRideOutput getStudentRideOutput = GetStudentRideOutput.builder()
+                .student(studentOutput)
+                .pickupPoint(pickupPointOutput)
+                .executions(executionOutputs)
+                .build();
+            result.add(getStudentRideOutput);
         }
 
-        return null;
+        return result;
     }
 }
