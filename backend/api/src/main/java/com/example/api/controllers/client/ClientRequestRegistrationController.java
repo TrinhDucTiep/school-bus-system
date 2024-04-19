@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/client/request-registration")
 @RequiredArgsConstructor
 @Slf4j
-public class RequestRegistrationController {
+public class ClientRequestRegistrationController {
     private final RequestRegistrationService requestRegistrationService;
 
     @GetMapping("")

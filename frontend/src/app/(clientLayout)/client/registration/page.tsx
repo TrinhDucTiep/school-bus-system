@@ -184,7 +184,8 @@ const ClientRegistration: React.FC = () => {
                         >
                             <TableHeader columns={[
                                 { key: 'student', label: 'Học sinh' },
-                                { key: 'ride-bus', label: 'Chuyến - Xe' }
+                                { key: 'ride-bus', label: 'Chuyến - Xe' },
+                                { key: 'address', label: 'Điểm đón' }
                             ]}>
                                 {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                             </TableHeader>
@@ -192,7 +193,7 @@ const ClientRegistration: React.FC = () => {
                             <TableBody items={studentRidesData?.result ?? []}>
                                 {(item) => (
                                     <TableRow key={item.student.id}>
-                                        <TableCell>{item.student.name}</TableCell>
+                                        <TableCell>{item?.student?.name}</TableCell>
                                         <TableCell>
                                             {/* {item.executions.map(execution => `${execution.ride.id} - ${execution.bus.numberPlate}`).join(' ')} */}
                                             {item.executions.map((execution, index) =>
@@ -202,6 +203,7 @@ const ClientRegistration: React.FC = () => {
                                                 </React.Fragment>
                                             )}
                                         </TableCell>
+                                        <TableCell>{item?.pickupPoint?.address}</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>

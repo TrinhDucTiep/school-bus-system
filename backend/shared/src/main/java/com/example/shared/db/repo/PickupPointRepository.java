@@ -57,4 +57,14 @@ public interface PickupPointRepository extends JpaRepository<PickupPoint, Long> 
     WHERE spp.student.id = :studentId
     """)
     Optional<PickupPoint> findByStudentId(Long studentId);
+
+    @Query("""
+    DELETE FROM PickupPoint p
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM StudentPickupPoint spp
+        WHERE spp.pickupPoint.id = p.id
+    )
+    """)
+    void deletePickupPointWithNoStudent();
 }
