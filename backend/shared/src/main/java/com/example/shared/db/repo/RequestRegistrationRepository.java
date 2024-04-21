@@ -20,16 +20,16 @@ public interface RequestRegistrationRepository extends JpaRepository<RequestRegi
     );
 
     @Query("""
-        SELECT r.student as student, r.parent as parent, r as requestRegistration
+    SELECT r.student as student, r.parent as parent, r as requestRegistration
         FROM RequestRegistration r
-        WHERE (:studentId IS NULL OR r.student.id = :studentId)
-        AND (:parentId IS NULL OR r.parent.id = :parentId)
-        AND (:statuses IS NULL OR r.status IN :statuses)
-        AND (:address IS NULL OR r.address LIKE %:address%)
+        WHERE (:studentName IS NULL OR r.student.name ILIKE %:studentName%)
+        AND (:parentName IS NULL OR r.parent.name ILIKE %:parentName%)
+        AND (:statuses IS NULL OR r.status IN (:statuses))
+        AND (:address IS NULL OR r.address ILIKE %:address%)
     """)
     Page<GetListRequestRegistrationDTO> getPageRequestRegistration(
-        @Param("studentId") Long studentId,
-        @Param("parentId") Long parentId,
+        @Param("studentName") String studentName,
+        @Param("parentName") String parentName,
         @Param("statuses") List<RequestRegistrationStatus> statuses,
         @Param("address") String address,
         Pageable pageable

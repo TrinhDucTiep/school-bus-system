@@ -10,6 +10,12 @@ export const bus_status_map = [
     { value: 'BROKEN', label: 'Hỏng hóc', color: 'danger' },
 ];
 
+export const request_registration_status_map = [
+    { value: 'PENDING', label: 'Chờ xử lý', color: 'warning' },
+    { value: 'ACCEPTED', label: 'Chấp nhận', color: 'success' },
+    { value: 'REJECTED', label: 'Từ chối', color: 'danger' },
+];
+
 export enum EmployeeRole {
     DRIVER = "DRIVER",
     DRIVER_MATE = "DRIVER_MATE",

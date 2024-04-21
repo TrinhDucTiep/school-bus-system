@@ -15,8 +15,8 @@ public interface RequestRegistrationService {
     List<GetListRequestRegistrationOutput> getListRequestRegistration(Account account);
 
     Page<GetListRequestRegistrationOutput> getPageRequestRegistration(
-        Long studentId,
-        Long parentId,
+        String studentName,
+        String parentName,
         List<RequestRegistrationStatus> statuses,
         String address,
         Pageable pageable

@@ -16,6 +16,7 @@ public class RequestRegistrationOutput {
     private String address;
     private Double longitude;
     private Double latitude;
+    private String note;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -29,6 +30,7 @@ public class RequestRegistrationOutput {
             .address(entity.getAddress())
             .longitude(entity.getLongitude())
             .latitude(entity.getLatitude())
+            .note(entity.getNote())
             .createdAt(entity.getCreatedAt())
             .updatedAt(entity.getUpdatedAt())
             .build();

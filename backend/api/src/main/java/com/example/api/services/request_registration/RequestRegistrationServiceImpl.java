@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -132,13 +133,18 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
     }
 
     @Override
-    public Page<GetListRequestRegistrationOutput> getPageRequestRegistration(Long studentId,
-                                                                             Long parentId,
-                                                                             List<RequestRegistrationStatus> statuses,
-                                                                             String address,
-                                                                             Pageable pageable) {
+    public Page<GetListRequestRegistrationOutput> getPageRequestRegistration(
+        String studentName,
+        String parentName,
+        List<RequestRegistrationStatus> statuses,
+        String address,
+        Pageable pageable
+    ) {
+        if (statuses != null && statuses.isEmpty()) {
+            statuses = null;
+        }
        Page<GetListRequestRegistrationDTO> pageRequestRegistration = requestRegistrationRepository
-           .getPageRequestRegistration(studentId, parentId, statuses, address, pageable);
+           .getPageRequestRegistration(studentName, parentName, statuses, address, pageable);
 
          return pageRequestRegistration.map(GetListRequestRegistrationOutput::fromDTO);
     }
@@ -146,15 +152,32 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
     @Override
     @Transactional
     public void handleRequestRegistration(HandleRequestRegistrationInput input) {
-        RequestRegistration requestRegistration = requestRegistrationRepository
-            .findById(input.getRequestId()).orElseThrow(
-            () -> new MyException(
+        if (input.getRequestIds() == null || input.getRequestIds().isEmpty()) {
+            throw new MyException(
                 null,
-                "REQUEST_REGISTRATION_NOT_FOUND",
-                "Request registration not found",
-                HttpStatus.NOT_FOUND
-            )
-        );
+                "INVALID_INPUT",
+                "Invalid input",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+        for (Long requestId : input.getRequestIds()) {
+            handleSingleRequestRegistration(input, requestId);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handleSingleRequestRegistration(HandleRequestRegistrationInput input,
+                                                Long requestId) {
+        RequestRegistration requestRegistration = requestRegistrationRepository
+            .findById(requestId).orElseThrow(
+                () -> new MyException(
+                    null,
+                    "REQUEST_REGISTRATION_NOT_FOUND",
+                    "Request registration not found",
+                    HttpStatus.NOT_FOUND
+                )
+            );
 
         if (requestRegistration.getStatus() != RequestRegistrationStatus.PENDING) {
             throw new MyException(
@@ -166,16 +189,16 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
         }
 
         requestRegistration.setStatus(input.getStatus());
+        requestRegistration.setNote(input.getNote());
         requestRegistrationRepository.save(requestRegistration);
 
         if (input.getStatus() == RequestRegistrationStatus.ACCEPTED) {
             // delete old pickup point of student
             studentPickupPointRepository.deleteByStudentId(requestRegistration.getStudent().getId());
             // if a pickup point with no student, delete it
-            pickupPointRepository.deletePickupPointWithNoStudent();
+//            pickupPointRepository.deletePickupPointWithNoStudent(); //todo: manage pickup point for admin role later
             // upsert pickup point
-            PickupPoint pickupPoint = pickupPointRepository.findById(input.getPickupPointId())
-                .orElse(null);
+            PickupPoint pickupPoint = null;
             if (pickupPoint == null) {
                 if (input.getAddress() == null || input.getAddress().isBlank()
                     || input.getLongitude() == null || input.getLatitude() == null) {
@@ -191,6 +214,16 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
                     .longitude(input.getLongitude())
                     .latitude(input.getLatitude())
                     .build();
+            } else {
+                pickupPoint = pickupPointRepository.findById(input.getPickupPointId())
+                    .orElseThrow(
+                        () -> new MyException(
+                            null,
+                            "PICKUP_POINT_NOT_FOUND",
+                            "Pickup point not found",
+                            HttpStatus.NOT_FOUND
+                        )
+                    );
             }
 
             pickupPoint = pickupPointRepository.save(pickupPoint);

@@ -47,6 +47,8 @@ public class RequestRegistration {
     private Double longitude;
     private Double latitude;
 
+    private String note;
+
     @CreatedDate
     @CreationTimestamp
     private Instant createdAt;

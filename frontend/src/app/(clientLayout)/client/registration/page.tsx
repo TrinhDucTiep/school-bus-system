@@ -246,17 +246,19 @@ const ClientRegistration: React.FC = () => {
                     <TableHeader columns={[
                         { key: 'student', label: 'Học sinh' },
                         { key: 'address', label: 'Địa điểm đăng ký' },
-                        { key: 'status', label: 'Trạng thái' }
+                        { key: 'status', label: 'Trạng thái' },
+                        { key: 'note', label: 'Ghi chú' }
                     ]}>
                         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                     </TableHeader>
 
                     <TableBody items={requestRegistrationData?.result ?? []}>
                         {(item) => (
-                            <TableRow key={item.requestRegistration.studentId}>
+                            <TableRow key={item.requestRegistration.id}>
                                 <TableCell>{item.student.name}</TableCell>
                                 <TableCell>{item.requestRegistration.address}</TableCell>
                                 <TableCell>{item.requestRegistration.status}</TableCell>
+                                <TableCell>{item.requestRegistration.note}</TableCell>
                             </TableRow>
                         )}
                     </TableBody>

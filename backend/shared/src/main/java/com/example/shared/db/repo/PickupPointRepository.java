@@ -8,8 +8,10 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PickupPointRepository extends JpaRepository<PickupPoint, Long> {
 
@@ -58,13 +60,15 @@ public interface PickupPointRepository extends JpaRepository<PickupPoint, Long> 
     """)
     Optional<PickupPoint> findByStudentId(Long studentId);
 
-    @Query("""
-    DELETE FROM PickupPoint p
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM StudentPickupPoint spp
-        WHERE spp.pickupPoint.id = p.id
-    )
-    """)
-    void deletePickupPointWithNoStudent();
+//    @Modifying
+//    @Transactional
+//    @Query("""
+//    DELETE FROM PickupPoint p
+//    WHERE NOT EXISTS (
+//        SELECT 1
+//        FROM StudentPickupPoint spp
+//        WHERE spp.pickupPoint.id = p.id
+//    )
+//    """)
+//    void deletePickupPointWithNoStudent();
 }

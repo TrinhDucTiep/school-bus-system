@@ -31,8 +31,8 @@ public class RequestRegistrationController {
         Pageable pageable = PageableUtils.generate(page, size, sort);
         return ResponseUtil.toSuccessCommonResponse(
             requestRegistrationService.getPageRequestRegistration(
-                filterParam.getStudentId(),
-                filterParam.getParentId(),
+                filterParam.getStudentName(),
+                filterParam.getParentName(),
                 filterParam.getStatuses(),
                 filterParam.getAddress(),
                 pageable
@@ -40,7 +40,7 @@ public class RequestRegistrationController {
         );
     }
 
-    @PostMapping("")
+    @PostMapping("/handle")
     public ResponseEntity<CommonResponse<Object>> handleRequestRegistration(
         @RequestBody HandleRequestRegistrationRequest request
         ) {
