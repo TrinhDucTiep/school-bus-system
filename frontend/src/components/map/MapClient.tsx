@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FC, RefObject, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import polyline from 'polyline';
 
@@ -16,6 +16,11 @@ const manipulateLocationIcon = L.icon({
 
 const schoolIcon = L.icon({
     iconUrl: 'https://cdn4.iconfinder.com/data/icons/education-738/64/college-school-university-education-building-architecture-256.png',
+    iconSize: [38, 38],
+});
+
+const wavingPeopleIcon = L.icon({
+    iconUrl: 'https://cdn2.iconfinder.com/data/icons/graduated-student-2/512/HumanV1-15-512.png',
     iconSize: [38, 38],
 });
 
@@ -40,6 +45,7 @@ interface MapProps {
     features: IFeature[];
     directionsGetResponse: IDirectionsGetResponse | undefined;
     enableClickMap: boolean;
+    ourPickupPoints: IPickupPoint[];
 }
 
 interface MyComponentProps {
@@ -69,7 +75,12 @@ function MapZoom() {
     return null;
 }
 
-export default function MapClient({ features, directionsGetResponse, enableClickMap }: MapProps) {
+export default function MapClient({
+    features,
+    directionsGetResponse,
+    enableClickMap,
+    ourPickupPoints
+}: MapProps) {
     const zoomRef = useRef<number>(12);
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
 
@@ -87,9 +98,9 @@ export default function MapClient({ features, directionsGetResponse, enableClick
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {geoData.lat && geoData.lng && (
+            {/* {geoData.lat && geoData.lng && (
                 <Marker position={center} icon={locationIcon} />
-            )}
+            )} */}
             {features.map((feature, index) => (
                 <Marker
                     key={index}
@@ -100,7 +111,19 @@ export default function MapClient({ features, directionsGetResponse, enableClick
 
             <ChangeView coords={center} />
 
-            {enableClickMap && <MapClick geoData={geoData} setGeoData={setGeoData} />}
+            {/* {enableClickMap && <MapClick geoData={geoData} setGeoData={setGeoData} />} */}
+
+            {ourPickupPoints?.map((pickupPoint, index) => (
+                <Marker
+                    key={index}
+                    position={{ lat: pickupPoint.latitude, lng: pickupPoint.longitude }}
+                    icon={wavingPeopleIcon}
+                >
+                    <Tooltip>
+                        {pickupPoint.address}
+                    </Tooltip>
+                </Marker>
+            ))}
 
             {directionsGetResponse?.routes.map((route, routeIndex) => {
                 const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude

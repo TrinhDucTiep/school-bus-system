@@ -7,6 +7,8 @@ interface IRequestRegistration {
     latitude: number;
     longitude: number;
     note: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface IAddRequestRegistrationRequest {

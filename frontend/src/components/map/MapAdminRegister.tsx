@@ -49,6 +49,7 @@ interface MapProps {
     directionsGetResponse: IDirectionsGetResponse | undefined;
     enableClickMap: boolean;
     selectedPendingRequestRegistration: IRequestRegistrationResponse[] | null;
+    pickupPointId: number | null;
     setPickupPointId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
@@ -122,6 +123,7 @@ export default function MapAdminRegister(
         directionsGetResponse,
         enableClickMap,
         selectedPendingRequestRegistration,
+        pickupPointId,
         setPickupPointId,
     }: MapProps) {
     const zoomRef = useRef<number>(12);
@@ -162,12 +164,13 @@ export default function MapAdminRegister(
                     position={{ lat: pickupPointTable.pickupPoint.latitude, lng: pickupPointTable.pickupPoint.longitude }} //todo: add detail onclick later when having enough data from client flow
                     icon={
                         pickupPointTable.pickupPoint.address === 'SCHOOL' ? schoolIcon
-                            : locationIcon
+                            : pickupPointId === pickupPointTable.pickupPoint.id ? manipulateLocationIcon
+                                : locationIcon
                     }
                     eventHandlers={{
                         click: () => {
                             if (!enableClickMap) {
-                                setPickupPointId(pickupPointTable.pickupPoint.id);
+                                setPickupPointId(prevId => prevId === pickupPointTable.pickupPoint.id ? null : pickupPointTable.pickupPoint.id);
                             }
                         }
                     }}

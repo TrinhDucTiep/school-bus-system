@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface RequestRegistrationRepository extends JpaRepository<RequestRegistration, Long> {
-    List<RequestRegistration> findByParentId(Long parentId);
+    List<RequestRegistration> findByParentIdOrderByCreatedAtDesc(Long parentId);
 
     List<RequestRegistration> findByParentIdAndStudentIdInAndStatus(
         Long parentId,

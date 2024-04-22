@@ -25,6 +25,7 @@ import {
     SelectItem,
     useDisclosure,
     Tabs,
+    Chip,
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
@@ -188,58 +189,15 @@ const RegisterPage: React.FC = () => {
         }
         handleRequestRegistrationMutation.mutate(handleRequestRegistrationParams);
     }
-    console.log('addressHandle', addressHandle);
-    console.log('latitude', latitude);
-    console.log('longitude', longitude);
-
-    console.log('requestIds', requestIds);
     // pick available pickup point
 
     return (
         <div className='flex flex-col'>
             <div className='flex justify-between w-auto'>
                 <div className='w-5/12 mr-4'>
-                    <Autocomplete
-                        placeholder="Nhập địa điểm"
-                        allowsCustomValue
-                        startContent={<SearchIcon />}
-                        items={autoCompleteData?.features.map((item) => item.properties) || []}
-                        className="m-2 w-full"
-                        selectorIcon={false}
-                        onInputChange={(value) => {
-                            debounceSetAutoCompleteQuery(value);
-                        }}
-                        onSelectionChange={
-                            (selectedId) => {
-                                const selectedItem = autoCompleteData?.features.find((item) => item.properties.id === selectedId);
-                                if (selectedItem) {
-                                    setSelectedAutoCompleteData(selectedItem);
-                                }
-                            }
-                        }
-                        isClearable={false}
-                    >
-                        {(item) =>
-                            <AutocompleteItem
-                                key={item.id}
-                                textValue={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
-                            >
-                                <div className="flex gap-2 items-center">
-                                    <div className='flex-shrink-0'>
-                                        <LocationIcon />
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        {`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
-                                    </div>
-                                </div>
-
-                            </AutocompleteItem>
-                        }
-                    </Autocomplete>
 
                     <div className='flex justify-between'>
-                        <div className='flex gap-2 mx-2'>
+                        <div className='flex gap-2 mx-2 mt-2'>
                             <Input
                                 size='sm'
                                 placeholder='Tên học sinh'
@@ -289,12 +247,26 @@ const RegisterPage: React.FC = () => {
                                 {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                             </TableHeader>
 
-                            <TableBody items={(pendingPageRequestRegistrationData?.result.content ?? []).filter(item => item.requestRegistration.status === 'PENDING')}>
+                            <TableBody
+                                emptyContent='No row to display'
+                                items={(pendingPageRequestRegistrationData?.result.content ?? []).filter(item => item.requestRegistration.status === 'PENDING')}>
                                 {(item) => (
                                     <TableRow key={item.requestRegistration.id}>
                                         <TableCell>{item.student.name}</TableCell>
                                         <TableCell>{item.parent.name}</TableCell>
-                                        <TableCell>{item.requestRegistration.status}</TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                variant='flat'
+                                                color={
+                                                    item.requestRegistration.status === 'PENDING' ? 'warning' :
+                                                        item.requestRegistration.status === 'ACCEPTED' ? 'success' :
+                                                            item.requestRegistration.status === 'REJECTED' ? 'danger' : 'default'
+
+                                                }
+                                            >
+                                                {item.requestRegistration.status}
+                                            </Chip>
+                                        </TableCell>
                                         <TableCell>{item.requestRegistration.address}</TableCell>
                                     </TableRow>
                                 )}
@@ -311,18 +283,61 @@ const RegisterPage: React.FC = () => {
                             <Tab key='REJECTED' title='Từ chối' />
                         </Tabs>
 
-                        <Switch
-                            checked={enableClickMap}
-                            onChange={() => {
-                                setEnableClickMap(!enableClickMap)
-                                if (enableClickMap) {
-                                    setPickupPointId(null);
-                                }
-                            }}
-                        >
-                            {enableClickMap ? 'Tự chọn điểm' : 'Chọn điểm đón'}
-                        </Switch>
+                        {!(handleStatus == 'REJECTED') && (
+                            <Switch
+                                checked={enableClickMap}
+                                onChange={() => {
+                                    setEnableClickMap(!enableClickMap)
+                                    if (enableClickMap) {
+                                        setPickupPointId(null);
+                                    }
+                                }}
+                            >
+                                {enableClickMap ? 'Chọn trên map' : 'Chọn điểm đón'}
+                            </Switch>
+                        )}
                     </div>
+
+                    {enableClickMap && !(handleStatus == 'REJECTED') && (
+                        <Autocomplete
+                            placeholder="Nhập địa điểm"
+                            allowsCustomValue
+                            startContent={<SearchIcon />}
+                            items={autoCompleteData?.features.map((item) => item.properties) || []}
+                            className="m-2 w-full"
+                            selectorIcon={false}
+                            onInputChange={(value) => {
+                                debounceSetAutoCompleteQuery(value);
+                            }}
+                            onSelectionChange={
+                                (selectedId) => {
+                                    const selectedItem = autoCompleteData?.features.find((item) => item.properties.id === selectedId);
+                                    if (selectedItem) {
+                                        setSelectedAutoCompleteData(selectedItem);
+                                    }
+                                }
+                            }
+                            isClearable={false}
+                        >
+                            {(item) =>
+                                <AutocompleteItem
+                                    key={item.id}
+                                    textValue={`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
+                                >
+                                    <div className="flex gap-2 items-center">
+                                        <div className='flex-shrink-0'>
+                                            <LocationIcon />
+                                        </div>
+
+                                        <div className='flex flex-col'>
+                                            {`${item.name ?? ''}, ${item.county ?? ''}, ${item.region ?? ''}, ${item.country ?? ''}`}
+                                        </div>
+                                    </div>
+
+                                </AutocompleteItem>
+                            }
+                        </Autocomplete>
+                    )}
 
                     <div className='flex justify-end mx-2'>
                         <Button
@@ -346,6 +361,7 @@ const RegisterPage: React.FC = () => {
                         directionsGetResponse={directionsGetResponse}
                         enableClickMap={enableClickMap}
                         selectedPendingRequestRegistration={selectedPendingRequestRegistration}
+                        pickupPointId={pickupPointId}
                         setPickupPointId={setPickupPointId}
                     />
                 </div >
@@ -394,18 +410,29 @@ const RegisterPage: React.FC = () => {
                         { key: 'student', label: 'Học sinh' },
                         { key: 'parent', label: 'Phụ huynh' },
                         { key: 'status', label: 'Trạng thái' },
-                        { key: 'address', label: 'Địa chỉ' },
+                        { key: 'address', label: 'Địa chỉ đăng ký' },
                         { key: 'note', label: 'Ghi chú' },
                     ]}>
                         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                     </TableHeader>
 
-                    <TableBody items={(pageRequestRegistrationData?.result.content ?? [])}>
+                    <TableBody items={(pageRequestRegistrationData?.result.content ?? [])} emptyContent='No row to display'>
                         {(item) => (
                             <TableRow key={item.requestRegistration.id}>
                                 <TableCell>{item.student.name}</TableCell>
                                 <TableCell>{item.parent.name}</TableCell>
-                                <TableCell>{item.requestRegistration.status}</TableCell>
+                                <TableCell>
+                                    <Chip
+                                        variant='flat'
+                                        color={
+                                            item.requestRegistration.status === 'PENDING' ? 'warning' :
+                                                item.requestRegistration.status === 'ACCEPTED' ? 'success' :
+                                                    item.requestRegistration.status === 'REJECTED' ? 'danger' : 'default'
+                                        }
+                                    >
+                                        {item.requestRegistration.status}
+                                    </Chip>
+                                </TableCell>
                                 <TableCell>{item.requestRegistration.address}</TableCell>
                                 <TableCell>{item.requestRegistration.note}</TableCell>
                             </TableRow>

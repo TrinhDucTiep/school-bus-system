@@ -112,7 +112,7 @@ const StudentTable: React.FC = () => {
                     )}
                 </TableHeader>
                 {data?.result && data.result.content ? (
-                    <TableBody items={data.result.content}>
+                    <TableBody items={data.result.content} emptyContent='No row to display'>
                         {(item) => (
                             <TableRow key={item.id}>
                                 {(columnKey) => (

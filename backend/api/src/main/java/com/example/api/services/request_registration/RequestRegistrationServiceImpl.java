@@ -120,7 +120,8 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
             )
         );
 
-        List<RequestRegistration> requestRegistrations = requestRegistrationRepository.findByParentId(parent.getId());
+        List<RequestRegistration> requestRegistrations = requestRegistrationRepository
+            .findByParentIdOrderByCreatedAtDesc(parent.getId());
 
         return requestRegistrations.stream().map(requestRegistration -> {
             Student student = requestRegistration.getStudent();
@@ -199,7 +200,7 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
 //            pickupPointRepository.deletePickupPointWithNoStudent(); //todo: manage pickup point for admin role later
             // upsert pickup point
             PickupPoint pickupPoint = null;
-            if (pickupPoint == null) {
+            if (input.getPickupPointId() == null) {
                 if (input.getAddress() == null || input.getAddress().isBlank()
                     || input.getLongitude() == null || input.getLatitude() == null) {
                     throw new MyException(
@@ -235,6 +236,8 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
                     .status(StudentPickupPointStatus.PICKING)
                     .build()
             );
+            // save note for request registration
+            requestRegistration.setNote( "Địa chỉ tiếp nhận: " + pickupPoint.getAddress());
             // save history
             studentPickupPointHistoryRepository.save(
                 StudentPickupPointHistory.builder()

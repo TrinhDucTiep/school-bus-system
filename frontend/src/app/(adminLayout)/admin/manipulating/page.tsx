@@ -18,7 +18,8 @@ import {
     ModalBody,
     ModalFooter,
     useDisclosure,
-    Switch
+    Switch,
+    Chip
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
@@ -45,7 +46,7 @@ const ManipulatingPage: React.FC = () => {
     const { data: autoCompleteData, isLoading: autoCompleteLoading, error: autoCompleteError } = useGetAutoComplete(autoCompleteParams);
     const [selectedAutoCompleteData, setSelectedAutoCompleteData] = React.useState<IFeature | null>(null);
 
-    
+
     // get directions
     const useGetDirectionsParams: IDirectionsParams = {
         coordinates: [[105.804817, 21.028511], [105.803577, 21.03422], [105.80325113694303, 21.03586062789824]]
@@ -208,11 +209,24 @@ const ManipulatingPage: React.FC = () => {
                             ]}>
                                 {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                             </TableHeader>
-                            <TableBody items={listManipulateBus?.result ?? []}>
+                            <TableBody items={listManipulateBus?.result ?? []} emptyContent='No row to display'>
                                 {(item) => (
                                     <TableRow key={item.bus.id}>
                                         <TableCell>{item.bus.numberPlate}</TableCell>
-                                        <TableCell>{item.bus.status}</TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                variant='flat'
+                                                color={
+                                                    item.bus.status === 'AVAILABLE' ? 'success' :
+                                                        item.bus.status === 'RUNNING' ? 'warning' :
+                                                            item.bus.status === 'BROKEN' ? 'danger' :
+                                                                item.bus.status === 'MAINTENANCE' ? 'primary' : 'default'
+
+                                                }
+                                            >
+                                                {item.bus.status}
+                                            </Chip>
+                                        </TableCell>
                                         <TableCell>{item?.ride?.id}</TableCell>
                                     </TableRow>
                                 )}

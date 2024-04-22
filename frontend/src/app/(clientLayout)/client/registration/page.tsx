@@ -21,6 +21,7 @@ import {
     ModalBody,
     ModalFooter,
     useDisclosure,
+    Chip,
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
@@ -30,6 +31,7 @@ import LocationIcon from '@/components/icons/location-icon';
 import { useGetStudentRides } from '@/services/client/parentStudentService';
 import { useAddRequestRegistration, useGetRequestRegistration } from '@/services/client/clientRequestRegistrationService';
 import { on } from 'events';
+import { convertStringInstantToDate } from '@/util/dateConverter';
 
 
 
@@ -184,25 +186,24 @@ const ClientRegistration: React.FC = () => {
                         >
                             <TableHeader columns={[
                                 { key: 'student', label: 'Học sinh' },
-                                { key: 'ride-bus', label: 'Chuyến - Xe' },
+                                // { key: 'ride-bus', label: 'Chuyến - Xe' },
                                 { key: 'address', label: 'Điểm đón' }
                             ]}>
                                 {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                             </TableHeader>
 
-                            <TableBody items={studentRidesData?.result ?? []}>
+                            <TableBody items={studentRidesData?.result ?? []} emptyContent='No row to display'>
                                 {(item) => (
                                     <TableRow key={item.student.id}>
                                         <TableCell>{item?.student?.name}</TableCell>
-                                        <TableCell>
-                                            {/* {item.executions.map(execution => `${execution.ride.id} - ${execution.bus.numberPlate}`).join(' ')} */}
+                                        {/* <TableCell>
                                             {item.executions.map((execution, index) =>
                                                 <React.Fragment key={index}>
                                                     {`${execution.ride.id} - ${execution.bus.numberPlate}`}
                                                     {index < item.executions.length - 1 && <br />}
                                                 </React.Fragment>
                                             )}
-                                        </TableCell>
+                                        </TableCell> */}
                                         <TableCell>{item?.pickupPoint?.address}</TableCell>
                                     </TableRow>
                                 )}
@@ -229,7 +230,8 @@ const ClientRegistration: React.FC = () => {
                         features={selectedAutoCompleteData ? [selectedAutoCompleteData] : []}
                         directionsGetResponse={directionsGetResponse}
                         enableClickMap={enableClickMap}
-                    />
+                        // ourPickupPoint={studentRidesData?.result?.filter(item => studentIds.includes(item.student.id)).map(item => item.pickupPoint) ?? []}
+                        ourPickupPoints={studentRidesData?.result?.map(item => item.pickupPoint).filter(pickupPoint => pickupPoint !== null) ?? []} />
                 </div >
             </div>
 
@@ -247,17 +249,31 @@ const ClientRegistration: React.FC = () => {
                         { key: 'student', label: 'Học sinh' },
                         { key: 'address', label: 'Địa điểm đăng ký' },
                         { key: 'status', label: 'Trạng thái' },
+                        { key: 'ngày đăng ký', label: 'Ngày đăng ký' },
                         { key: 'note', label: 'Ghi chú' }
                     ]}>
                         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                     </TableHeader>
 
-                    <TableBody items={requestRegistrationData?.result ?? []}>
+                    <TableBody items={requestRegistrationData?.result ?? []} emptyContent='No row to display'>
                         {(item) => (
                             <TableRow key={item.requestRegistration.id}>
                                 <TableCell>{item.student.name}</TableCell>
                                 <TableCell>{item.requestRegistration.address}</TableCell>
-                                <TableCell>{item.requestRegistration.status}</TableCell>
+                                <TableCell>
+                                    <Chip
+                                        variant='flat'
+                                        color={
+                                            item.requestRegistration.status === 'PENDING' ? 'warning' :
+                                                item.requestRegistration.status === 'ACCEPTED' ? 'success' :
+                                                    item.requestRegistration.status === 'REJECTED' ? 'danger' : 'default'
+
+                                        }
+                                    >
+                                        {item.requestRegistration.status}
+                                    </Chip>
+                                </TableCell>
+                                <TableCell>{convertStringInstantToDate(item.requestRegistration.createdAt)}</TableCell>
                                 <TableCell>{item.requestRegistration.note}</TableCell>
                             </TableRow>
                         )}

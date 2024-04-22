@@ -100,7 +100,7 @@ const ParentTable: React.FC = () => {
                     )}
                 </TableHeader>
                 {parentList?.result && parentList.result.content ? (
-                    <TableBody items={parentList.result.content}>
+                    <TableBody items={parentList.result.content} emptyContent='No row to display'>
                         {(item) => (
                             <TableRow key={item.id}>
                                 {(columnKey) => (
