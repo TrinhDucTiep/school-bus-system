@@ -17,6 +17,9 @@ import com.example.shared.db.repo.StudentPickupPointRepository;
 import com.example.shared.enumeration.RidePickupPointStatus;
 import com.example.shared.enumeration.RideStatus;
 import com.example.shared.exception.MyException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -166,6 +169,20 @@ public class RideServiceImpl implements RideService {
                     .build()
             );
         });
+
+        // default upsert back to school ride is reversed from school ride
+        if (upsertRideInput.getIsToSchool()) {
+            upsertRideInput.setIsToSchool(false);
+            upsertRideInput.setStartFrom("School");
+            // always start at 17:45pm, not related to the input
+            ZonedDateTime startAtZonedDateTime = upsertRideInput.getStartAt().atZone(ZoneId.systemDefault());
+            ZonedDateTime newStartAtZonedDateTime = startAtZonedDateTime.withHour(17).withMinute(45);
+            upsertRideInput.setStartAt(newStartAtZonedDateTime.toInstant());
+            upsertRideInput.setEndAt(null);
+            Collections.reverse(upsertRideInput.getPickupPointIds());
+
+            upsertRide(upsertRideInput);
+        }
     }
 
     @Override
