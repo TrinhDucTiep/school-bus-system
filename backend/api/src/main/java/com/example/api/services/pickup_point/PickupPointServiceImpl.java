@@ -39,10 +39,6 @@ public class PickupPointServiceImpl implements PickupPointService {
     @Override
     public Page<GetListPickupPointOutput> getListPickupPoint(PickupPointFilterParam filterParam,
                                                              Pageable pageable) {
-//        Page<GetListPickupPointDTO> pickupPointPage = pickupPointRepository.getListPickupPoint(
-//            filterParam.getAddress(), pageable);
-//
-//        return pickupPointPage.map(GetListPickupPointOutput::fromDto);
         Page<PickupPoint> pickupPointPage = pickupPointRepository.getPagePickupPoint(
             filterParam.getAddress(), pageable);
 
