@@ -32,6 +32,16 @@ public interface PickupPointRepository extends JpaRepository<PickupPoint, Long> 
     );
 
     @Query("""
+    SELECT p
+    FROM PickupPoint p
+    WHERE (:address is NULL or p.address ILIKE %:address%)
+    """)
+    Page<PickupPoint> getPagePickupPoint(
+        @Param("address") String address,
+        Pageable pageable
+    );
+
+    @Query("""
     SELECT p AS pickupPoint, 
            s AS student
     FROM Student s

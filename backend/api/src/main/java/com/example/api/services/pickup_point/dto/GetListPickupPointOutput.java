@@ -4,6 +4,7 @@ import com.example.api.services.common_dto.PickupPointOutput;
 import com.example.api.services.common_dto.RideOutput;
 import com.example.api.services.common_dto.StudentOutput;
 import com.example.shared.db.dto.GetListPickupPointDTO;
+import com.example.shared.db.entities.PickupPoint;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,14 @@ public class GetListPickupPointOutput {
                 (dto.getRides() == null) ? null :
                     dto.getRides().stream().map(RideOutput::fromEntity).toList()
             )
+            .build();
+    }
+
+    public static GetListPickupPointOutput fromEntity(PickupPoint entity) {
+        return GetListPickupPointOutput.builder()
+            .pickupPoint(PickupPointOutput.fromEntity(entity))
+            .students(null)
+            .rides(null)
             .build();
     }
 }

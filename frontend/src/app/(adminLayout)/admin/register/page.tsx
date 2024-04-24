@@ -123,7 +123,7 @@ const RegisterPage: React.FC = () => {
         statuses: 'PENDING',
         address: addressPending,
         page: pendingPage - 1,
-        size: 10,
+        size: 5,
         sort: '-createdAt'
     }
     const { data: pendingPageRequestRegistrationData, isLoading: pendingPageRequestRegistrationLoading, error: pendingPageRequestRegistrationError } = useGetPageRequestRegistration(pendingPageRequestRegistrationParams);

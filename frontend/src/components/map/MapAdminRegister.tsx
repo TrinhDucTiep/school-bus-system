@@ -135,7 +135,7 @@ export default function MapAdminRegister(
         <MapContainer
             center={center}
             zoom={12}
-            style={{ height: '70vh' }}
+            style={{ height: '85vh' }}
         >
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

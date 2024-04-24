@@ -53,4 +53,13 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 //        """)
 //    List<GetStudentRideDTO> getStudentRides(Long studentIds);
 
+    // findAllByPickupPointId
+    @Query("""
+        select s from Student s
+        join StudentPickupPoint spp on s.id = spp.student.id
+        join spp.pickupPoint pp
+        where pp.id = :pickupPointId
+    """)
+    List<Student> findAllByPickupPointId(@Param("pickupPointId") Long pickupPointId);
+
 }

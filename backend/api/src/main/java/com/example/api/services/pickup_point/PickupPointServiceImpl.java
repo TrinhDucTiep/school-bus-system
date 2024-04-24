@@ -1,6 +1,8 @@
 package com.example.api.services.pickup_point;
 
 import com.example.api.controllers.admin.dto.PickupPointFilterParam;
+import com.example.api.services.common_dto.RideOutput;
+import com.example.api.services.common_dto.StudentOutput;
 import com.example.api.services.pickup_point.dto.AddPickupPointInput;
 import com.example.api.services.pickup_point.dto.GetListPickupPointOutput;
 import com.example.api.services.pickup_point.dto.UpdatePickupPointInput;
@@ -9,8 +11,10 @@ import com.example.shared.db.entities.PickupPoint;
 import com.example.shared.db.repo.ParentRepository;
 import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
+import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.RoutePickupPointRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
+import com.example.shared.db.repo.StudentRepository;
 import com.example.shared.exception.MyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,14 +33,33 @@ public class PickupPointServiceImpl implements PickupPointService {
     private final RidePickupPointRepository ridePickupPointRepository;
     private final RoutePickupPointRepository routePickupPointRepository;
     private final ParentRepository parentRepository;
+    private final StudentRepository studentRepository;
+    private final RideRepository rideRepository;
 
     @Override
     public Page<GetListPickupPointOutput> getListPickupPoint(PickupPointFilterParam filterParam,
                                                              Pageable pageable) {
-        Page<GetListPickupPointDTO> pickupPointPage = pickupPointRepository.getListPickupPoint(
+//        Page<GetListPickupPointDTO> pickupPointPage = pickupPointRepository.getListPickupPoint(
+//            filterParam.getAddress(), pageable);
+//
+//        return pickupPointPage.map(GetListPickupPointOutput::fromDto);
+        Page<PickupPoint> pickupPointPage = pickupPointRepository.getPagePickupPoint(
             filterParam.getAddress(), pageable);
 
-        return pickupPointPage.map(GetListPickupPointOutput::fromDto);
+        Page<GetListPickupPointOutput> result = pickupPointPage.map(GetListPickupPointOutput::fromEntity);
+        // find all students and rides for each pickup point
+        for (GetListPickupPointOutput output : result) {
+            output.setStudents(
+                studentRepository.findAllByPickupPointId(output.getPickupPoint().getId())
+                    .stream().map(StudentOutput::fromEntity).toList()
+            );
+            output.setRides(
+                rideRepository.findByPickupPointId(output.getPickupPoint().getId())
+                    .stream().map(RideOutput::fromEntity).toList()
+            );
+        }
+
+        return result;
     }
 
     @Override

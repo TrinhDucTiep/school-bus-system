@@ -230,7 +230,6 @@ const ClientRegistration: React.FC = () => {
                         features={selectedAutoCompleteData ? [selectedAutoCompleteData] : []}
                         directionsGetResponse={directionsGetResponse}
                         enableClickMap={enableClickMap}
-                        // ourPickupPoint={studentRidesData?.result?.filter(item => studentIds.includes(item.student.id)).map(item => item.pickupPoint) ?? []}
                         ourPickupPoints={studentRidesData?.result?.map(item => item.pickupPoint).filter(pickupPoint => pickupPoint !== null) ?? []} />
                 </div >
             </div>
