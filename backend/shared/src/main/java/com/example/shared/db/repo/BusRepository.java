@@ -5,6 +5,7 @@ import com.example.shared.db.entities.Bus;
 import com.example.shared.enumeration.BusStatus;
 import com.example.shared.enumeration.EmployeeRole;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -59,4 +60,8 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
         @Param("role") String role,
         @Param("query") String numberPlate
     );
+
+    Optional<Bus> findByDriverId(Long driverId);
+
+    Optional<Bus> findByDriverMateId(Long driverMateId);
 }

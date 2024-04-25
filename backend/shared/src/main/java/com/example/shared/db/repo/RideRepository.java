@@ -4,6 +4,7 @@ import com.example.shared.db.entities.Ride;
 import com.example.shared.enumeration.RideStatus;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +33,13 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
             WHERE rpp.pickupPoint.id = :pickupPointId
     """)
     List<Ride> findByPickupPointId(Long pickupPointId);
+
+    @Query("""
+        SELECT r
+        FROM Ride r
+        WHERE r.bus.id = :busId
+        AND r.status = :status
+        AND DATE(r.startAt) = DATE(:startAt)
+    """)
+    Optional<Ride> findByBusIdAndStatusAndStartAt(Long busId, RideStatus status, Instant startAt);
 }

@@ -1,13 +1,25 @@
 package com.example.api.services.pickup_point;
 
 import com.example.api.controllers.admin.dto.PickupPointFilterParam;
+import com.example.api.services.common_dto.BusOutput;
+import com.example.api.services.common_dto.EmployeeOutput;
+import com.example.api.services.common_dto.PickupPointOutput;
 import com.example.api.services.common_dto.RideOutput;
 import com.example.api.services.common_dto.StudentOutput;
+import com.example.api.services.common_dto.StudentPickupPointOutput;
 import com.example.api.services.pickup_point.dto.AddPickupPointInput;
 import com.example.api.services.pickup_point.dto.GetListPickupPointOutput;
+import com.example.api.services.pickup_point.dto.ManipulatePickupPointOutput;
 import com.example.api.services.pickup_point.dto.UpdatePickupPointInput;
 import com.example.shared.db.dto.GetListPickupPointDTO;
+import com.example.shared.db.entities.Account;
+import com.example.shared.db.entities.Bus;
+import com.example.shared.db.entities.Employee;
 import com.example.shared.db.entities.PickupPoint;
+import com.example.shared.db.entities.Ride;
+import com.example.shared.db.repo.AccountRepository;
+import com.example.shared.db.repo.BusRepository;
+import com.example.shared.db.repo.EmployeeRepository;
 import com.example.shared.db.repo.ParentRepository;
 import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
@@ -15,7 +27,12 @@ import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.RoutePickupPointRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
 import com.example.shared.db.repo.StudentRepository;
+import com.example.shared.enumeration.EmployeeRole;
+import com.example.shared.enumeration.RideStatus;
 import com.example.shared.exception.MyException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class PickupPointServiceImpl implements PickupPointService {
+    private final AccountRepository accountRepository;
+    private final EmployeeRepository employeeRepository;
     private final PickupPointRepository pickupPointRepository;
     private final StudentPickupPointRepository studentPickupPointRepository;
     private final RidePickupPointRepository ridePickupPointRepository;
@@ -35,6 +54,7 @@ public class PickupPointServiceImpl implements PickupPointService {
     private final ParentRepository parentRepository;
     private final StudentRepository studentRepository;
     private final RideRepository rideRepository;
+    private final BusRepository busRepository;
 
     @Override
     public Page<GetListPickupPointOutput> getListPickupPoint(PickupPointFilterParam filterParam,
@@ -144,5 +164,114 @@ public class PickupPointServiceImpl implements PickupPointService {
         routePickupPointRepository.deleteAllByPickupPoint(pickupPoint);
 
         pickupPointRepository.delete(pickupPoint);
+    }
+
+    @Override
+    public ManipulatePickupPointOutput getListManipulatePickupPoint(Account account) {
+        Employee driver;
+        Employee driverMate;
+        Bus bus;
+
+        // find driver, driver mate, and bus
+        Employee employee = employeeRepository.findByAccountId(account.getId())
+            .orElseThrow(() -> new MyException(
+                null,
+                "EMPLOYEE_NOT_FOUND",
+                "Employee with account id " + account.getId() + " not found",
+                HttpStatus.NOT_FOUND
+            ));
+
+        if (employee.getRole().equals(EmployeeRole.DRIVER)) {
+            driver = employee;
+            bus = busRepository.findByDriverId(driver.getId())
+                .orElseThrow(() -> new MyException(
+                    null,
+                    "BUS_NOT_FOUND",
+                    "Bus with driver id " + driver.getId() + " not found",
+                    HttpStatus.NOT_FOUND
+                ));
+            driverMate = employeeRepository.findById(bus.getDriverMateId())
+                .orElseThrow(() -> new MyException(
+                    null,
+                    "EMPLOYEE_NOT_FOUND",
+                    "Employee with id " + bus.getDriverMateId() + " not found",
+                    HttpStatus.NOT_FOUND
+                ));
+        } else {
+            driverMate = employee;
+            bus = busRepository.findByDriverMateId(driverMate.getId())
+                .orElseThrow(() -> new MyException(
+                    null,
+                    "BUS_NOT_FOUND",
+                    "Bus with driver mate id " + driverMate.getId() + " not found",
+                    HttpStatus.NOT_FOUND
+                ));
+            driver = employeeRepository.findById(bus.getDriverId())
+                .orElseThrow(() -> new MyException(
+                    null,
+                    "EMPLOYEE_NOT_FOUND",
+                    "Employee with id " + bus.getDriverId() + " not found",
+                    HttpStatus.NOT_FOUND
+                ));
+        }
+
+        // find manipulate ride
+        Ride ride = rideRepository.findByBusIdAndStatusAndStartAt(
+            bus.getId(),
+            RideStatus.PENDING,
+            Instant.now()
+        ).orElseThrow(() -> new MyException(
+            null,
+            "RIDE_NOT_FOUND",
+            "Ride with bus id " + bus.getId() + " and status PENDING not found",
+            HttpStatus.NOT_FOUND
+        ));
+
+        // find pickup points & corresponding students
+        List<ManipulatePickupPointOutput.PickupPointWithStudent> pickupPointWithStudents = new ArrayList<>();
+        List<PickupPoint> pickupPoints = pickupPointRepository.findAll();
+        for (PickupPoint pickupPoint : pickupPoints) {
+            // find students & student pickup points
+            List<ManipulatePickupPointOutput.PickupPointWithStudent.StudentWithPickupPoint> studentWithPickupPoints = new ArrayList<>();
+            List<StudentOutput> students = studentRepository.findAllByPickupPointId(pickupPoint.getId())
+                .stream().map(StudentOutput::fromEntity).toList();
+            for (StudentOutput student : students) {
+                studentWithPickupPoints.add(
+                    ManipulatePickupPointOutput.PickupPointWithStudent.StudentWithPickupPoint.builder()
+                        .student(student)
+                        .studentPickupPoint(
+                            StudentPickupPointOutput.fromEntity(
+                                studentPickupPointRepository.findByStudentIdAndPickupPointId(
+                                    student.getId(),
+                                    pickupPoint.getId()
+                                ).orElseThrow(() -> new MyException(
+                                    null,
+                                    "STUDENT_PICKUP_POINT_NOT_FOUND",
+                                    "Student pickup point with student id " + student.getId() +
+                                        " and pickup point id " + pickupPoint.getId() + " not found",
+                                    HttpStatus.NOT_FOUND
+                                ))
+                            )
+                        )
+                        .build()
+                );
+            }
+
+            pickupPointWithStudents.add(
+                ManipulatePickupPointOutput.PickupPointWithStudent.builder()
+                    .pickupPoint(PickupPointOutput.fromEntity(pickupPoint))
+                    .studentWithPickupPoints(studentWithPickupPoints)
+                    .build()
+            );
+
+        }
+
+        return ManipulatePickupPointOutput.builder()
+            .bus(BusOutput.fromEntity(bus))
+            .driver(EmployeeOutput.fromEntity(driver))
+            .driverMate(EmployeeOutput.fromEntity(driverMate))
+            .ride(RideOutput.fromEntity(ride))
+            .pickupPointWithStudents(pickupPointWithStudents)
+            .build();
     }
 }

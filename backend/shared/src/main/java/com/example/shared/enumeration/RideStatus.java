@@ -4,6 +4,7 @@ public enum RideStatus {
     PENDING("PENDING"),
     READY("READY"),
     RUNNING("RUNNING"),
+    AT_SCHOOL("AT_SCHOOL"),
     FINISHED("FINISHED");
 
 

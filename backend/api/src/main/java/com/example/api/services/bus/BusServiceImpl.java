@@ -233,7 +233,6 @@ public class BusServiceImpl implements BusService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         List<Bus> buses = busRepository.findAll(sort);
         for (Bus bus : buses) {
-//            List<Ride> rides = rideRepository.findByBusIdAndStatus(bus.getId(), RideStatus.PENDING);
             List<Ride> rides = rideRepository.findByManipulateRide(
                 bus.getId(),
                 RideStatus.PENDING,
