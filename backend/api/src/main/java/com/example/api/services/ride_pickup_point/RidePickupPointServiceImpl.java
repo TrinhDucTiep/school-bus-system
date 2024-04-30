@@ -3,10 +3,15 @@ package com.example.api.services.ride_pickup_point;
 import com.example.api.services.ride_pickup_point.dto.AddRidePickupPointInput;
 import com.example.api.services.ride_pickup_point.dto.GetListRidePickupPointOutput;
 import com.example.api.services.ride_pickup_point.dto.RidePickupPointFilterParam;
+import com.example.api.services.ride_pickup_point.dto.UpdateRidePickupPointEmployeeInput;
 import com.example.api.services.ride_pickup_point.dto.UpdateRidePickupPointInput;
 import com.example.shared.db.dto.GetListRidePickupPointDTO;
+import com.example.shared.db.entities.Account;
+import com.example.shared.db.entities.Bus;
+import com.example.shared.db.entities.Employee;
 import com.example.shared.db.entities.RidePickupPoint;
 import com.example.shared.db.entities.RidePickupPointHistory;
+import com.example.shared.db.repo.EmployeeRepository;
 import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RidePickupPointHistoryRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
@@ -28,6 +33,7 @@ public class RidePickupPointServiceImpl implements RidePickupPointService{
     private final RideRepository rideRepository;
     private final PickupPointRepository pickupPointRepository;
     private final RidePickupPointHistoryRepository ridePickupPointHistoryRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
     public Page<GetListRidePickupPointOutput> getListRidePickupPoint(
@@ -120,5 +126,29 @@ public class RidePickupPointServiceImpl implements RidePickupPointService{
 
         // delete ride pickup point
         ridePickupPointRepository.deleteAllById(ridePickupPointIds);
+    }
+
+    @Override
+    @Transactional
+    public void updateRidePickupPointEmployee(
+        UpdateRidePickupPointEmployeeInput input,
+        Account account) {
+        Employee employee = employeeRepository.findByAccountId(account.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+
+        RidePickupPoint ridePickupPoint = ridePickupPointRepository.findByRideIdAndPickupPointId(
+                    input.getRideId(),
+                    input.getPickupPointId()
+                ).orElseThrow(() -> new IllegalArgumentException("Ride pickup point not found"));
+
+        // validate if employee is assigned to ride pickup point
+        Bus bus = ridePickupPoint.getRide().getBus();
+        if (!bus.getDriverId().equals(employee.getId()) &&
+            !bus.getDriverMateId().equals(employee.getId())) {
+            throw new IllegalArgumentException("Employee is not assigned to ride pickup point");
+        }
+
+        ridePickupPoint.setStatus(input.getStatus());
+        ridePickupPointRepository.save(ridePickupPoint);
     }
 }

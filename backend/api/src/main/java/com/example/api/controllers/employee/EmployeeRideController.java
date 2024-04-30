@@ -1,7 +1,7 @@
 package com.example.api.controllers.employee;
 
-import com.example.api.controllers.employee.dto.UpdateStudentPickupPointRequest;
-import com.example.api.services.student_pickup_point.StudentPickupPointService;
+import com.example.api.controllers.employee.dto.UpdateRideRequest;
+import com.example.api.services.ride.RideService;
 import com.example.shared.db.entities.Account;
 import com.example.shared.response.CommonResponse;
 import com.example.shared.utils.ResponseUtil;
@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/employee/student-pickup-point")
+@RequestMapping("/api/v1/employee/ride")
 @RequiredArgsConstructor
 @Slf4j
-public class EmployeeStudentPickupPointController {
-    private final StudentPickupPointService studentPickupPointService;
+public class EmployeeRideController {
+    private final RideService rideService;
 
     @PutMapping()
-    public ResponseEntity<CommonResponse<Object>> updateStudentPickupPoints(
-        @RequestBody UpdateStudentPickupPointRequest request,
+    public ResponseEntity<CommonResponse<Object>> updateRide(
+        @RequestBody UpdateRideRequest request,
         @AuthenticationPrincipal Account account
     ) {
-        studentPickupPointService.updateStudentPickupPointEmployee(request.toInput(), account);
-        return ResponseUtil.toSuccessCommonResponse("Update student pickup point successfully");
+        rideService.updateRideEmployee(request.toInput(), account);
+        return ResponseUtil.toSuccessCommonResponse("Update bus successfully");
     }
 }

@@ -1,13 +1,17 @@
 package com.example.api.services.ride;
 
+import com.example.api.services.ride.dto.UpdateRideEmployeeInput;
 import com.example.api.services.ride.dto.UpsertRideInput;
 import com.example.api.services.ride.dto.UpdateRideInput;
+import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Bus;
+import com.example.shared.db.entities.Employee;
 import com.example.shared.db.entities.PickupPoint;
 import com.example.shared.db.entities.Ride;
 import com.example.shared.db.entities.RidePickupPoint;
 import com.example.shared.db.entities.RidePickupPointHistory;
 import com.example.shared.db.repo.BusRepository;
+import com.example.shared.db.repo.EmployeeRepository;
 import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RideHistoryRepository;
 import com.example.shared.db.repo.RidePickupPointHistoryRepository;
@@ -32,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class RideServiceImpl implements RideService {
+    private final EmployeeRepository employeeRepository;
     private final RideRepository rideRepository;
     private final RidePickupPointRepository ridePickupPointRepository;
     private final BusRepository busRepository;
@@ -214,5 +219,43 @@ public class RideServiceImpl implements RideService {
         ride.setStatus(updateRideInput.getStatus());
         rideRepository.save(ride);
         rideHistoryRepository.save(ride.toRideHistory());
+    }
+
+    @Override
+    @Transactional
+    public void updateRideEmployee(UpdateRideEmployeeInput updateRideEmployeeInput,
+                                   Account account) {
+        Employee employee = employeeRepository.findByAccountId(account.getId())
+                .orElseThrow(() -> new MyException(
+                    null,
+                    "employee_not_found",
+                    "Employee not found with account id: " + account.getId(),
+                    HttpStatus.BAD_REQUEST
+                ));
+
+        // find by ride id
+        Ride ride = rideRepository.findById(updateRideEmployeeInput.getRideId())
+                .orElseThrow(() -> new MyException(
+                    null,
+                    "ride_not_found",
+                    "Ride not found with id: " + updateRideEmployeeInput.getRideId(),
+                    HttpStatus.BAD_REQUEST
+                ));
+
+        // validate employee assign to ride
+        Bus bus = ride.getBus();
+        if (!bus.getDriverId().equals(employee.getId()) &&
+            !bus.getDriverMateId().equals(employee.getId())) {
+            throw new MyException(
+                null,
+                "employee_not_assign_to_ride",
+                "Employee not assign to ride",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+        // update ride status
+        ride.setStatus(updateRideEmployeeInput.getStatus());
+        rideRepository.save(ride);
     }
 }

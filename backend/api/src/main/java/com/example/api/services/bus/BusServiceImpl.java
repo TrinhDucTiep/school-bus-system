@@ -5,8 +5,10 @@ import com.example.api.services.bus.dto.GetListBusOutput;
 import com.example.api.services.bus.dto.GetListManipulateBusOutPut;
 import com.example.api.services.bus.dto.ListBusFilterParam;
 import com.example.api.services.bus.dto.AddBusInput;
+import com.example.api.services.bus.dto.UpdateBusEmployeeInput;
 import com.example.api.services.bus.dto.UpdateBusInput;
 import com.example.shared.db.dto.GetListBusDTO;
+import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Bus;
 import com.example.shared.db.entities.Employee;
 import com.example.shared.db.entities.Ride;
@@ -258,6 +260,37 @@ public class BusServiceImpl implements BusService {
         }
 
         return result;
+    }
+
+    @Override
+    @Transactional
+    public void updateBusEmployee(UpdateBusEmployeeInput input, Account account) {
+
+        Employee employee = employeeRepository.findByAccountId(account.getId())
+            .orElseThrow(() -> new MyException(null,
+                "EMPLOYEE_NOT_FOUND",
+                "Employee not found",
+                HttpStatus.NOT_FOUND));
+
+        // find by number plate
+        Bus bus = busRepository.findByNumberPlate(input.getNumberPlate());
+        if (bus == null) {
+            throw new MyException(null,
+                "BUS_NOT_FOUND",
+                "Bus with number plate " + input.getNumberPlate() + " not found",
+                HttpStatus.NOT_FOUND);
+        }
+
+        // validate account have this bus
+        if (!employee.getBusId().equals(bus.getId())) {
+            throw new MyException(null,
+                "BUS_NOT_ASSIGNED",
+                "Bus with number plate " + input.getNumberPlate() + " not assigned to this account",
+                HttpStatus.BAD_REQUEST);
+        }
+
+        bus.setStatus(input.getStatus());
+        busRepository.save(bus);
     }
 
 }

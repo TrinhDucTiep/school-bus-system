@@ -5,7 +5,9 @@ import com.example.api.services.bus.dto.GetListBusOutput;
 import com.example.api.services.bus.dto.GetListManipulateBusOutPut;
 import com.example.api.services.bus.dto.ListBusFilterParam;
 import com.example.api.services.bus.dto.AddBusInput;
+import com.example.api.services.bus.dto.UpdateBusEmployeeInput;
 import com.example.api.services.bus.dto.UpdateBusInput;
+import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Bus;
 import com.example.shared.enumeration.EmployeeRole;
 import java.util.List;
@@ -24,4 +26,6 @@ public interface BusService {
     List<Bus> getAvailableBuses(EmployeeRole role, String numberPlate);
 
     List<GetListManipulateBusOutPut> getListManipulateBus(BusManipulateParam param);
+
+    void updateBusEmployee(UpdateBusEmployeeInput input, Account account);
 }

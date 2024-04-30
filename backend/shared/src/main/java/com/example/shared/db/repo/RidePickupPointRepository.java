@@ -6,6 +6,7 @@ import com.example.shared.db.entities.Ride;
 import com.example.shared.db.entities.RidePickupPoint;
 import com.example.shared.enumeration.RidePickupPointStatus;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,4 +51,7 @@ public interface RidePickupPointRepository extends JpaRepository<RidePickupPoint
         WHERE rpp.ride.id = :rideId
     """)
     List<PickupPoint> findPickupPointsByRideId(Long rideId);
+
+    // findByRideIdAndPickupPointId
+    Optional<RidePickupPoint> findByRideIdAndPickupPointId(Long rideId, Long pickupPointId);
 }
