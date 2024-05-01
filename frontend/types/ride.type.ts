@@ -5,6 +5,7 @@ interface IRide {
     endAt: string;
     startFrom: string;
     status: string;
+    isToSchool: boolean;
     createdAt: string;
     updatedAt: string;
 }

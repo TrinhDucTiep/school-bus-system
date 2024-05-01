@@ -12,9 +12,8 @@ import lombok.Data;
 public class RideOutput {
     private Long id;
     private Long busId;
-
+    private Boolean isToSchool;
     private Instant startAt;
-
     private Instant endAt;
     private String startFrom;
     private RideStatus status;
@@ -25,6 +24,7 @@ public class RideOutput {
         return RideOutput.builder()
             .id(entity.getId())
             .busId(entity.getBus().getId())
+            .isToSchool(entity.getIsToSchool())
             .startAt(entity.getStartAt())
             .endAt(entity.getEndAt())
             .startFrom(entity.getStartFrom())

@@ -1,11 +1,31 @@
 import React, { useState, useEffect, FC, RefObject, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline } from 'react-leaflet';
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    useMap,
+    useMapEvents,
+    GeoJSON,
+    Polyline,
+    Tooltip
+} from 'react-leaflet';
 import L from 'leaflet';
 import polyline from 'polyline';
+import 'leaflet-polylinedecorator';
 
 const locationIcon = L.icon({
     iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+    iconSize: [38, 38],
+});
+
+const manipulateLocationIcon = L.icon({
+    iconUrl: 'https://cdn4.iconfinder.com/data/icons/BRILLIANT/transportation/png/256/school_bus.png',
+    iconSize: [38, 38],
+});
+
+const schoolIcon = L.icon({
+    iconUrl: 'https://cdn4.iconfinder.com/data/icons/education-738/64/college-school-university-education-building-architecture-256.png',
     iconSize: [38, 38],
 });
 
@@ -17,6 +37,38 @@ interface Coords {
 interface ChangeViewProps {
     coords: Coords;
 }
+
+// arrow decorator for polyline
+const ArrowDecorator = ({ positions }: { positions: LatLngExpression[] }) => {
+    const map = useMap();
+
+    useEffect(() => {
+        const polyline = L.polyline(positions);
+        const decorator = L.polylineDecorator(polyline, {
+            patterns: [
+                {
+                    offset: '2%',
+                    repeat: '5%',
+                    symbol: L.Symbol.arrowHead({
+                        pixelSize: 10,
+                        polygon: false,
+                        pathOptions: {
+                            stroke: true,
+                            color: '#f54242',
+                            weight: 2
+                        }
+                    })
+                }
+            ]
+        }).addTo(map);
+
+        return () => {
+            map.removeLayer(decorator);
+        };
+    }, [map, positions]);
+
+    return null;
+};
 
 export const ChangeView: FC<ChangeViewProps> = ({ coords }) => {
     const map = useMap();
@@ -30,6 +82,7 @@ interface MapProps {
     features: IFeature[];
     directionsGetResponse: IDirectionsGetResponse | undefined;
     enableClickMap: boolean;
+    manipulatePickupPointsOutput: IManipulatePickupPointOutput;
 }
 
 interface MyComponentProps {
@@ -63,6 +116,7 @@ export default function MapEmployee({
     features,
     directionsGetResponse,
     enableClickMap,
+    manipulatePickupPointsOutput
 }: MapProps) {
     const zoomRef = useRef<number>(12);
     const [geoData, setGeoData] = useState<Coords>({ lat: 21.028511, lng: 105.804817 });
@@ -108,14 +162,59 @@ export default function MapEmployee({
                 )
             }
 
+            {/* manipulate pickup points */}
+            {manipulatePickupPointsOutput?.pickupPointWithStudents.map((pickupPointWithStudents, index) => (
+                <Marker
+                    key={index}
+                    position={{ lat: pickupPointWithStudents.pickupPoint.latitude, lng: pickupPointWithStudents.pickupPoint.longitude }}
+                    icon={
+                        pickupPointWithStudents.pickupPoint.address === 'SCHOOL' ? schoolIcon
+                            : manipulateLocationIcon
+                    }
+                >
+                    <Tooltip>
+                        {pickupPointWithStudents.pickupPoint.address}
+                    </Tooltip>
+                </Marker>
+            ))}
+
+            {/* direction */}
             {directionsGetResponse?.routes.map((route, routeIndex) => {
-                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude
+                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]);
+                const distance = (route.summary.distance / 1000).toFixed(2); // convert distance to km
+                const durationInSeconds = route.summary.duration;
+                const hours = Math.floor(durationInSeconds / 3600);
+                const minutes = Math.floor((durationInSeconds % 3600) / 60);
 
                 return (
-                    <Polyline
-                        key={`route-${routeIndex}`}
-                        positions={decodedPolyline}
-                    />
+                    <>
+                        <Polyline
+                            key={`route-border-${routeIndex}`}
+                            positions={decodedPolyline}
+                            color="blue" // Border color
+                            weight={8} // Border width
+                        />
+                        <Polyline
+                            key={`route-${routeIndex}`}
+                            positions={decodedPolyline}
+                            color="#910322"
+                            weight={6}
+                            eventHandlers={{
+                                mouseover: (e) => {
+                                    e.target.openTooltip();
+                                },
+                                mouseout: (e) => {
+                                    e.target.closeTooltip();
+                                },
+                            }}
+                        >
+                            <Tooltip>
+                                {`Khoảng cách: ${distance} km, Thời gian: ${hours > 0 ? `${hours} giờ ` : ''}${minutes} phút`}
+                            </Tooltip>
+                        </Polyline>
+                        <ArrowDecorator positions={polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]] as LatLngTuple)} />
+                    </>
+
                 );
             })}
 

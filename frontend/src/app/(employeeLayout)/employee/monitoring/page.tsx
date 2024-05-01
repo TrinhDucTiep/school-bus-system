@@ -26,6 +26,8 @@ import {
     CardBody,
     Accordion,
     AccordionItem,
+    Snippet,
+    User
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
@@ -33,6 +35,7 @@ import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/m
 import _ from 'lodash';
 import LocationIcon from '@/components/icons/location-icon';
 import { convertStringInstantToDate } from '@/util/dateConverter';
+import { useGetListManipulatePickupPoint } from '@/services/employee/employeeService';
 
 const EmployeeMonitoring: React.FC = () => {
 
@@ -48,12 +51,6 @@ const EmployeeMonitoring: React.FC = () => {
     const { data: autoCompleteData, isLoading: autoCompleteLoading, error: autoCompleteError } = useGetAutoComplete(autoCompleteParams);
     const [selectedAutoCompleteData, setSelectedAutoCompleteData] = React.useState<IFeature | null>(null);
 
-    // get directions
-    const useGetDirectionsParams: IDirectionsParams = {
-        coordinates: [[105.804817, 21.028511], [105.803577, 21.03422], [105.80325113694303, 21.03586062789824]]
-    }
-    const { data: directionsGetResponse, isLoading: directionsLoading, error: directionsError } = useGetDirections(useGetDirectionsParams);
-
     const Map = useMemo(() => dynamic(
         () => import('@/components/map/MapEmployee'),
         {
@@ -65,13 +62,71 @@ const EmployeeMonitoring: React.FC = () => {
     // enable click point to map
     const [enableClickMap, setEnableClickMap] = React.useState<boolean>(false);
 
+    // get manipulate pickup point
+    const { data: manipulatePickupPointData, isLoading: manipulatePickupPointLoading, error: manipulatePickupPointError } = useGetListManipulatePickupPoint();
+
+    // get directions
+    const useGetManipulatePickupPointDirectionParams: IDirectionsParams = {
+        coordinates: manipulatePickupPointData?.result.pickupPointWithStudents.map((item) => [item.pickupPoint.longitude, item.pickupPoint.latitude]) || []
+    }
+    const { data: directionsGetResponse, isLoading: directionsLoading, error: directionsError } = useGetDirections(useGetManipulatePickupPointDirectionParams);
+
     return (
         <div className='flex flex-col'>
             <Card className='m-2'>
                 <CardBody>
-                    <p>Xe bus hiện tại: Trạng thái: </p>
-                    <p>Thời gian: </p>
-                    <p>Tài xế: Phụ xe: </p>
+                    <div className='flex gap-8 items-center my-2'>
+                        <span>Xe bus hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result.bus.numberPlate}</Snippet></span>
+                        <span> Trạng thái:
+                            <Chip
+                                variant='flat'
+                                color={
+                                    manipulatePickupPointData?.result.bus.status === 'AVAILABLE' ? 'success' :
+                                        manipulatePickupPointData?.result.bus.status === 'RUNNING' ? 'warning' :
+                                            manipulatePickupPointData?.result.bus.status === 'BROKEN' ? 'danger' :
+                                                manipulatePickupPointData?.result.bus.status === 'MAINTENANCE' ? 'primary' : 'default'
+
+                                }
+                            >
+                                {manipulatePickupPointData?.result.bus.status}
+                            </Chip>
+                        </span>
+                    </div>
+
+                    <div className='flex gap-8 items-center my-2'>
+                        <span className='flex items-center'>Tài xế:
+                            <User
+                                name={manipulatePickupPointData?.result.driver.name}
+                            >
+                                {manipulatePickupPointData?.result?.driver.name}
+                            </User>
+                        </span>
+                        <span className='flex items-center'>
+                            Phụ xe:
+                            <User
+                                name={manipulatePickupPointData?.result.driverMate.name}
+                            >
+                                {manipulatePickupPointData?.result?.driverMate.name}
+                            </User>
+                        </span>
+                    </div>
+
+                    <div className='flex items-center my-2 gap-8'>
+                        <span>Chuyến hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result.ride.id}</Snippet> </span>
+                        <span>Thời gian bắt đầu: {convertStringInstantToDate(manipulatePickupPointData?.result.ride.startAt)} </span>
+                        <span>Trạng thái:
+                            <Chip variant='flat'
+                                color={
+                                    manipulatePickupPointData?.result.ride.status === 'PENDING' ? 'primary' :
+                                        manipulatePickupPointData?.result.ride.status === 'READY' ? 'success' :
+                                            manipulatePickupPointData?.result.ride.status === 'RUNNING' ? 'warning' :
+                                                manipulatePickupPointData?.result.ride.status === 'FINISHED' ? 'danger' : 'default'
+
+                                }>
+                                {manipulatePickupPointData?.result.ride.status}
+                            </Chip>
+                        </span>
+                    </div>
                 </CardBody>
             </Card>
             <div className='flex justify-between w-auto'>
@@ -125,30 +180,42 @@ const EmployeeMonitoring: React.FC = () => {
                         </Button>
                     </div>
 
-                    {/* Accordian pickupPoints & Student inside */}
+                    {/* Accordion pickupPoints & Student inside */}
                     <div className='my-2 ml-2'>
                         <Accordion variant='shadow'>
-                            <AccordionItem key="1" aria-label="Accordion 1" subtitle="Press to expand" title="Accordion 1">
-                                a'ksfj;ákjf'là'àsdf
-                            </AccordionItem>
-                            <AccordionItem
-                                key="2"
-                                aria-label="Accordion 2"
-                                subtitle={
-                                    // <span>
-                                    //     Press to expand <strong>key 2</strong>
-                                    // </span>
-                                    <Button>
-                                        Press to expand <strong>key 2</strong>
-                                    </Button>
-                                }
-                                title="Accordion 2"
-                            >
-                                a'ksfj;ákjf'là'àsdf
-                            </AccordionItem>
-                            <AccordionItem key="3" aria-label="Accordion 3" subtitle="Press to expand" title="Accordion 3">
-                                a'ksfj;ákjf'là'àsdf
-                            </AccordionItem>
+                            {
+                                (manipulatePickupPointData?.result.pickupPointWithStudents || []).map((item, index) => {
+                                    return (
+                                        <AccordionItem
+                                            key={index}
+                                            title={item.pickupPoint.address}
+                                        >
+                                            <div className='flex flex-col gap-2'>
+                                                {item.studentWithPickupPoints.map((student, index) => {
+                                                    return (
+                                                        <div key={index} className='flex gap-4 items-center'>
+                                                            <User
+                                                                name={student.student.name}
+                                                            >
+                                                                {student.student.name}
+                                                            </User>
+                                                            <Chip
+                                                                color={
+                                                                    student.studentPickupPoint.status === 'PICKED' ? 'success' :
+                                                                        student.studentPickupPoint.status === 'PICKING' ? 'primary' :
+                                                                            student.studentPickupPoint.status === 'MISSED' ? 'danger' : 'default'
+                                                                }
+                                                            >
+                                                                {student.studentPickupPoint.status}
+                                                            </Chip>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </AccordionItem>
+                                    )
+                                })
+                            }
                         </Accordion>
                     </div>
 
@@ -162,6 +229,7 @@ const EmployeeMonitoring: React.FC = () => {
                         features={selectedAutoCompleteData ? [selectedAutoCompleteData] : []}
                         directionsGetResponse={directionsGetResponse}
                         enableClickMap={enableClickMap}
+                        manipulatePickupPointsOutput={manipulatePickupPointData?.result || []}
                     />
                 </div >
             </div>

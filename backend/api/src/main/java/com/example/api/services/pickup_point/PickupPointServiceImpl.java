@@ -216,20 +216,21 @@ public class PickupPointServiceImpl implements PickupPointService {
         }
 
         // find manipulate ride
-        Ride ride = rideRepository.findByBusIdAndStatusAndStartAt(
+        List<Ride> rides = rideRepository.findByBusIdAndStatusAndStartAt(
             bus.getId(),
             RideStatus.PENDING,
             Instant.now()
-        ).orElseThrow(() -> new MyException(
-            null,
-            "RIDE_NOT_FOUND",
-            "Ride with bus id " + bus.getId() + " and status PENDING not found",
-            HttpStatus.NOT_FOUND
-        ));
+        );
+        // ride to school pending => get ride to school,
+        // else get ride to home (just have 1 element in array)
+        Ride ride = rides.get(0);
+
 
         // find pickup points & corresponding students
         List<ManipulatePickupPointOutput.PickupPointWithStudent> pickupPointWithStudents = new ArrayList<>();
-        List<PickupPoint> pickupPoints = pickupPointRepository.findAll();
+        // find pickup points by ride id
+        List<PickupPoint> pickupPoints = pickupPointRepository.findByRideId(ride.getId());
+
         for (PickupPoint pickupPoint : pickupPoints) {
             // find students & student pickup points
             List<ManipulatePickupPointOutput.PickupPointWithStudent.StudentWithPickupPoint> studentWithPickupPoints = new ArrayList<>();
