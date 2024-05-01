@@ -248,6 +248,7 @@ public class RequestRegistrationServiceImpl implements RequestRegistrationServic
                     .address(studentPickupPoint.getPickupPoint().getAddress())
                     .latitude(studentPickupPoint.getPickupPoint().getLatitude())
                     .longitude(studentPickupPoint.getPickupPoint().getLongitude())
+                    .rideId(null)
                     .build()
             );
         }

@@ -39,3 +39,9 @@ interface IBusTable {
     ride: IRide;
     pickupPoints: IPickupPoint[];
   }
+
+  // employee
+  interface IEmployeeUpdateBusRequest {
+    numberPlate: string;
+    status: string;
+  }

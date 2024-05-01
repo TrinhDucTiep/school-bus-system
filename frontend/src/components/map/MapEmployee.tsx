@@ -82,7 +82,7 @@ interface MapProps {
     features: IFeature[];
     directionsGetResponse: IDirectionsGetResponse | undefined;
     enableClickMap: boolean;
-    manipulatePickupPointsOutput: IManipulatePickupPointOutput;
+    manipulatePickupPointsOutput: IManipulatePickupPointOutput | undefined;
 }
 
 interface MyComponentProps {
@@ -163,7 +163,7 @@ export default function MapEmployee({
             }
 
             {/* manipulate pickup points */}
-            {manipulatePickupPointsOutput?.pickupPointWithStudents.map((pickupPointWithStudents, index) => (
+            {manipulatePickupPointsOutput?.pickupPointWithStudents?.map((pickupPointWithStudents, index) => (
                 <Marker
                     key={index}
                     position={{ lat: pickupPointWithStudents.pickupPoint.latitude, lng: pickupPointWithStudents.pickupPoint.longitude }}

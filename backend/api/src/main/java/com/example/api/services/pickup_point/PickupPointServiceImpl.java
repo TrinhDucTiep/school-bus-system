@@ -223,7 +223,15 @@ public class PickupPointServiceImpl implements PickupPointService {
         );
         // ride to school pending => get ride to school,
         // else get ride to home (just have 1 element in array)
-        Ride ride = rides.get(0);
+        if (rides.isEmpty()) {
+            return null;
+        }
+        Ride ride; //todo: tieptd
+        if (rides.size() > 1 && !rides.get(0).getIsToSchool()) {
+            ride = rides.get(1);
+        } else {
+            ride = rides.get(0);
+        }
 
 
         // find pickup points & corresponding students

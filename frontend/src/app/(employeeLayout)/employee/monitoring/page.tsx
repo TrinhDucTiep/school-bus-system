@@ -67,7 +67,7 @@ const EmployeeMonitoring: React.FC = () => {
 
     // get directions
     const useGetManipulatePickupPointDirectionParams: IDirectionsParams = {
-        coordinates: manipulatePickupPointData?.result.pickupPointWithStudents.map((item) => [item.pickupPoint.longitude, item.pickupPoint.latitude]) || []
+        coordinates: manipulatePickupPointData?.result?.pickupPointWithStudents.map((item) => [item.pickupPoint.longitude, item.pickupPoint.latitude]) || []
     }
     const { data: directionsGetResponse, isLoading: directionsLoading, error: directionsError } = useGetDirections(useGetManipulatePickupPointDirectionParams);
 
@@ -76,19 +76,19 @@ const EmployeeMonitoring: React.FC = () => {
             <Card className='m-2'>
                 <CardBody>
                     <div className='flex gap-8 items-center my-2'>
-                        <span>Xe bus hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result.bus.numberPlate}</Snippet></span>
+                        <span>Xe bus hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result?.bus.numberPlate}</Snippet></span>
                         <span> Trạng thái:
                             <Chip
                                 variant='flat'
                                 color={
-                                    manipulatePickupPointData?.result.bus.status === 'AVAILABLE' ? 'success' :
-                                        manipulatePickupPointData?.result.bus.status === 'RUNNING' ? 'warning' :
-                                            manipulatePickupPointData?.result.bus.status === 'BROKEN' ? 'danger' :
-                                                manipulatePickupPointData?.result.bus.status === 'MAINTENANCE' ? 'primary' : 'default'
+                                    manipulatePickupPointData?.result?.bus.status === 'AVAILABLE' ? 'success' :
+                                        manipulatePickupPointData?.result?.bus.status === 'RUNNING' ? 'warning' :
+                                            manipulatePickupPointData?.result?.bus.status === 'BROKEN' ? 'danger' :
+                                                manipulatePickupPointData?.result?.bus.status === 'MAINTENANCE' ? 'primary' : 'default'
 
                                 }
                             >
-                                {manipulatePickupPointData?.result.bus.status}
+                                {manipulatePickupPointData?.result?.bus.status}
                             </Chip>
                         </span>
                     </div>
@@ -96,7 +96,7 @@ const EmployeeMonitoring: React.FC = () => {
                     <div className='flex gap-8 items-center my-2'>
                         <span className='flex items-center'>Tài xế:
                             <User
-                                name={manipulatePickupPointData?.result.driver.name}
+                                name={manipulatePickupPointData?.result?.driver.name}
                             >
                                 {manipulatePickupPointData?.result?.driver.name}
                             </User>
@@ -104,7 +104,7 @@ const EmployeeMonitoring: React.FC = () => {
                         <span className='flex items-center'>
                             Phụ xe:
                             <User
-                                name={manipulatePickupPointData?.result.driverMate.name}
+                                name={manipulatePickupPointData?.result?.driverMate.name}
                             >
                                 {manipulatePickupPointData?.result?.driverMate.name}
                             </User>
@@ -112,18 +112,18 @@ const EmployeeMonitoring: React.FC = () => {
                     </div>
 
                     <div className='flex items-center my-2 gap-8'>
-                        <span>Chuyến hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result.ride.id}</Snippet> </span>
-                        <span>Thời gian bắt đầu: {convertStringInstantToDate(manipulatePickupPointData?.result.ride.startAt)} </span>
+                        <span>Chuyến hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result?.ride.id}</Snippet> </span>
+                        <span>Thời gian bắt đầu: {convertStringInstantToDate(manipulatePickupPointData?.result?.ride.startAt)} </span>
                         <span>Trạng thái:
                             <Chip variant='flat'
                                 color={
-                                    manipulatePickupPointData?.result.ride.status === 'PENDING' ? 'primary' :
-                                        manipulatePickupPointData?.result.ride.status === 'READY' ? 'success' :
-                                            manipulatePickupPointData?.result.ride.status === 'RUNNING' ? 'warning' :
-                                                manipulatePickupPointData?.result.ride.status === 'FINISHED' ? 'danger' : 'default'
+                                    manipulatePickupPointData?.result?.ride.status === 'PENDING' ? 'primary' :
+                                        manipulatePickupPointData?.result?.ride.status === 'READY' ? 'success' :
+                                            manipulatePickupPointData?.result?.ride.status === 'RUNNING' ? 'warning' :
+                                                manipulatePickupPointData?.result?.ride.status === 'FINISHED' ? 'danger' : 'default'
 
                                 }>
-                                {manipulatePickupPointData?.result.ride.status}
+                                {manipulatePickupPointData?.result?.ride.status}
                             </Chip>
                         </span>
                     </div>
@@ -184,7 +184,7 @@ const EmployeeMonitoring: React.FC = () => {
                     <div className='my-2 ml-2'>
                         <Accordion variant='shadow'>
                             {
-                                (manipulatePickupPointData?.result.pickupPointWithStudents || []).map((item, index) => {
+                                (manipulatePickupPointData?.result?.pickupPointWithStudents || []).map((item, index) => {
                                     return (
                                         <AccordionItem
                                             key={index}
@@ -199,6 +199,7 @@ const EmployeeMonitoring: React.FC = () => {
                                                             >
                                                                 {student.student.name}
                                                             </User>
+                                                            <Snippet symbol="" color="default">{student.student.phoneNumber}</Snippet>
                                                             <Chip
                                                                 color={
                                                                     student.studentPickupPoint.status === 'PICKED' ? 'success' :
@@ -229,7 +230,7 @@ const EmployeeMonitoring: React.FC = () => {
                         features={selectedAutoCompleteData ? [selectedAutoCompleteData] : []}
                         directionsGetResponse={directionsGetResponse}
                         enableClickMap={enableClickMap}
-                        manipulatePickupPointsOutput={manipulatePickupPointData?.result || []}
+                        manipulatePickupPointsOutput={manipulatePickupPointData?.result}
                     />
                 </div >
             </div>

@@ -51,6 +51,9 @@ public class StudentPickupPointHistory {
 
     private Double longitude;
 
+    @Column(name = "ride_id")
+    private Long rideId;
+
     @CreatedDate
     @CreationTimestamp
     private Instant createdAt;

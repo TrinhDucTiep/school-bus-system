@@ -19,3 +19,9 @@ interface IUpsertRideRequest {
     pickupPointIds: number[] | null;
     isToSchool: boolean;
 }
+
+// employee
+interface IEmployeeUpdateRideRequest {
+    rideId: number;
+    status: string;
+}
