@@ -216,9 +216,9 @@ public class PickupPointServiceImpl implements PickupPointService {
         }
 
         // find manipulate ride
-        List<Ride> rides = rideRepository.findByBusIdAndStatusAndStartAt(
+        List<Ride> rides = rideRepository.findByBusIdAndNotInStatusAndStartAt(
             bus.getId(),
-            RideStatus.PENDING,
+            RideStatus.FINISHED,
             Instant.now()
         );
         // ride to school pending => get ride to school,

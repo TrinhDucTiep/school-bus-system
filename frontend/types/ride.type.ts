@@ -22,6 +22,6 @@ interface IUpsertRideRequest {
 
 // employee
 interface IEmployeeUpdateRideRequest {
-    rideId: number;
-    status: string;
+    rideId: number | null;
+    status: string | null;
 }

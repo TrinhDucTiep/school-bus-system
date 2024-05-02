@@ -27,15 +27,21 @@ import {
     Accordion,
     AccordionItem,
     Snippet,
-    User
+    User,
+    CardHeader,
+    Select,
+    SelectItem
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/mapService';
-import _ from 'lodash';
+import _, { set } from 'lodash';
 import LocationIcon from '@/components/icons/location-icon';
 import { convertStringInstantToDate } from '@/util/dateConverter';
-import { useGetListManipulatePickupPoint } from '@/services/employee/employeeService';
+import { useGetListManipulatePickupPoint, useUpdateEmployeeBus, useUpdateEmployeeRide } from '@/services/employee/employeeService';
+import { bus_status_map, ride_status_map } from '@/util/constant';
+import { m } from 'framer-motion';
+import { on } from 'events';
 
 const EmployeeMonitoring: React.FC = () => {
 
@@ -71,64 +77,163 @@ const EmployeeMonitoring: React.FC = () => {
     }
     const { data: directionsGetResponse, isLoading: directionsLoading, error: directionsError } = useGetDirections(useGetManipulatePickupPointDirectionParams);
 
+    // update bus
+    const { isOpen: isUpdateBusModalOpen, onOpen: onOpenUpdateBusModal, onOpenChange: onOpenUpdateBusModalChange } = useDisclosure();
+    const [status, setStatus] = React.useState<string>(manipulatePickupPointData?.result?.bus.status || '');
+    let updateEmployeeBusRequest: IEmployeeUpdateBusRequest = {
+        numberPlate: manipulatePickupPointData?.result?.bus.numberPlate || '',
+        status: status
+    }
+    const updateEmployeeBusMutation = useUpdateEmployeeBus(() => {
+        onOpenUpdateBusModalChange();
+    });
+    const handleUpdateEmployeeBus = () => {
+        if (!updateEmployeeBusRequest.numberPlate || !updateEmployeeBusRequest.status) {
+            return;
+        }
+        updateEmployeeBusMutation.mutate(updateEmployeeBusRequest);
+    }
+
+    // update ride
+    const { isOpen: isUpdateRideModalOpen, onOpen: onOpenUpdateRideModal, onOpenChange: onOpenUpdateRideModalChange } = useDisclosure();
+    const [statusRide, setStatusRide] = React.useState<string>(manipulatePickupPointData?.result?.ride.status || '');
+    let updateEmployeeRideRequest: IEmployeeUpdateRideRequest = {
+        rideId: manipulatePickupPointData?.result?.ride.id || null,
+        status: statusRide
+    }
+    const updateEmployeeRideMutation = useUpdateEmployeeRide(() => {
+        onOpenUpdateRideModalChange();
+    });
+    const handleUpdateEmployeeRide = () => {
+        if (!updateEmployeeRideRequest.rideId || !updateEmployeeRideRequest.status) {
+            return;
+        }
+        updateEmployeeRideMutation.mutate(updateEmployeeRideRequest);
+    }
+
+    if (manipulatePickupPointLoading) {
+        return <CustomSkeleton />
+    }
     return (
         <div className='flex flex-col'>
-            <Card className='m-2'>
-                <CardBody>
-                    <div className='flex gap-8 items-center my-2'>
-                        <span>Xe bus hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result?.bus.numberPlate}</Snippet></span>
-                        <span> Trạng thái:
-                            <Chip
-                                variant='flat'
-                                color={
-                                    manipulatePickupPointData?.result?.bus.status === 'AVAILABLE' ? 'success' :
-                                        manipulatePickupPointData?.result?.bus.status === 'RUNNING' ? 'warning' :
-                                            manipulatePickupPointData?.result?.bus.status === 'BROKEN' ? 'danger' :
-                                                manipulatePickupPointData?.result?.bus.status === 'MAINTENANCE' ? 'primary' : 'default'
-
+            <div className='flex justify-between  flex-col sm:flex-row'>
+                {/* card bus info */}
+                <Card className='m-2 w-full sm:w-1/2'>
+                    <CardHeader className='w-full flex justify-center font-bold'>
+                        Thông tin xe bus
+                    </CardHeader>
+                    <CardBody>
+                        <div className='flex gap-8 items-center my-2'>
+                            <span>Xe bus hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result?.bus.numberPlate}</Snippet></span>
+                            <Select
+                                label='Trạng thái'
+                                placeholder='Chọn trạng thái'
+                                value={manipulatePickupPointData?.result?.bus.status}
+                                defaultSelectedKeys={[bus_status_map.find((item) => item.value === manipulatePickupPointData?.result?.bus.status)?.value || '']}
+                                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                                    setStatus(event.target.value);
+                                }}
+                                className='w-1/2'
+                                color={bus_status_map.find((item) => item.value == updateEmployeeBusRequest.status)?.color || 'default'}
+                            >
+                                {
+                                    bus_status_map.map((item, index) => {
+                                        return (
+                                            <SelectItem key={item.value} value={item.value}>
+                                                {item.label}
+                                            </SelectItem>
+                                        )
+                                    })
                                 }
-                            >
-                                {manipulatePickupPointData?.result?.bus.status}
-                            </Chip>
-                        </span>
-                    </div>
+                            </Select>
+                        </div>
 
-                    <div className='flex gap-8 items-center my-2'>
-                        <span className='flex items-center'>Tài xế:
-                            <User
-                                name={manipulatePickupPointData?.result?.driver.name}
-                            >
-                                {manipulatePickupPointData?.result?.driver.name}
-                            </User>
-                        </span>
-                        <span className='flex items-center'>
-                            Phụ xe:
-                            <User
-                                name={manipulatePickupPointData?.result?.driverMate.name}
-                            >
-                                {manipulatePickupPointData?.result?.driverMate.name}
-                            </User>
-                        </span>
-                    </div>
+                        <div className='flex gap-8 items-center my-2'>
+                            <span className='flex items-center'>Tài xế:
+                                <User
+                                    name={manipulatePickupPointData?.result?.driver.name}
+                                >
+                                    {manipulatePickupPointData?.result?.driver.name}
+                                </User>
+                            </span>
+                            <span className='flex items-center'>
+                                Phụ xe:
+                                <User
+                                    name={manipulatePickupPointData?.result?.driverMate.name}
+                                >
+                                    {manipulatePickupPointData?.result?.driverMate.name}
+                                </User>
+                            </span>
+                        </div>
 
-                    <div className='flex items-center my-2 gap-8'>
-                        <span>Chuyến hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result?.ride.id}</Snippet> </span>
-                        <span>Thời gian bắt đầu: {convertStringInstantToDate(manipulatePickupPointData?.result?.ride.startAt)} </span>
-                        <span>Trạng thái:
-                            <Chip variant='flat'
-                                color={
-                                    manipulatePickupPointData?.result?.ride.status === 'PENDING' ? 'primary' :
-                                        manipulatePickupPointData?.result?.ride.status === 'READY' ? 'success' :
-                                            manipulatePickupPointData?.result?.ride.status === 'RUNNING' ? 'warning' :
-                                                manipulatePickupPointData?.result?.ride.status === 'FINISHED' ? 'danger' : 'default'
+                        <Button color='primary' className='w-1/12'
+                            onClick={() => {
+                                onOpenUpdateBusModal();
+                            }}
+                        >
+                            Lưu
+                        </Button>
+                    </CardBody>
+                </Card>
 
-                                }>
-                                {manipulatePickupPointData?.result?.ride.status}
-                            </Chip>
-                        </span>
-                    </div>
-                </CardBody>
-            </Card>
+                {/* card ride info */}
+                <Card className='m-2  w-full sm:w-1/2 justify-center'>
+                    <CardHeader className='w-full flex justify-center font-bold'>
+                        Thông tin chuyến đi
+                    </CardHeader>
+                    <CardBody>
+                        <div className='flex items-center my-2 gap-8'>
+                            <span>Chuyến hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result?.ride.id}</Snippet> </span>
+                            {/* <span>Trạng thái:
+                                <Chip variant='flat'
+                                    color={
+                                        manipulatePickupPointData?.result?.ride.status === 'PENDING' ? 'primary' :
+                                            manipulatePickupPointData?.result?.ride.status === 'READY' ? 'success' :
+                                                manipulatePickupPointData?.result?.ride.status === 'RUNNING' ? 'warning' :
+                                                    manipulatePickupPointData?.result?.ride.status === 'FINISHED' ? 'danger' : 'default'
+
+                                    }>
+                                    {manipulatePickupPointData?.result?.ride.status}
+                                </Chip>
+                            </span> */}
+                            <Select
+                                label='Trạng thái'
+                                placeholder='Chọn trạng thái'
+                                value={manipulatePickupPointData?.result?.ride.status}
+                                defaultSelectedKeys={[manipulatePickupPointData?.result?.ride.status || '']}
+                                onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                                    setStatusRide(event.target.value);
+                                }}
+                                className='w-1/2'
+                                color={ride_status_map.find((item) => item.value == updateEmployeeRideRequest.status)?.color || 'default'}
+                            >
+                                {
+                                    ride_status_map.map((item, index) => {
+                                        return (
+                                            <SelectItem key={item.value} value={item.value}>
+                                                {item.label}
+                                            </SelectItem>
+                                        )
+                                    })
+                                }
+                            </Select>
+                        </div>
+
+                        <div className='mt-4'>
+                            <span>Thời gian bắt đầu: {convertStringInstantToDate(manipulatePickupPointData?.result?.ride.startAt)} </span>
+                        </div>
+
+                        <Button color='primary' className='w-1/12 mt-4'
+                            onClick={() => {
+                                onOpenUpdateRideModal();
+                            }}
+                        >
+                            Lưu
+                        </Button>
+                    </CardBody>
+                </Card>
+            </div>
+
             <div className='flex justify-between w-auto'>
                 <div className='w-2/5 mr-4'>
                     <Autocomplete
@@ -236,10 +341,67 @@ const EmployeeMonitoring: React.FC = () => {
             </div>
 
 
-            <div className='m-4'>
-
+            {/* modal update bus */}
+            <div className='relative z-10'>
+                <Modal isOpen={isUpdateBusModalOpen} onOpenChange={onOpenUpdateBusModalChange}
+                >
+                    <ModalContent>
+                        {(onOpenAddRideConfirm) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Xác nhận lưu chuyến</ModalHeader>
+                                <ModalBody>
+                                    <p>
+                                        Bạn có muốn lưu chuyến không?
+                                    </p>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light"
+                                        onPress={onOpenUpdateBusModalChange}
+                                    >
+                                        Huỷ
+                                    </Button>
+                                    <Button color="primary" onPress={() => {
+                                        handleUpdateEmployeeBus();
+                                    }}>
+                                        Xác nhận
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
             </div>
 
+            {/* modal update ride */}
+            <div className='relative z-10'>
+                <Modal isOpen={isUpdateRideModalOpen} onOpenChange={onOpenUpdateRideModalChange}
+                >
+                    <ModalContent>
+                        {(onOpenAddRideConfirm) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Xác nhận lưu chuyến</ModalHeader>
+                                <ModalBody>
+                                    <p>
+                                        Bạn có muốn lưu chuyến không?
+                                    </p>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light"
+                                        onPress={onOpenUpdateRideModalChange}
+                                    >
+                                        Huỷ
+                                    </Button>
+                                    <Button color="primary" onPress={() => {
+                                        handleUpdateEmployeeRide();
+                                    }}>
+                                        Xác nhận
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
+            </div>
 
         </div>
     );

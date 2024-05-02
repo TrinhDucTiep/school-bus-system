@@ -42,4 +42,13 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         AND DATE(r.startAt) = DATE(:startAt)
     """)
     List<Ride> findByBusIdAndStatusAndStartAt(Long busId, RideStatus status, Instant startAt);
+
+    @Query("""
+        SELECT r
+        FROM Ride r
+        WHERE r.bus.id = :busId
+        AND r.status != :status
+        AND DATE(r.startAt) = DATE(:startAt)
+    """)
+    List<Ride> findByBusIdAndNotInStatusAndStartAt(Long busId, RideStatus status, Instant startAt);
 }
