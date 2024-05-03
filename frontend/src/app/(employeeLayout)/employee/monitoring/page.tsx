@@ -40,8 +40,6 @@ import LocationIcon from '@/components/icons/location-icon';
 import { convertStringInstantToDate } from '@/util/dateConverter';
 import { useGetListManipulatePickupPoint, useUpdateEmployeeBus, useUpdateEmployeeRide } from '@/services/employee/employeeService';
 import { bus_status_map, ride_status_map } from '@/util/constant';
-import { m } from 'framer-motion';
-import { on } from 'events';
 
 const EmployeeMonitoring: React.FC = () => {
 
@@ -283,7 +281,7 @@ const EmployeeMonitoring: React.FC = () => {
                                             key={index}
                                             title={item.pickupPoint.address}
                                         >
-                                            <div className='flex flex-col gap-2'>
+                                            {/* <div className='flex flex-col gap-2'>
                                                 {item.studentWithPickupPoints.map((student, index) => {
                                                     return (
                                                         <div key={index} className='flex gap-4 items-center'>
@@ -305,6 +303,59 @@ const EmployeeMonitoring: React.FC = () => {
                                                         </div>
                                                     )
                                                 })}
+                                            </div> */}
+                                            <Table
+                                                aria-label='Student pickup point'
+                                                selectionMode='multiple'
+                                            >
+                                                <TableHeader>
+                                                    <TableColumn>STT</TableColumn>
+                                                    <TableColumn>Tên học sinh</TableColumn>
+                                                    <TableColumn>Số điện thoại</TableColumn>
+                                                    <TableColumn>Trạng thái</TableColumn>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {item.studentWithPickupPoints.map((student, index) => {
+                                                        return (
+                                                            <TableRow key={index}>
+                                                                <TableCell>{index + 1}</TableCell>
+                                                                <TableCell>
+                                                                    <User
+                                                                        name={student.student.name}
+                                                                    >
+                                                                        {student.student.name}
+                                                                    </User>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Snippet symbol="" color="default">{student.student.phoneNumber}</Snippet>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Chip
+                                                                        color={
+                                                                            student.studentPickupPoint.status === 'PICKED' ? 'success' :
+                                                                                student.studentPickupPoint.status === 'PICKING' ? 'primary' :
+                                                                                    student.studentPickupPoint.status === 'MISSED' ? 'danger' : 'default'
+                                                                        }
+                                                                    >
+                                                                        {student.studentPickupPoint.status}
+                                                                    </Chip>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )
+                                                    })}
+                                                </TableBody>
+                                            </Table>
+
+                                            <div>
+                                                <Button
+                                                    color='primary'
+                                                    className='w-1/12 mt-4'
+                                                    onClick={() => {
+                                                        // handleUpdateEmployeeRidePickupPoint();
+                                                    }}
+                                                >
+                                                    Lưu
+                                                </Button>
                                             </div>
                                         </AccordionItem>
                                     )

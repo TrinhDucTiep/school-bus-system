@@ -13,9 +13,12 @@ import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
 import com.example.shared.db.repo.StudentRepository;
+import com.example.shared.enumeration.StudentPickupPointStatus;
+import com.example.shared.exception.MyException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +46,40 @@ public class StudentPickupPointServiceImpl implements StudentPickupPointService 
                         studentId, input.getPickupPointId())
                         .orElseThrow(() -> new IllegalArgumentException("Student pickup point not found"))
                 ).toList();
+
+        // validate status to ensure that it will be updated following the correct order
+        for (StudentPickupPoint studentPickupPoint : studentPickupPoints) {
+            switch (input.getStatus()) {
+                case PICKING -> {
+                    throw new MyException(
+                            null,
+                            "Invalid status",
+                            "Cannot update status to PICKING",
+                            HttpStatus.BAD_REQUEST
+                    );
+                }
+                case PICKED, MISSED -> {
+                    if (studentPickupPoint.getStatus() != StudentPickupPointStatus.PICKING) {
+                        throw new MyException(
+                                null,
+                                "Invalid status",
+                                String.format("Student %d is not in picking status", studentPickupPoint.getStudent().getId()),
+                                HttpStatus.BAD_REQUEST
+                        );
+                    }
+                }
+                case AT_SCHOOL, AT_HOME -> {
+                    if (studentPickupPoint.getStatus() != StudentPickupPointStatus.PICKED) {
+                        throw new MyException(
+                                null,
+                                "Invalid status",
+                                String.format("Student %d is not in picked status", studentPickupPoint.getStudent().getId()),
+                                HttpStatus.BAD_REQUEST
+                        );
+                    }
+                }
+            }
+        }
 
         // update student pickup point
         studentPickupPoints.forEach(studentPickupPoint -> {

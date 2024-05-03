@@ -43,14 +43,14 @@ export const useUpdateEmployeeBus = (callback: any) => {
 };
 
 // update ride
-const updateEmployeeRide = async (data: IEmployeeUpdateBusRequest) => {
+const updateEmployeeRide = async (data: IEmployeeUpdateRideRequest) => {
     const response = await apiClient.put('/api/v1/employee/ride', data);
     return response.data;
 }
 export const useUpdateEmployeeRide = (callback: any) => {
     return useMutation(
         {
-            mutationFn: (data: IEmployeeUpdateBusRequest) => updateEmployeeRide(data),
+            mutationFn: (data: IEmployeeUpdateRideRequest) => updateEmployeeRide(data),
             onSuccess: (result) => {
                 callback();
                 queryClient.invalidateQueries({ queryKey: ['manipulatePickupPoint'] });
