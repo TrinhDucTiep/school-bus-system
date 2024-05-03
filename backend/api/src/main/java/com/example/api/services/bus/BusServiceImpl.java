@@ -229,15 +229,18 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
-    public List<GetListManipulateBusOutPut> getListManipulateBus(BusManipulateParam param) {
-        List<GetListManipulateBusOutPut> result = new ArrayList<>();
+    public Page<GetListManipulateBusOutPut> getListManipulateBusPage(BusManipulateParam param,
+                                                                     Pageable pageable) {
+        Page<Bus> buses = busRepository.findAllByNumberPlateAndStatus(
+            param.getNumberPlate(),
+            param.getStatus(),
+            pageable
+        );
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        List<Bus> buses = busRepository.findAll(sort);
-        for (Bus bus : buses) {
-            List<Ride> rides = rideRepository.findByManipulateRide(
+        return buses.map(bus -> {
+            List<Ride> rides = rideRepository.findByManipulateRideNotInStatus(
                 bus.getId(),
-                RideStatus.PENDING,
+                RideStatus.FINISHED,
                 param.getIsToSchool(),
                 DateConvertUtil.convertStringToInstant(param.getDate())
             );
@@ -252,14 +255,12 @@ public class BusServiceImpl implements BusService {
             }
 
             Ride ride = rides.isEmpty() ? null : rides.get(0);
-            result.add(GetListManipulateBusOutPut.builder()
+            return GetListManipulateBusOutPut.builder()
                 .bus(bus)
                 .ride(ride)
                 .pickupPoints(ride == null ? null : pickupPointRepository.findByRideId(ride.getId()))
-                .build());
-        }
-
-        return result;
+                .build();
+        });
     }
 
     @Override

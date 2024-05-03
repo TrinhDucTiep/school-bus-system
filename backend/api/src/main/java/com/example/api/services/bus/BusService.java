@@ -25,7 +25,8 @@ public interface BusService {
 
     List<Bus> getAvailableBuses(EmployeeRole role, String numberPlate);
 
-    List<GetListManipulateBusOutPut> getListManipulateBus(BusManipulateParam param);
+    Page<GetListManipulateBusOutPut> getListManipulateBusPage(BusManipulateParam param,
+                                                          Pageable pageable);
 
     void updateBusEmployee(UpdateBusEmployeeInput input, Account account);
 }

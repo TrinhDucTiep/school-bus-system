@@ -19,7 +19,11 @@ import {
     ModalFooter,
     useDisclosure,
     Switch,
-    Chip
+    Chip,
+    Pagination,
+    Select,
+    SelectItem,
+    Snippet
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
@@ -31,6 +35,7 @@ import { useGetListManipulateBus } from '@/services/busService';
 import { useAddRide } from '@/services/rideService';
 import { on } from 'events';
 import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
+import { bus_status_map } from '@/util/constant';
 
 const ManipulatingPage: React.FC = () => {
 
@@ -86,12 +91,35 @@ const ManipulatingPage: React.FC = () => {
     }
 
     // get list manipulate bus
+    const [page, setPage] = React.useState<number>(1);
     const [manipulateDate, setManipulateDate] = React.useState(new Date().toISOString().split('T')[0]);
+    const [numberPlateQuery, setNumberPlateQuery] = React.useState('');
+    const [statusQuery, setStatusQuery] = React.useState('');
+    const debouncedSetNumberPlateQuery = _.debounce((value: string) => setNumberPlateQuery(value), 500);
     let manipulateBusParams: IGetListManipulateBusParams = {
         isToSchool: manipulateIsToSchool,
-        date: manipulateDate
+        date: manipulateDate,
+        numberPlate: numberPlateQuery,
+        status: statusQuery,
+        page: page - 1,
+        size: 5,
+        sort: '-createdAt'
     }
     const { data: listManipulateBus, isLoading: listManipulateBusLoading, error: listManipulateBusError } = useGetListManipulateBus(manipulateBusParams);
+    const bottomContent = (
+        <div className="py-2 px-2 flex w-full justify-center items-center">
+            <Pagination
+                isCompact
+                showControls
+                showShadow
+                color="primary"
+                page={page}
+                total={listManipulateBus?.result.totalPages || 1}
+                onChange={setPage}
+            />
+        </div>
+    );
+
 
     // search manipulate pickup points direction
     const useGetManipulatePickupPointsDirectionsParams: IDirectionsParams = {
@@ -108,12 +136,8 @@ const ManipulatingPage: React.FC = () => {
         }
     ), [])
 
-    // console.log('manipulatePickupPoints', manipulatePickupPoints);
-
     // enable click point to map
     const [enableClickMap, setEnableClickMap] = React.useState<boolean>(false);
-
-    // console.log('manipulateStartAt', manipulateStartAt);
 
     return (
         <div className='flex flex-col'>
@@ -186,19 +210,47 @@ const ManipulatingPage: React.FC = () => {
                         </Button>
                     </div>
 
+                    <div className='flex justify-between'>
+                        <Input
+                            placeholder="Biển số xe"
+                            className='m-2'
+                            variant='bordered'
+                            onChange={(e) => debouncedSetNumberPlateQuery(e.target.value)}
+                        />
+                        <Select
+                            label="Trạng thái"
+                            placeholder='Chọn trạng thái'
+                            selectionMode='single'
+                            value={statusQuery}
+                            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                                const newValue = event.target.value;
+                                setStatusQuery(newValue);
+                            }}
+                        >
+                            {bus_status_map.map((status) => (
+                                <SelectItem key={status.value} value={status.value}
+                                >
+                                    {status.label}
+                                </SelectItem>
+                            ))
+                            }
+                        </Select>
+                    </div>
+
                     <div className='m-2'>
                         <Table
                             aria-label="List manipulate bus"
                             selectionMode='single'
+                            bottomContent={bottomContent}
                             onSelectionChange={(selectedKeys) => {
                                 const keysArray = Array.from(selectedKeys);
                                 const selectedKey = Number(keysArray[0]);
 
-                                const selectedManipulateBus = listManipulateBus?.result.find((item) => item.bus.id === selectedKey);
+                                const selectedManipulateBus = listManipulateBus?.result.content.find((item) => item.bus.id === selectedKey);
                                 setManipulateRideId(selectedManipulateBus?.ride?.id ?? null);
                                 setManipulateBusId(selectedManipulateBus?.bus.id ?? null);
                                 setManipulatePickupPoints(selectedManipulateBus?.pickupPoints ?? []);
-                                setManipulateStartAt(convertStringInstantToDateTime(listManipulateBus?.result.find((item) => item.bus.id === selectedManipulateBus?.bus.id)?.ride?.startAt));
+                                setManipulateStartAt(convertStringInstantToDateTime(listManipulateBus?.result.content.find((item) => item.bus.id === selectedManipulateBus?.bus.id)?.ride?.startAt));
                                 setManipulateStartFrom(selectedManipulateBus?.ride?.startFrom ?? null);
                             }}
                         >
@@ -209,10 +261,15 @@ const ManipulatingPage: React.FC = () => {
                             ]}>
                                 {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                             </TableHeader>
-                            <TableBody items={listManipulateBus?.result ?? []} emptyContent='No row to display'>
+                            <TableBody items={listManipulateBus?.result?.content ?? []} emptyContent='No row to display'>
                                 {(item) => (
                                     <TableRow key={item.bus.id}>
-                                        <TableCell>{item.bus.numberPlate}</TableCell>
+                                        <TableCell>
+                                            {/* {item.bus.numberPlate} */}
+                                            <Snippet symbol="" color="default" size='sm'>
+                                                {item.bus.numberPlate}
+                                            </Snippet>
+                                        </TableCell>
                                         <TableCell>
                                             <Chip
                                                 variant='flat'

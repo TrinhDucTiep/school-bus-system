@@ -32,6 +32,11 @@ interface IBusTable {
   interface IGetListManipulateBusParams {
     isToSchool: boolean;
     date: string;
+    numberPlate: string;
+    status: string;
+    page: number;
+    size: number;
+    sort: string;
   }
 
   interface IManipulateBus {

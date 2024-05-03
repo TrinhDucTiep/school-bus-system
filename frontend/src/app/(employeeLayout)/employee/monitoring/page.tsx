@@ -134,7 +134,7 @@ const EmployeeMonitoring: React.FC = () => {
                                     setStatus(event.target.value);
                                 }}
                                 className='w-1/2'
-                                color={bus_status_map.find((item) => item.value == updateEmployeeBusRequest.status)?.color || 'default'}
+                                color={bus_status_map.find((item) => item.value == status)?.color || 'default'}
                             >
                                 {
                                     bus_status_map.map((item, index) => {
@@ -184,18 +184,6 @@ const EmployeeMonitoring: React.FC = () => {
                     <CardBody>
                         <div className='flex items-center my-2 gap-8'>
                             <span>Chuyến hiện tại: <Snippet symbol="" color="default">{manipulatePickupPointData?.result?.ride.id}</Snippet> </span>
-                            {/* <span>Trạng thái:
-                                <Chip variant='flat'
-                                    color={
-                                        manipulatePickupPointData?.result?.ride.status === 'PENDING' ? 'primary' :
-                                            manipulatePickupPointData?.result?.ride.status === 'READY' ? 'success' :
-                                                manipulatePickupPointData?.result?.ride.status === 'RUNNING' ? 'warning' :
-                                                    manipulatePickupPointData?.result?.ride.status === 'FINISHED' ? 'danger' : 'default'
-
-                                    }>
-                                    {manipulatePickupPointData?.result?.ride.status}
-                                </Chip>
-                            </span> */}
                             <Select
                                 label='Trạng thái'
                                 placeholder='Chọn trạng thái'
@@ -205,7 +193,7 @@ const EmployeeMonitoring: React.FC = () => {
                                     setStatusRide(event.target.value);
                                 }}
                                 className='w-1/2'
-                                color={ride_status_map.find((item) => item.value == updateEmployeeRideRequest.status)?.color || 'default'}
+                                color={ride_status_map.find((item) => item.value == statusRide)?.color || 'default'}
                             >
                                 {
                                     ride_status_map.map((item, index) => {

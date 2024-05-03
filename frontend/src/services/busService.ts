@@ -109,11 +109,11 @@ export const useGetAvailableBuses = (role: string | null, numberPlate: String | 
 
 // get list manipulate bus
 const getListManipulateBus = async (params: IGetListManipulateBusParams) => {
-    const response = await apiClient.get<ICommonResponse<IManipulateBus[]>>('/api/v1/admin/bus/manipulate', { params });
+    const response = await apiClient.get<ICommonResponse<Page<IManipulateBus>>>('/api/v1/admin/bus/manipulate', { params });
     return response.data;
 }
 export const useGetListManipulateBus = (params: IGetListManipulateBusParams) => {
-    return useQuery<ICommonResponse<IManipulateBus[]>, AxiosError>({
+    return useQuery<ICommonResponse<Page<IManipulateBus>>, AxiosError>({
         queryKey: ['manipulateBusList', params],
         queryFn: () => getListManipulateBus(params)
     });

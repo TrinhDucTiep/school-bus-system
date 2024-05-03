@@ -64,4 +64,14 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
     Optional<Bus> findByDriverId(Long driverId);
 
     Optional<Bus> findByDriverMateId(Long driverMateId);
+
+    @Query("""
+    SELECT b
+        FROM Bus b
+        WHERE
+            (:numberPlate IS NULL OR b.numberPlate ILIKE %:numberPlate%)
+            AND (:status IS NULL OR b.status = :status)
+    """)
+    Page<Bus> findAllByNumberPlateAndStatus(String numberPlate, BusStatus status,
+                                            Pageable pageable);
 }

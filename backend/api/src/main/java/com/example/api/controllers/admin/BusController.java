@@ -78,10 +78,13 @@ public class BusController {
 
     @GetMapping("/manipulate")
     public ResponseEntity<CommonResponse<Object>> getListManipulateBus(
-        BusManipulateParam param
+        BusManipulateParam param,
+        Integer page, Integer size, String sort
         ) {
+        Pageable pageable = PageableUtils.generate(page, size, sort);
+
         return ResponseUtil.toSuccessCommonResponse(
-            busService.getListManipulateBus(param)
+            busService.getListManipulateBusPage(param, pageable)
         );
     }
 
