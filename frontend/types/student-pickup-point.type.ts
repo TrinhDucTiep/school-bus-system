@@ -11,6 +11,7 @@ interface IStudentPickupPointRaw {
 // employee
 interface IEmployeeUpdateStudentPickupPointRequest {
     studentIds: number[];
-    pickupPointId: number;
-    status: string;
+    pickupPointId: number | null;
+    status: string | null;
+    rideId: number | null;
 }

@@ -11,4 +11,5 @@ public class UpdateStudentPickupPointEmployeeInput {
     private List<Long> studentIds;
     private Long pickupPointId;
     private StudentPickupPointStatus status;
+    private Long rideId;
 }

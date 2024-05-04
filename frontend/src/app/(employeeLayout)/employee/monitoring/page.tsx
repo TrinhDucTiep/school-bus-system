@@ -37,9 +37,9 @@ import React, { useMemo } from 'react';
 import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/mapService';
 import _, { set } from 'lodash';
 import LocationIcon from '@/components/icons/location-icon';
-import { convertStringInstantToDate } from '@/util/dateConverter';
-import { useGetListManipulatePickupPoint, useUpdateEmployeeBus, useUpdateEmployeeRide } from '@/services/employee/employeeService';
-import { bus_status_map, ride_status_map } from '@/util/constant';
+import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
+import { useGetListManipulatePickupPoint, useUpdateEmployeeBus, useUpdateEmployeeRide, useUpdateEmployeeStudentPickupPoint } from '@/services/employee/employeeService';
+import { bus_status_map, ride_status_map, student_pickup_point_status_map } from '@/util/constant';
 
 const EmployeeMonitoring: React.FC = () => {
 
@@ -109,6 +109,31 @@ const EmployeeMonitoring: React.FC = () => {
         updateEmployeeRideMutation.mutate(updateEmployeeRideRequest);
     }
 
+    // update student pickup point
+    const [statusStudentPickupPoint, setStatusStudentPickupPoint] = React.useState<string>('');
+    const [studentIds, setStudentIds] = React.useState<number[]>([]);
+    const [pickupPointId, setPickupPointId] = React.useState<number | null>(null);
+    const { isOpen: isUpdateStudentPickupPointModalOpen, onOpen: onOpenUpdateStudentPickupPointModal, onOpenChange: onOpenUpdateStudentPickupPointModalChange } = useDisclosure();
+    let employeeUpdateStudentPickupPointRequest: IEmployeeUpdateStudentPickupPointRequest = {
+        studentIds: studentIds,
+        pickupPointId: pickupPointId,
+        status: statusStudentPickupPoint,
+        rideId: manipulatePickupPointData?.result?.ride.id || null
+    }
+    const updateEmployeeStudentPickupPointMutation = useUpdateEmployeeStudentPickupPoint(() => {
+        setStatusStudentPickupPoint('');
+        onOpenUpdateStudentPickupPointModalChange();
+    });
+    const handleUpdateEmployeeStudentPickupPoint = () => {
+        if (!employeeUpdateStudentPickupPointRequest.studentIds.length || !employeeUpdateStudentPickupPointRequest.status) {
+            return;
+        }
+        updateEmployeeStudentPickupPointMutation.mutate(employeeUpdateStudentPickupPointRequest);
+    }
+
+
+
+    // ui
     if (manipulatePickupPointLoading) {
         return <CustomSkeleton />
     }
@@ -137,7 +162,7 @@ const EmployeeMonitoring: React.FC = () => {
                                 {
                                     bus_status_map.map((item, index) => {
                                         return (
-                                            <SelectItem key={item.value} value={item.value}>
+                                            <SelectItem key={item.value} value={item.value} color={item.color}>
                                                 {item.label}
                                             </SelectItem>
                                         )
@@ -196,7 +221,7 @@ const EmployeeMonitoring: React.FC = () => {
                                 {
                                     ride_status_map.map((item, index) => {
                                         return (
-                                            <SelectItem key={item.value} value={item.value}>
+                                            <SelectItem key={item.value} value={item.value} color={item.color}>
                                                 {item.label}
                                             </SelectItem>
                                         )
@@ -205,8 +230,9 @@ const EmployeeMonitoring: React.FC = () => {
                             </Select>
                         </div>
 
-                        <div className='mt-4'>
-                            <span>Thời gian bắt đầu: {convertStringInstantToDate(manipulatePickupPointData?.result?.ride.startAt)} </span>
+                        <div className='mt-4 flex gap-8'>
+                            <span>Thời gian bắt đầu: {convertStringInstantToDateTime(manipulatePickupPointData?.result?.ride.startAt)} </span>
+                            <span>Chiều đi: {manipulatePickupPointData?.result.ride.isToSchool ? 'Đến trường' : 'Về nhà'}</span>
                         </div>
 
                         <Button color='primary' className='w-1/12 mt-4'
@@ -281,35 +307,19 @@ const EmployeeMonitoring: React.FC = () => {
                                             key={index}
                                             title={item.pickupPoint.address}
                                         >
-                                            {/* <div className='flex flex-col gap-2'>
-                                                {item.studentWithPickupPoints.map((student, index) => {
-                                                    return (
-                                                        <div key={index} className='flex gap-4 items-center'>
-                                                            <User
-                                                                name={student.student.name}
-                                                            >
-                                                                {student.student.name}
-                                                            </User>
-                                                            <Snippet symbol="" color="default">{student.student.phoneNumber}</Snippet>
-                                                            <Chip
-                                                                color={
-                                                                    student.studentPickupPoint.status === 'PICKED' ? 'success' :
-                                                                        student.studentPickupPoint.status === 'PICKING' ? 'primary' :
-                                                                            student.studentPickupPoint.status === 'MISSED' ? 'danger' : 'default'
-                                                                }
-                                                            >
-                                                                {student.studentPickupPoint.status}
-                                                            </Chip>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div> */}
                                             <Table
                                                 aria-label='Student pickup point'
                                                 selectionMode='multiple'
+                                                onSelectionChange={(selectedKeys) => {
+                                                    if (selectedKeys === 'all') {
+                                                        setStudentIds(item.studentWithPickupPoints.map((student) => student.student.id));
+                                                    } else {
+                                                        const keysArray = Array.from(selectedKeys).map(Number);
+                                                        setStudentIds(keysArray);
+                                                    }
+                                                }}
                                             >
                                                 <TableHeader>
-                                                    <TableColumn>STT</TableColumn>
                                                     <TableColumn>Tên học sinh</TableColumn>
                                                     <TableColumn>Số điện thoại</TableColumn>
                                                     <TableColumn>Trạng thái</TableColumn>
@@ -317,8 +327,7 @@ const EmployeeMonitoring: React.FC = () => {
                                                 <TableBody>
                                                     {item.studentWithPickupPoints.map((student, index) => {
                                                         return (
-                                                            <TableRow key={index}>
-                                                                <TableCell>{index + 1}</TableCell>
+                                                            <TableRow key={student.student.id}>
                                                                 <TableCell>
                                                                     <User
                                                                         name={student.student.name}
@@ -346,12 +355,36 @@ const EmployeeMonitoring: React.FC = () => {
                                                 </TableBody>
                                             </Table>
 
-                                            <div>
+                                            <div className='flex'>
+                                                <Select
+                                                    label='Chọn trạng thái'
+                                                    placeholder='Chọn trạng thái'
+                                                    value={statusStudentPickupPoint}
+                                                    defaultSelectedKeys={[student_pickup_point_status_map.find((item) => item.value === statusStudentPickupPoint)?.value || '']}
+                                                    onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                                                        setStatusStudentPickupPoint(event.target.value);
+                                                    }}
+                                                    className='w-1/2'
+                                                    color={student_pickup_point_status_map.find((item) => item.value == statusStudentPickupPoint)?.color || 'default'}
+                                                >
+                                                    {
+                                                        student_pickup_point_status_map.map((item, index) => {
+                                                            return (
+                                                                <SelectItem key={item.value} value={item.value}
+                                                                    color={item.color}
+                                                                >
+                                                                    {item.label}
+                                                                </SelectItem>
+                                                            )
+                                                        })
+                                                    }
+                                                </Select>
                                                 <Button
                                                     color='primary'
                                                     className='w-1/12 mt-4'
                                                     onClick={() => {
-                                                        // handleUpdateEmployeeRidePickupPoint();
+                                                        setPickupPointId(item.pickupPoint.id);
+                                                        onOpenUpdateStudentPickupPointModal();
                                                     }}
                                                 >
                                                     Lưu
@@ -387,10 +420,10 @@ const EmployeeMonitoring: React.FC = () => {
                     <ModalContent>
                         {(onOpenAddRideConfirm) => (
                             <>
-                                <ModalHeader className="flex flex-col gap-1">Xác nhận lưu chuyến</ModalHeader>
+                                <ModalHeader className="flex flex-col gap-1">Xác nhận lưu trạng thái xe</ModalHeader>
                                 <ModalBody>
                                     <p>
-                                        Bạn có muốn lưu chuyến không?
+                                        Bạn có muốn lưu trạng thái xe không?
                                     </p>
                                 </ModalBody>
                                 <ModalFooter>
@@ -442,6 +475,37 @@ const EmployeeMonitoring: React.FC = () => {
                 </Modal>
             </div>
 
+            {/* modal update student pickup point */}
+            <div className='relative z-10'>
+                <Modal isOpen={isUpdateStudentPickupPointModalOpen} onOpenChange={onOpenUpdateStudentPickupPointModalChange}
+                >
+                    <ModalContent>
+                        {(onOpenAddRideConfirm) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Xác nhận lưu trạng thái học sinh</ModalHeader>
+                                <ModalBody>
+                                    <p>
+                                        Bạn có muốn lưu trạng thái học sinh không?
+                                    </p>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light"
+                                        onPress={onOpenUpdateStudentPickupPointModalChange}
+                                    >
+                                        Huỷ
+                                    </Button>
+                                    <Button color="primary" onPress={() => {
+                                        handleUpdateEmployeeStudentPickupPoint();
+                                    }}>
+                                        Xác nhận
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
+
+            </div>
         </div>
     );
 };

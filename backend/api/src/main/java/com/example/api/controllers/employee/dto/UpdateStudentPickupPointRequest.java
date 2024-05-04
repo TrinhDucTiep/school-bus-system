@@ -12,12 +12,14 @@ public class UpdateStudentPickupPointRequest {
     private List<Long> studentIds;
     private Long pickupPointId;
     private StudentPickupPointStatus status;
+    private Long rideId;
 
     public UpdateStudentPickupPointEmployeeInput toInput() {
         return UpdateStudentPickupPointEmployeeInput.builder()
                 .studentIds(studentIds)
                 .pickupPointId(pickupPointId)
                 .status(status)
+                .rideId(rideId)
                 .build();
     }
 }

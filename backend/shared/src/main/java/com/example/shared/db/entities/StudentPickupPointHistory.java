@@ -60,4 +60,17 @@ public class StudentPickupPointHistory {
     @LastModifiedDate
     @UpdateTimestamp
     private Instant updatedAt;
+
+    public StudentPickupPointHistory (StudentPickupPoint studentPickupPoint,
+                                      String address, Double latitude, Double longitude,
+                                      Long rideId) {
+        this.studentPickupPointId = studentPickupPoint.getId();
+        this.studentId = studentPickupPoint.getStudent().getId();
+        this.pickupPointId = studentPickupPoint.getPickupPoint().getId();
+        this.status = studentPickupPoint.getStatus();
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.rideId = rideId;
+    }
 }
