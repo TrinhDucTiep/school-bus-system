@@ -10,6 +10,8 @@ import com.example.shared.db.entities.PickupPoint;
 import com.example.shared.db.entities.Ride;
 import com.example.shared.db.entities.RidePickupPoint;
 import com.example.shared.db.entities.RidePickupPointHistory;
+import com.example.shared.db.entities.StudentPickupPoint;
+import com.example.shared.db.entities.StudentPickupPointHistory;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.EmployeeRepository;
 import com.example.shared.db.repo.PickupPointRepository;
@@ -17,15 +19,18 @@ import com.example.shared.db.repo.RideHistoryRepository;
 import com.example.shared.db.repo.RidePickupPointHistoryRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
 import com.example.shared.db.repo.RideRepository;
+import com.example.shared.db.repo.StudentPickupPointHistoryRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
 import com.example.shared.enumeration.RidePickupPointStatus;
 import com.example.shared.enumeration.RideStatus;
+import com.example.shared.enumeration.StudentPickupPointStatus;
 import com.example.shared.exception.MyException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -42,6 +47,7 @@ public class RideServiceImpl implements RideService {
     private final BusRepository busRepository;
     private final PickupPointRepository pickupPointRepository;
     private final StudentPickupPointRepository studentPickupPointRepository;
+    private final StudentPickupPointHistoryRepository studentPickupPointHistoryRepository;
     private final RideHistoryRepository rideHistoryRepository;
     private final RidePickupPointHistoryRepository ridePickupPointHistoryRepository;
 
@@ -188,6 +194,25 @@ public class RideServiceImpl implements RideService {
 
             upsertRide(upsertRideInput);
         }
+
+        // set all student pickup points to PICKING status
+        List<StudentPickupPoint> studentPickupPoints = studentPickupPointRepository
+            .findByPickupPointIdIn(upsertRideInput.getPickupPointIds());
+        studentPickupPoints.forEach(studentPickupPoint -> {
+            studentPickupPoint.setStatus(StudentPickupPointStatus.PICKING);
+        });
+        studentPickupPointRepository.saveAll(studentPickupPoints);
+        studentPickupPointHistoryRepository.saveAll(
+            studentPickupPoints.stream()
+                .map(studentPickupPoint -> new StudentPickupPointHistory(
+                    studentPickupPoint,
+                    studentPickupPoint.getPickupPoint().getAddress(),
+                    studentPickupPoint.getPickupPoint().getLatitude(),
+                    studentPickupPoint.getPickupPoint().getLongitude(),
+                    ride.getId()
+                ))
+                .collect(Collectors.toList())
+        );
     }
 
     @Override
@@ -252,6 +277,54 @@ public class RideServiceImpl implements RideService {
                 "Employee not assign to ride",
                 HttpStatus.BAD_REQUEST
             );
+        }
+
+        // validate all student pickup points status updated when ride status is FINISHED
+        if (updateRideEmployeeInput.getStatus() == RideStatus.FINISHED) {
+            //todo: tieptd
+            List<StudentPickupPointHistory> studentPickupPointHistories =
+                studentPickupPointHistoryRepository.findByRideId(ride.getId());
+            // history is track status of student pickup point from the beginning of the ride and a student pickup point can have multiple status in a ride
+            // check last status of each student pickup point is AT_SCHOOL or AT_HOME => can update ride status to FINISHED
+
+            // first get all last status of each student pickup point
+            List<StudentPickupPointHistory> lastStudentPickupPointHistories =
+                studentPickupPointHistories.stream()
+                .collect(Collectors.groupingBy(StudentPickupPointHistory::getStudentPickupPointId))
+                .values()
+                .stream()
+                .map(studentPickupPointHistoryList -> studentPickupPointHistoryList.stream()
+                    .max(Comparator.comparing(StudentPickupPointHistory::getCreatedAt))
+                    .orElseThrow(() -> new MyException(
+                        null,
+                        "student_pickup_point_history_not_found",
+                        "Student pickup point history not found",
+                        HttpStatus.BAD_REQUEST
+                    ))
+                )
+                .toList();
+
+            if (lastStudentPickupPointHistories.isEmpty()) {
+                throw new MyException(
+                    null,
+                    "student_pickup_point_history_not_found",
+                    "Student pickup point history not found",
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+
+            // check all last status of each student pickup point is AT_SCHOOL or AT_HOME
+            for (StudentPickupPointHistory studentPickupPointHistory : lastStudentPickupPointHistories) {
+                if (studentPickupPointHistory.getStatus() != StudentPickupPointStatus.AT_SCHOOL &&
+                    studentPickupPointHistory.getStatus() != StudentPickupPointStatus.AT_HOME) {
+                    throw new MyException(
+                        null,
+                        "student_pickup_point_not_finished",
+                        "Student pickup point not finished",
+                        HttpStatus.BAD_REQUEST
+                    );
+                }
+            }
         }
 
         // update ride status

@@ -96,6 +96,22 @@ public class StudentPickupPointServiceImpl implements StudentPickupPointService 
                     HttpStatus.BAD_REQUEST
             );
         }
+        if (ride.getIsToSchool() && input.getStatus() == StudentPickupPointStatus.AT_HOME) {
+            throw new MyException(
+                    null,
+                    "Invalid status",
+                    "Cannot update status to AT_HOME for ride to school",
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+        if (!ride.getIsToSchool() && input.getStatus() == StudentPickupPointStatus.AT_SCHOOL) {
+            throw new MyException(
+                    null,
+                    "Invalid status",
+                    "Cannot update status to AT_SCHOOL for ride to home",
+                    HttpStatus.BAD_REQUEST
+            );
+        }
 
         PickupPoint pickupPoint = pickupPointRepository.findById(input.getPickupPointId())
                 .orElseThrow(() -> new IllegalArgumentException("Pickup point not found"));

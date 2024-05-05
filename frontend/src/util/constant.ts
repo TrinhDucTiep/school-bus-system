@@ -21,7 +21,7 @@ export const ride_status_map = [
 export const student_pickup_point_status_map = [
     { value: 'PICKING', label: 'Đang đón', color: 'warning' },
     { value: 'PICKED', label: 'Đã đón', color: 'success' },
-    { value: 'MISSED', label: 'Lỡ', color: 'danger' },
+    { value: 'MISSED', label: 'Bỏ lỡ', color: 'danger' },
     { value: 'AT_SCHOOL', label: 'Tại trường', color: 'secondary' },
     { value: 'AT_HOME', label: 'Tại nhà', color: 'secondary' },
 ];

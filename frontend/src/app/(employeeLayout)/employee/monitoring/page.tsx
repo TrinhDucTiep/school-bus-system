@@ -137,6 +137,18 @@ const EmployeeMonitoring: React.FC = () => {
     if (manipulatePickupPointLoading) {
         return <CustomSkeleton />
     }
+    // if dont have data => return message you dont have ride today
+    if (!manipulatePickupPointData?.result) {
+        return <div className='w-auto h-full m-4 flex justify-center'>
+            <Card className='m-2 w-full h-full flex justify-center'>
+                <CardBody className='flex justify-center'>
+                    <div className='flex justify-center'>
+                        <h1 className='font-bold'>Bạn không có chuyến đi nào hôm nay!</h1>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+    }
     return (
         <div className='flex flex-col'>
             <div className='flex justify-between  flex-col sm:flex-row'>
@@ -232,7 +244,7 @@ const EmployeeMonitoring: React.FC = () => {
 
                         <div className='mt-4 flex gap-8'>
                             <span>Thời gian bắt đầu: {convertStringInstantToDateTime(manipulatePickupPointData?.result?.ride.startAt)} </span>
-                            <span>Chiều đi: {manipulatePickupPointData?.result.ride.isToSchool ? 'Đến trường' : 'Về nhà'}</span>
+                            <span>Chiều đi: {manipulatePickupPointData?.result?.ride.isToSchool ? 'Đến trường' : 'Về nhà'}</span>
                         </div>
 
                         <Button color='primary' className='w-1/12 mt-4'
@@ -368,15 +380,25 @@ const EmployeeMonitoring: React.FC = () => {
                                                     color={student_pickup_point_status_map.find((item) => item.value == statusStudentPickupPoint)?.color || 'default'}
                                                 >
                                                     {
-                                                        student_pickup_point_status_map.map((item, index) => {
-                                                            return (
-                                                                <SelectItem key={item.value} value={item.value}
-                                                                    color={item.color}
-                                                                >
-                                                                    {item.label}
-                                                                </SelectItem>
-                                                            )
-                                                        })
+                                                        student_pickup_point_status_map
+                                                            .filter((item) => {
+                                                                if (manipulatePickupPointData?.result?.ride.isToSchool && item.value == 'AT_HOME') {
+                                                                    return false;
+                                                                }
+                                                                if (!manipulatePickupPointData?.result?.ride.isToSchool && item.value == 'AT_SCHOOL') {
+                                                                    return false;
+                                                                }
+                                                                return item.value !== 'PICKING';
+                                                            })
+                                                            .map((item, index) => {
+                                                                return (
+                                                                    <SelectItem key={item.value} value={item.value}
+                                                                        color={item.color}
+                                                                    >
+                                                                        {item.label}
+                                                                    </SelectItem>
+                                                                )
+                                                            })
                                                     }
                                                 </Select>
                                                 <Button
