@@ -5,6 +5,8 @@ import com.example.shared.enumeration.RideStatus;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -65,4 +67,31 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         AND DATE(r.startAt) = DATE(:startAt)
     """)
     List<Ride> findByBusIdAndNotInStatusAndStartAt(Long busId, RideStatus status, Instant startAt);
+
+    @Query("""
+        SELECT r
+        FROM Ride r
+        LEFT JOIN StudentPickupPointHistory spph ON r.id = spph.rideId
+        LEFT JOIN Student s ON spph.studentId = s.id
+        LEFT JOIN Parent p ON s.parent.id = p.id
+        WHERE (:startAt IS NULL OR DATE(r.startAt) = DATE(:startAt))
+        AND (:riderId IS NULL OR r.id = :riderId)
+        AND (:numberPlate IS NULL OR r.bus.numberPlate ILIKE %:numberPlate%)
+        AND (:status IS NULL OR r.status = :status)
+        AND (:isToSchool IS NULL OR r.isToSchool = :isToSchool)
+        AND (:address IS NULL OR spph.address ILIKE %:address%)
+        AND (:studentPhoneNumber IS NULL OR s.phoneNumber ILIKE %:studentPhoneNumber%)
+        AND (:parentPhoneNumber IS NULL OR p.phoneNumber ILIKE %:parentPhoneNumber%)
+    """)
+    Page<Ride> searchHistory(
+        @Param("startAt") Instant startAt,
+        @Param("riderId") Integer riderId,
+        @Param("numberPlate") String numberPlate,
+        @Param("status") String status,
+        @Param("isToSchool") Boolean isToSchool,
+        @Param("address") String address,
+        @Param("studentPhoneNumber") String studentPhoneNumber,
+        @Param("parentPhoneNumber") String parentPhoneNumber,
+        Pageable pageable
+    );
 }

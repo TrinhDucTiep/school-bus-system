@@ -281,7 +281,6 @@ public class RideServiceImpl implements RideService {
 
         // validate all student pickup points status updated when ride status is FINISHED
         if (updateRideEmployeeInput.getStatus() == RideStatus.FINISHED) {
-            //todo: tieptd
             List<StudentPickupPointHistory> studentPickupPointHistories =
                 studentPickupPointHistoryRepository.findByRideId(ride.getId());
             // history is track status of student pickup point from the beginning of the ride and a student pickup point can have multiple status in a ride
@@ -325,6 +324,9 @@ public class RideServiceImpl implements RideService {
                     );
                 }
             }
+
+            // update end time of ride
+            ride.setEndAt(ZonedDateTime.now().toInstant());
         }
 
         // update ride status
