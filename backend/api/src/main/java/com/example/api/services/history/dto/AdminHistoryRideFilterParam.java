@@ -1,5 +1,6 @@
 package com.example.api.services.history.dto;
 
+import com.example.shared.enumeration.RideStatus;
 import java.time.Instant;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,7 @@ public class AdminHistoryRideFilterParam {
     private Instant startAt;
     private Integer rideId;
     private String numberPlate;
-    private String status;
+    private RideStatus status;
     private Boolean isToSchool;
     private String address;
 

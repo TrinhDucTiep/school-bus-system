@@ -17,6 +17,7 @@ import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.StudentPickupPointHistoryRepository;
 import com.example.shared.db.repo.StudentRepository;
 import com.example.shared.exception.MyException;
+import java.time.Instant;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,14 +43,35 @@ public class HistoryServiceImpl implements HistoryService {
     public Page<AdminHistoryRideOutput> getAdminHistoryRides(
         AdminHistoryRideFilterParam filterParam, Pageable pageable) {
         Page<AdminHistoryRideOutput> result = null;
+
+        // set for query not get error
+        boolean isAllDate = false;
+        if (filterParam.getStartAt() == null) {
+            isAllDate = true;
+            filterParam.setStartAt(Instant.now());
+        }
+
         // find ride page
-        Page<Ride> ridepage = rideRepository.searchHistory(
-            filterParam.getStartAt(), filterParam.getRideId(),
-            filterParam.getNumberPlate(), filterParam.getStatus(), filterParam.getIsToSchool(),
-            filterParam.getAddress(), filterParam.getStudentPhoneNumber(),
-            filterParam.getParentPhoneNumber(),
-            pageable
-        );
+        Page<Ride> ridepage;
+        if (filterParam.getAddress() != null || filterParam.getStudentPhoneNumber() != null
+            || filterParam.getParentPhoneNumber() != null) {
+            ridepage = rideRepository.searchHistory(
+                filterParam.getStartAt(), filterParam.getRideId(),
+                filterParam.getNumberPlate(), filterParam.getStatus(), filterParam.getIsToSchool(),
+                filterParam.getAddress(), filterParam.getStudentPhoneNumber(),
+                filterParam.getParentPhoneNumber(),
+                isAllDate,
+                pageable
+            );
+        } else {
+            ridepage = rideRepository.searchHistory(
+                filterParam.getStartAt(), filterParam.getRideId(),
+                filterParam.getNumberPlate(), filterParam.getStatus(), filterParam.getIsToSchool(),
+                isAllDate,
+                pageable
+            );
+        }
+
 
         // map to output
         result = ridepage.map(ride -> {

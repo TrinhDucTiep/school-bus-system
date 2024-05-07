@@ -74,7 +74,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         LEFT JOIN StudentPickupPointHistory spph ON r.id = spph.rideId
         LEFT JOIN Student s ON spph.studentId = s.id
         LEFT JOIN Parent p ON s.parent.id = p.id
-        WHERE (:startAt IS NULL OR DATE(r.startAt) = DATE(:startAt))
+        WHERE (:isAllDate = TRUE OR DATE(r.startAt) = DATE(:startAt))
         AND (:riderId IS NULL OR r.id = :riderId)
         AND (:numberPlate IS NULL OR r.bus.numberPlate ILIKE %:numberPlate%)
         AND (:status IS NULL OR r.status = :status)
@@ -87,11 +87,31 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         @Param("startAt") Instant startAt,
         @Param("riderId") Integer riderId,
         @Param("numberPlate") String numberPlate,
-        @Param("status") String status,
+        @Param("status") RideStatus status,
         @Param("isToSchool") Boolean isToSchool,
         @Param("address") String address,
         @Param("studentPhoneNumber") String studentPhoneNumber,
         @Param("parentPhoneNumber") String parentPhoneNumber,
+        @Param("isAllDate") Boolean isAllDate,
+        Pageable pageable
+    );
+
+    @Query("""
+        SELECT r
+        FROM Ride r
+        WHERE (:isAllDate = TRUE OR DATE(r.startAt) = DATE(:startAt))
+        AND (:riderId IS NULL OR r.id = :riderId)
+        AND (:numberPlate IS NULL OR r.bus.numberPlate ILIKE %:numberPlate%)
+        AND (:status IS NULL OR r.status = :status)
+        AND (:isToSchool IS NULL OR r.isToSchool = :isToSchool)
+    """)
+    Page<Ride> searchHistory(
+        @Param("startAt") Instant startAt,
+        @Param("riderId") Integer riderId,
+        @Param("numberPlate") String numberPlate,
+        @Param("status") RideStatus status,
+        @Param("isToSchool") Boolean isToSchool,
+        @Param("isAllDate") Boolean isAllDate,
         Pageable pageable
     );
 }
