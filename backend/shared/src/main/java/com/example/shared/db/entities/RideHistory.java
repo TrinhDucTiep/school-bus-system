@@ -51,6 +51,12 @@ public class RideHistory {
     @Column(name = "is_to_school")
     private Boolean isToSchool;
 
+    @Column(name = "driver_id")
+    private Long driverId;
+
+    @Column(name = "driver_mate_id")
+    private Long driverMateId;
+
     @CreatedDate
     @CreationTimestamp
     private Instant createdAt;

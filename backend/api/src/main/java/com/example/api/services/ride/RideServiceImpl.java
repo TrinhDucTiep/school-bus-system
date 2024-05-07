@@ -151,7 +151,10 @@ public class RideServiceImpl implements RideService {
             .isToSchool(upsertRideInput.getIsToSchool())
             .build()
         );
-        rideHistoryRepository.save(ride.toRideHistory());
+        rideHistoryRepository.save(ride.toRideHistory(
+            bus.getDriverId(),
+            bus.getDriverMateId()
+        ));
 
         // save ride pickup points
         if (upsertRideInput.getId() != null) {
@@ -243,7 +246,10 @@ public class RideServiceImpl implements RideService {
         ride.setStartFrom(updateRideInput.getStartFrom());
         ride.setStatus(updateRideInput.getStatus());
         rideRepository.save(ride);
-        rideHistoryRepository.save(ride.toRideHistory());
+        rideHistoryRepository.save(ride.toRideHistory(
+            bus.getDriverId(),
+            bus.getDriverMateId()
+        ));
     }
 
     @Override

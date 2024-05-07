@@ -62,4 +62,22 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     """)
     List<Student> findAllByPickupPointId(@Param("pickupPointId") Long pickupPointId);
 
+    // findAllByParentId
+    @Query("""
+        select s from Student s
+        where s.parent.id = :parentId
+    """)
+    List<Student> findAllByParentId(@Param("parentId") Long parentId);
+
+    // findAllByParentIdAndStudentPhoneNumber
+    @Query("""
+        select s from Student s
+        where s.parent.id = :parentId
+        and s.phoneNumber LIKE %:studentPhoneNumber%
+    """)
+    List<Student> findAllByParentIdAndStudentPhoneNumber(
+        @Param("parentId") Long parentId,
+        @Param("studentPhoneNumber") String studentPhoneNumber
+    );
+
 }

@@ -59,7 +59,7 @@ public class Ride {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public RideHistory toRideHistory() {
+    public RideHistory toRideHistory(Long driverId, Long driverMateId) {
         return RideHistory.builder()
             .rideId(this.id)
             .busId(this.bus.getId())
@@ -68,6 +68,8 @@ public class Ride {
             .startFrom(this.startFrom)
             .status(this.status)
             .isToSchool(this.isToSchool)
+            .driverId(driverId)
+            .driverMateId(driverMateId)
             .build();
     }
 }

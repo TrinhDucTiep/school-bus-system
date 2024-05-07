@@ -114,4 +114,81 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         @Param("isAllDate") Boolean isAllDate,
         Pageable pageable
     );
+
+    @Query("""
+        SELECT r
+        FROM Ride r
+        LEFT JOIN StudentPickupPointHistory spph ON r.id = spph.rideId
+        LEFT JOIN Student s ON spph.studentId = s.id
+        LEFT JOIN Parent p ON s.parent.id = p.id
+        LEFT JOIN RideHistory rh ON r.id = rh.rideId
+        WHERE (:isAllDate = TRUE OR DATE(r.startAt) = DATE(:startAt))
+        AND (:riderId IS NULL OR r.id = :riderId)
+        AND (:numberPlate IS NULL OR r.bus.numberPlate ILIKE %:numberPlate%)
+        AND (:status IS NULL OR r.status = :status)
+        AND (:isToSchool IS NULL OR r.isToSchool = :isToSchool)
+        AND (:address IS NULL OR spph.address ILIKE %:address%)
+        AND (:studentPhoneNumber IS NULL OR s.phoneNumber ILIKE %:studentPhoneNumber%)
+        AND (:parentPhoneNumber IS NULL OR p.phoneNumber ILIKE %:parentPhoneNumber%)
+        AND (rh.driverId = :employeeId OR rh.driverMateId = :employeeId)
+    """)
+    Page<Ride> searchEmployeeHistory(
+        @Param("startAt") Instant startAt,
+        @Param("riderId") Integer riderId,
+        @Param("numberPlate") String numberPlate,
+        @Param("status") RideStatus status,
+        @Param("isToSchool") Boolean isToSchool,
+        @Param("address") String address,
+        @Param("studentPhoneNumber") String studentPhoneNumber,
+        @Param("parentPhoneNumber") String parentPhoneNumber,
+        @Param("isAllDate") Boolean isAllDate,
+        @Param("employeeId") Long employeeId,
+        Pageable pageable
+    );
+
+    @Query("""
+        SELECT r
+        FROM Ride r
+        LEFT JOIN RideHistory rh ON r.id = rh.rideId
+        WHERE (:isAllDate = TRUE OR DATE(r.startAt) = DATE(:startAt))
+        AND (:riderId IS NULL OR r.id = :riderId)
+        AND (:numberPlate IS NULL OR r.bus.numberPlate ILIKE %:numberPlate%)
+        AND (:status IS NULL OR r.status = :status)
+        AND (:isToSchool IS NULL OR r.isToSchool = :isToSchool)
+        AND (rh.driverId = :employeeId OR rh.driverMateId = :employeeId)
+    """)
+    Page<Ride> searchEmployeeHistory(
+        @Param("startAt") Instant startAt,
+        @Param("riderId") Integer riderId,
+        @Param("numberPlate") String numberPlate,
+        @Param("status") RideStatus status,
+        @Param("isToSchool") Boolean isToSchool,
+        @Param("isAllDate") Boolean isAllDate,
+        @Param("employeeId") Long employeeId,
+        Pageable pageable
+    );
+
+    @Query("""
+        SELECT r
+        FROM Ride r
+        LEFT JOIN StudentPickupPointHistory spph ON r.id = spph.rideId
+        WHERE (:isAllDate = TRUE OR DATE(r.startAt) = DATE(:startAt))
+        AND (:riderId IS NULL OR r.id = :riderId)
+        AND (:numberPlate IS NULL OR r.bus.numberPlate ILIKE %:numberPlate%)
+        AND (:status IS NULL OR r.status = :status)
+        AND (:isToSchool IS NULL OR r.isToSchool = :isToSchool)
+        AND (:address IS NULL OR spph.address ILIKE %:address%)
+        AND (:studentIds IS NULL OR spph.studentId IN :studentIds)
+    """)
+    Page<Ride> searchClientHistory(
+        @Param("startAt") Instant startAt,
+        @Param("riderId") Integer riderId,
+        @Param("numberPlate") String numberPlate,
+        @Param("status") RideStatus status,
+        @Param("isToSchool") Boolean isToSchool,
+        @Param("address") String address,
+        @Param("isAllDate") Boolean isAllDate,
+        @Param("studentIds") List<Long> studentIds,
+        Pageable pageable
+    );
 }
