@@ -1,6 +1,6 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, useDisclosure, Button, Input } from '@nextui-org/react';
 import React from 'react';
-import { useGetListStudent } from '@/services/accountService';
+import { useGetListStudent } from '@/services/admin/accountService';
 import _ from 'lodash';
 import { AddStudent } from '../../admin/student/add-student';
 import { ModalUpdateStudent } from '../../admin/student/update-student';

@@ -25,7 +25,7 @@ import {
 import { EmployeeRenderCell } from '@/components/employee/employee-render-cell';
 import { AddEmployee } from '@/components/employee/add-employee';
 import { ExportIcon } from '@/components/icons/export-icon';
-import { useGetListEmployee, useUpdateEmployee, useDeleteEmployee } from '@/services/employeeService';
+import { useGetListEmployee, useUpdateEmployee, useDeleteEmployee } from '@/services/admin/employeeService';
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SubmitHandler, set, useForm } from 'react-hook-form';
 import { convertStringInstantToDate } from '@/util/dateConverter';

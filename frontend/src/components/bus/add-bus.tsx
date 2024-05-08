@@ -16,9 +16,9 @@ import {
 import React from "react";
 import { PlusIcon } from "../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useAddBus } from "@/services/busService";
+import { useAddBus } from "@/services/admin/busService";
 import { EmployeeRole, bus_status_map } from "@/util/constant";
-import { useGetAvailableEmployees, useGetListEmployee } from "@/services/employeeService";
+import { useGetAvailableEmployees, useGetListEmployee } from "@/services/admin/employeeService";
 
 export const AddBus = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();

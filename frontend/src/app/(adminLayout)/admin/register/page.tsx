@@ -35,8 +35,8 @@ import LocationIcon from '@/components/icons/location-icon';
 import { useGetStudentRides } from '@/services/client/parentStudentService';
 import { useAddRequestRegistration, useGetRequestRegistration } from '@/services/client/clientRequestRegistrationService';
 import { on } from 'events';
-import { useGetListPickupPoint } from '@/services/pickupPointService';
-import { useGetPageRequestRegistration, useHandleRequestRegistration } from '@/services/requestRegistrationService';
+import { useGetListPickupPoint } from '@/services/admin/pickupPointService';
+import { useGetPageRequestRegistration, useHandleRequestRegistration } from '@/services/admin/requestRegistrationService';
 import { request_registration_status_map } from '@/util/constant';
 import { toast } from "react-toastify";
 

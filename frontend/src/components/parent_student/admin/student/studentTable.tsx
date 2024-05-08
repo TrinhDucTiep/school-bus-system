@@ -1,7 +1,7 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, useDisclosure, Button, Input } from '@nextui-org/react';
 import React from 'react';
 import { ParentRenderCell } from '../parent/parent-render-cell';
-import { useGetListParent, useGetListStudent } from '@/services/accountService';
+import { useGetListParent, useGetListStudent } from '@/services/admin/accountService';
 import { StudentRenderCell } from './student-render-cell';
 import { ExportIcon } from '../../../icons/export-icon';
 import _ from 'lodash';
@@ -33,7 +33,7 @@ const StudentTable: React.FC = () => {
 
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const handleOpenChangeDeleteStudent = () => onOpenChangeDelete();
-    
+
     const [page, setPage] = React.useState(1);
 
     const { data, isLoading, error } = useGetListStudent({
@@ -73,7 +73,7 @@ const StudentTable: React.FC = () => {
                         }}
                         size='sm'
                         label="Họ và tên"
-                        onChange={(e) => debouncedSetName(e.target.value)} 
+                        onChange={(e) => debouncedSetName(e.target.value)}
                     />
                     <Input
                         classNames={{
@@ -95,7 +95,7 @@ const StudentTable: React.FC = () => {
                     />
                 </div>
                 <div className="flex flex-row flex-wrap m-1 mb-8">
-                    <AddStudent/>
+                    <AddStudent />
                 </div>
             </div>
             <Table aria-label="Example table with custom cells"

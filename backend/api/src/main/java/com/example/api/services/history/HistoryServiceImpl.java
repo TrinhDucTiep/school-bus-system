@@ -1,6 +1,7 @@
 package com.example.api.services.history;
 
 import com.example.api.services.common_dto.BusOutput;
+import com.example.api.services.common_dto.EmployeeOutput;
 import com.example.api.services.common_dto.RideOutput;
 import com.example.api.services.common_dto.StudentOutput;
 import com.example.api.services.history.dto.AdminHistoryRideFilterParam;
@@ -92,6 +93,26 @@ public class HistoryServiceImpl implements HistoryService {
             return AdminHistoryRideOutput.builder()
                 .bus(BusOutput.fromEntity(bus))
                 .ride(RideOutput.fromEntity(ride))
+                .driver(
+                    bus.getDriverId() == null ? null :
+                    EmployeeOutput.fromEntity(
+                        employeeRepository.findById(bus.getDriverId())
+                            .orElseThrow(() -> new MyException(
+                                null, "EMPLOYEE_NOT_FOUND", "Employee not found",
+                                HttpStatus.NOT_FOUND
+                            ))
+                    )
+                )
+                .driverMate(
+                    bus.getDriverMateId() == null ? null :
+                    EmployeeOutput.fromEntity(
+                        employeeRepository.findById(bus.getDriverMateId())
+                            .orElseThrow(() -> new MyException(
+                                null, "EMPLOYEE_NOT_FOUND", "Employee not found",
+                                HttpStatus.NOT_FOUND
+                            ))
+                    )
+                )
                 .rideHistories(rideHistoryRepository.findByRideId(ride.getId()))
                 .ridePickupPointHistories(
                     ridePickupPointHistoryRepository.findByRideId(ride.getId())
@@ -174,6 +195,26 @@ public class HistoryServiceImpl implements HistoryService {
             return EmployeeHistoryRideOutput.builder()
                 .bus(BusOutput.fromEntity(bus))
                 .ride(RideOutput.fromEntity(ride))
+                .driver(
+                    bus.getDriverId() == null ? null :
+                    EmployeeOutput.fromEntity(
+                        employeeRepository.findById(bus.getDriverId())
+                            .orElseThrow(() -> new MyException(
+                                null, "EMPLOYEE_NOT_FOUND", "Employee not found",
+                                HttpStatus.NOT_FOUND
+                            ))
+                    )
+                )
+                .driverMate(
+                    bus.getDriverMateId() == null ? null :
+                    EmployeeOutput.fromEntity(
+                        employeeRepository.findById(bus.getDriverMateId())
+                            .orElseThrow(() -> new MyException(
+                                null, "EMPLOYEE_NOT_FOUND", "Employee not found",
+                                HttpStatus.NOT_FOUND
+                            ))
+                    )
+                )
                 .rideHistories(rideHistoryRepository.findByRideId(ride.getId()))
                 .ridePickupPointHistories(
                     ridePickupPointHistoryRepository.findByRideId(ride.getId())
@@ -249,6 +290,26 @@ public class HistoryServiceImpl implements HistoryService {
             return ClientHistoryRideOutput.builder()
                 .bus(BusOutput.fromEntity(bus))
                 .ride(RideOutput.fromEntity(ride))
+                .driver(
+                    bus.getDriverId() == null ? null :
+                    EmployeeOutput.fromEntity(
+                        employeeRepository.findById(bus.getDriverId())
+                            .orElseThrow(() -> new MyException(
+                                null, "EMPLOYEE_NOT_FOUND", "Employee not found",
+                                HttpStatus.NOT_FOUND
+                            ))
+                    )
+                )
+                .driverMate(
+                    bus.getDriverMateId() == null ? null :
+                    EmployeeOutput.fromEntity(
+                        employeeRepository.findById(bus.getDriverMateId())
+                            .orElseThrow(() -> new MyException(
+                                null, "EMPLOYEE_NOT_FOUND", "Employee not found",
+                                HttpStatus.NOT_FOUND
+                            ))
+                    )
+                )
                 .rideHistories(rideHistoryRepository.findByRideId(ride.getId()))
                 .ridePickupPointHistories(
                     ridePickupPointHistoryRepository.findByRideId(ride.getId())

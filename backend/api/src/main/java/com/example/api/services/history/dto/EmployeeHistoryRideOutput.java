@@ -2,6 +2,7 @@ package com.example.api.services.history.dto;
 
 
 import com.example.api.services.common_dto.BusOutput;
+import com.example.api.services.common_dto.EmployeeOutput;
 import com.example.api.services.common_dto.RideOutput;
 import com.example.api.services.common_dto.StudentOutput;
 import com.example.shared.db.entities.RideHistory;
@@ -16,6 +17,8 @@ import lombok.Data;
 public class EmployeeHistoryRideOutput {
     private BusOutput bus;
     private RideOutput ride;
+    private EmployeeOutput driver;
+    private EmployeeOutput driverMate;
     private List<RideHistory> rideHistories;
     private List<RidePickupPointHistory> ridePickupPointHistories;
     private List<StudentRideHistory> studentRideHistories;

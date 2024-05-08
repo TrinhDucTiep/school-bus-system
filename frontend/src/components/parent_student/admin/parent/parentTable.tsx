@@ -1,7 +1,7 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Input, Button, useDisclosure } from '@nextui-org/react';
 import React from 'react';
 import { ParentRenderCell } from './parent-render-cell';
-import { useGetListParent } from '@/services/accountService';
+import { useGetListParent } from '@/services/admin/accountService';
 import { AddParent } from './add-parent';
 import ModalDeleteParent from './delete-parent';
 import ModalUpdateParent from './update-parent';
@@ -68,7 +68,7 @@ const ParentTable: React.FC = () => {
                         }}
                         size='sm'
                         label="Tên phụ huynh"
-                        onChange={(e) => debouncedSetName(e.target.value)} 
+                        onChange={(e) => debouncedSetName(e.target.value)}
                     />
                     <Input
                         classNames={{
@@ -77,7 +77,7 @@ const ParentTable: React.FC = () => {
                         }}
                         size='sm'
                         label="Số điện thoại"
-                        onChange={(e) => debouncedSetPhoneNumber(e.target.value)} 
+                        onChange={(e) => debouncedSetPhoneNumber(e.target.value)}
                     />
                 </div>
                 <div className="flex flex-row flex-wrap m-1 mb-8">

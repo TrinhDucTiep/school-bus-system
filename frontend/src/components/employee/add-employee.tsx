@@ -13,7 +13,7 @@ import {
 import React from "react";
 import { PlusIcon } from "../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useAddEmployee } from "@/services/employeeService";
+import { useAddEmployee } from "@/services/admin/employeeService";
 import { employee_role_map } from "@/util/constant";
 
 export const AddEmployee = () => {

@@ -18,7 +18,7 @@ import {
 import React, { useRef, useState } from "react";
 import { PlusIcon } from "../../../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useAddStudent, useGetListParent, useGetListStudent } from "@/services/accountService";
+import { useAddStudent, useGetListParent, useGetListStudent } from "@/services/admin/accountService";
 import _, { set } from 'lodash';
 import { SearchIcon } from "../../../icons/searchicon";
 import { useAddStudentClient } from "@/services/client/clientAccountService";

@@ -1,4 +1,4 @@
-import { useGetParentDetail } from '@/services/accountService';
+import { useGetParentDetail } from '@/services/admin/accountService';
 import { convertStringInstantToDate } from '@/util/dateConverter';
 import { Skeleton, Modal, ModalContent, ModalHeader, ModalBody, Accordion, AccordionItem, User, Tooltip, ModalFooter, Button, Input } from '@nextui-org/react';
 import React from 'react';
@@ -74,14 +74,14 @@ const ModalViewParent: React.FC<IProps> = (
                                 </div>
                                 <div className='flex flex-col gap-3 w-full'>
                                     <Input
-                                    label="Thời gian tạo"
-                                    variant="bordered"
-                                    defaultValue={convertStringInstantToDate(parentDetail?.result.created_at) || ""}
+                                        label="Thời gian tạo"
+                                        variant="bordered"
+                                        defaultValue={convertStringInstantToDate(parentDetail?.result.created_at) || ""}
                                     />
                                     <Input
-                                    label="Thời gian cập nhật"
-                                    variant="bordered"
-                                    defaultValue={convertStringInstantToDate(parentDetail?.result.updated_at) || ""}
+                                        label="Thời gian cập nhật"
+                                        variant="bordered"
+                                        defaultValue={convertStringInstantToDate(parentDetail?.result.updated_at) || ""}
                                     />
                                 </div>
                             </div>

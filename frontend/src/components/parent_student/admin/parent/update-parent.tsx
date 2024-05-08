@@ -1,4 +1,4 @@
-import { useAddParent, useGetListStudent, useGetParentDetail, useUpdateParent } from '@/services/accountService';
+import { useAddParent, useGetListStudent, useGetParentDetail, useUpdateParent } from '@/services/admin/accountService';
 import { Accordion, AccordionItem, Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Skeleton, Tooltip, User, useDisclosure } from '@nextui-org/react';
 import { register } from 'module';
 import React, { useState } from 'react';
@@ -55,15 +55,15 @@ const ModalUpdateParent: React.FC<IProps> = (
                         onSubmit={handleSubmit(handlerUpdateParent)}
                     >
                         <ModalBody>
-                            <Input 
-                            label="id"
-                            variant="bordered"
-                            {...register("id")}
-                            defaultValue={parentDetail?.result.id.toString() || "123"}
-                            className='hidden'
+                            <Input
+                                label="id"
+                                variant="bordered"
+                                {...register("id")}
+                                defaultValue={parentDetail?.result.id.toString() || "123"}
+                                className='hidden'
                             />
-                            
-                            
+
+
                             <Input
                                 label="Họ và tên"
                                 variant="bordered"

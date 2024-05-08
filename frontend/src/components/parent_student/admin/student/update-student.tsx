@@ -18,7 +18,7 @@ import {
 import React, { Key, use, useEffect, useState } from "react";
 import { PlusIcon } from "../../../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useAddStudent, useGetListParent, useGetListStudent, useGetStudentDetail, useUpdateStudent } from "@/services/accountService";
+import { useAddStudent, useGetListParent, useGetListStudent, useGetStudentDetail, useUpdateStudent } from "@/services/admin/accountService";
 import _, { set, toInteger } from 'lodash';
 import { SearchIcon } from "../../../icons/searchicon";
 import { convertStringInstantToDate } from "@/util/dateConverter";

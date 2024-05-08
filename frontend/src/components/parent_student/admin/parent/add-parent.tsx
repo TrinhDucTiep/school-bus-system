@@ -13,8 +13,8 @@ import {
 import React from "react";
 import { PlusIcon } from "../../../icons/plus";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useAddBus } from "@/services/busService";
-import { useAddParent, useGetListStudent } from "@/services/accountService";
+import { useAddBus } from "@/services/admin/busService";
+import { useAddParent, useGetListStudent } from "@/services/admin/accountService";
 import { on } from "events";
 
 export const AddParent = () => {

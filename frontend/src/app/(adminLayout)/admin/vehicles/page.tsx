@@ -28,11 +28,11 @@ import {
 import { BusRenderCell } from '@/components/bus/bus-render-cell';
 import { AddBus } from '@/components/bus/add-bus';
 import { ExportIcon } from '@/components/icons/export-icon';
-import { useGetListBus, useUpdateBus, useDeleteBus } from '@/services/busService';
+import { useGetListBus, useUpdateBus, useDeleteBus } from '@/services/admin/busService';
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SubmitHandler, set, useForm } from "react-hook-form";
 import { bus_status_map, EmployeeRole } from '@/util/constant';
-import { useGetAvailableEmployees } from '@/services/employeeService';
+import { useGetAvailableEmployees } from '@/services/admin/employeeService';
 
 
 const VehiclesPage: React.FC = () => {
