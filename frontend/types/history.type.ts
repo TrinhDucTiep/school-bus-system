@@ -21,8 +21,8 @@ interface IRidePickupPointHistory {
     orderIndex: number;
     status: string;
     address: string;
-    longitude: string;
-    latitude: string;
+    longitude: number;
+    latitude: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -34,8 +34,8 @@ interface IStudentPickupPointHistory {
     pickup_point_id: number;
     status: string;
     address: string;
-    longitude: string;
-    latitude: string;
+    longitude: number;
+    latitude: number;
     rideId: number;
     createdAt: string;
     updatedAt: string;

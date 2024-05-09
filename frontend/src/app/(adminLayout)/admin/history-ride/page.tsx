@@ -67,7 +67,7 @@ const HistoryRidePage: React.FC = () => {
         parentPhoneNumber: parentPhoneNumber,
         page: page - 1,
         size: 5,
-        sort: '-createdAt'
+        sort: '-id'
     }
 
     const { data: adminHistory, isLoading: isLoadingAdminHistory, isError: isErrorAdminHistory } = useGetAdminHistory(adminHistoryRideFilterParam);
@@ -86,6 +86,25 @@ const HistoryRidePage: React.FC = () => {
         </div>
     )
 
+
+    // map
+    const Map = useMemo(() => dynamic(
+        () => import('@/components/map/MapAdminHistory'),
+        {
+            loading: () => <CustomSkeleton />,
+            ssr: false
+        }
+    ), [])
+    // get directions
+    const [selectedHistoryRide, setSelectedHistoryRide] = React.useState<IHistoryResponse | null>(null);
+    const directionsParams: IDirectionsParams = {
+        coordinates: selectedHistoryRide?.ridePickupPointHistories.map(pickupPoint => [pickupPoint.longitude, pickupPoint.latitude]) || []
+    }
+    const { data: directions, isLoading: isLoadingDirections, isError: isErrorDirections } = useGetDirections(directionsParams);
+
+    console.log('selectedHistoryRide', selectedHistoryRide);
+    console.log('directionsParams', directionsParams);
+    console.log('directions', directions);
 
     if (isLoadingAdminHistory) {
         return <CustomSkeleton />
@@ -113,232 +132,211 @@ const HistoryRidePage: React.FC = () => {
         </div>
     }
     return (
-        <div className='m-4 w-1/2'>
-            <Accordion selectionMode='single' variant='shadow' className='bg-default-100'>
-                {
-                    (adminHistory?.result?.content || []).map((history, index) => {
-                        return (
-                            <AccordionItem
-                                key={index}
-                                title={
-                                    <div className='flex justify-around'>
-                                        <Image
-                                            width={70}
-                                            alt="NextUI hero Image"
-                                            src="https://cdn4.iconfinder.com/data/icons/BRILLIANT/transportation/png/256/school_bus.png"
-                                        />
-                                        <div className='flex-col gap-2 justify-between'>
-                                            <div className='flex flex-col'>
-                                                <h4 className='text-lg items-center flex gap-4'>
-                                                    <span className='flex gap-2 items-center'>
-                                                        <p className='font-bold'>Chuyến:</p>
-                                                        <Snippet symbol="" size='sm'> {history.ride.id}</Snippet>
-                                                    </span>
-                                                    <span className='flex gap-2 items-center'>
-                                                        <p className='font-bold'>Trạng thái:</p>
-                                                        <Chip color={ride_status_map.find(status => status.value === history.ride.status)?.color} variant="flat" size="sm">
-                                                            {ride_status_map.find(status => status.value === history.ride.status)?.label}
-                                                        </Chip>
-                                                    </span>
-                                                </h4>
-                                            </div>
+        <div className='flex'>
+            <div className='m-4 w-1/2'>
+                <Accordion selectionMode='single' variant='shadow' className='bg-default-100'
+                // onChange={(event) => {
+                //     console.log(event.target);
+                //     const panel = event.target as HTMLDivElement;
+                //     const newValue = panel.getAttribute('data-index');
+                //     if (newValue) {
+                //         setSelectedHistoryRide(adminHistory?.result?.content[Number(newValue)]);
+                //     }
+                // }}
+                >
+                    {
+                        (adminHistory?.result?.content || []).map((history, index) => {
+                            return (
+                                <AccordionItem
+                                    onClick={() => setSelectedHistoryRide(adminHistory?.result?.content[index])}
+                                    key={index}
+                                    title={
+                                        <div className='flex justify-around'>
+                                            <Image
+                                                width={70}
+                                                alt="NextUI hero Image"
+                                                src="https://cdn4.iconfinder.com/data/icons/BRILLIANT/transportation/png/256/school_bus.png"
+                                            />
+                                            <div className='flex-col gap-2 justify-between'>
+                                                <div className='flex flex-col'>
+                                                    <h4 className='text-lg items-center flex gap-4'>
+                                                        <span className='flex gap-2 items-center'>
+                                                            <p className='font-bold'>Chuyến:</p>
+                                                            <Snippet symbol="" size='sm'> {history.ride.id}</Snippet>
+                                                        </span>
+                                                        <span className='flex gap-2 items-center'>
+                                                            <p className='font-bold'>Trạng thái:</p>
+                                                            <Chip color={ride_status_map.find(status => status.value === history.ride.status)?.color} variant="flat" size="sm">
+                                                                {ride_status_map.find(status => status.value === history.ride.status)?.label}
+                                                            </Chip>
+                                                        </span>
+                                                    </h4>
+                                                </div>
 
-                                            <div>
-                                                <h4 className='text-lg items-center flex gap-4 mt-2'>
-                                                    <span className='flex gap-2 items-center'>
-                                                        <p className='font-bold'>Xe:</p>
-                                                        <Snippet symbol="" size='sm'> {history.bus.numberPlate}</Snippet>
-                                                    </span>
-                                                    <span className='flex gap-2 items-center'>
-                                                        <p className='font-bold'>Chiều: </p>
-                                                        <p>{history.ride.isToSchool ? 'Trường -> Nhà' : 'Nhà -> Trường'}</p>
-                                                    </span>
-                                                    {/* <span className='flex gap-2 items-center'>
+                                                <div>
+                                                    <h4 className='text-lg items-center flex gap-4 mt-2'>
+                                                        <span className='flex gap-2 items-center'>
+                                                            <p className='font-bold'>Xe:</p>
+                                                            <Snippet symbol="" size='sm'> {history.bus.numberPlate}</Snippet>
+                                                        </span>
+                                                        <span className='flex gap-2 items-center'>
+                                                            <p className='font-bold'>Chiều: </p>
+                                                            <p>{history.ride.isToSchool ? 'Trường -> Nhà' : 'Nhà -> Trường'}</p>
+                                                        </span>
+                                                        {/* <span className='flex gap-2 items-center'>
                                                     <p className='font-bold'>Trạng thái:</p>
                                                     <Chip color={bus_status_map.find(status => status.value === history.bus.status)?.color} variant="flat" size="sm">
                                                         {bus_status_map.find(status => status.value === history.bus.status)?.label}
                                                     </Chip>
                                                 </span> */}
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                >
+                                    <div className='flex-col'>
+                                        <div className='flex gap-4n'>
+                                            <div className='flex flex-col'>
+                                                <h4 className='text-lg items-center flex-col gap-4'>
+                                                    <span className='flex gap-2 items-center'>
+                                                        <p className='font-bold'>Khởi hành:</p>
+                                                        <p>{convertStringInstantToDateTime(history.ride.startAt)}</p>
+                                                    </span>
+                                                    <span className='flex gap-2 items-center'>
+                                                        <p className='font-bold'>Kết thúc:</p>
+                                                        <p>{convertStringInstantToDateTime(history.ride.endAt)}</p>
+                                                    </span>
+                                                    <span className='flex gap-2'>
+                                                        <p className='font-bold'>Từ:</p>
+                                                        <p>{history.ride.startFrom}</p>
+                                                    </span>
+                                                    <span className='flex gap-2 items-center'>
+                                                        <p className='font-bold'>Chiều: </p>
+                                                        <p>{history.ride.isToSchool ? 'Trường -> Nhà' : 'Nhà -> Trường'}</p>
+                                                    </span>
+                                                </h4>
+                                            </div>
+
+                                            <div>
+                                                <h4 className='text-lg items-center flex-col gap-4'>
+                                                    <span className='flex gap-2 items-center'>
+                                                        <p className='font-bold'>Xe:</p>
+                                                        <Snippet symbol="" size='sm'> {history.bus.numberPlate}</Snippet>
+                                                    </span>
+
+                                                    <div className='flex gap-1 items-center'>
+                                                        <h4 className='font-bold'>Tài xế:</h4>
+                                                        <User
+                                                            avatarProps={{
+                                                                src: history?.driver.avatar || ""
+                                                            }}
+                                                            name={history?.driver.name}
+                                                        >
+                                                            {history?.driver.name}
+                                                        </User>
+                                                    </div>
+                                                    <div className='flex gap-1 items-center'>
+                                                        <h4 className='font-bold'>Phụ xe:</h4>
+                                                        <User
+                                                            avatarProps={{
+                                                                src: history?.driverMate.avatar || ""
+                                                            }}
+                                                            name={history?.driverMate.name}
+                                                        >
+                                                            {history?.driverMate.name}
+                                                        </User>
+                                                    </div>
                                                 </h4>
                                             </div>
                                         </div>
-                                    </div>
-                                }
 
-                            >
-                                <div className='flex-col'>
-                                    <div className='flex gap-4n'>
-                                        <div className='flex flex-col'>
-                                            <h4 className='text-lg items-center flex-col gap-4'>
-                                                <span className='flex gap-2 items-center'>
-                                                    <p className='font-bold'>Khởi hành:</p>
-                                                    <p>{convertStringInstantToDateTime(history.ride.startAt)}</p>
-                                                </span>
-                                                <span className='flex gap-2 items-center'>
-                                                    <p className='font-bold'>Kết thúc:</p>
-                                                    <p>{convertStringInstantToDateTime(history.ride.endAt)}</p>
-                                                </span>
-                                                <span className='flex gap-2'>
-                                                    <p className='font-bold'>Từ:</p>
-                                                    <p>{history.ride.startFrom}</p>
-                                                </span>
-                                                <span className='flex gap-2 items-center'>
-                                                    <p className='font-bold'>Chiều: </p>
-                                                    <p>{history.ride.isToSchool ? 'Trường -> Nhà' : 'Nhà -> Trường'}</p>
-                                                </span>
-                                            </h4>
-                                        </div>
-
-                                        <div>
-                                            <h4 className='text-lg items-center flex-col gap-4'>
-                                                <span className='flex gap-2 items-center'>
-                                                    <p className='font-bold'>Xe:</p>
-                                                    <Snippet symbol="" size='sm'> {history.bus.numberPlate}</Snippet>
-                                                </span>
-
-                                                <div className='flex gap-1 items-center'>
-                                                    <h4 className='font-bold'>Tài xế:</h4>
-                                                    <User
-                                                        avatarProps={{
-                                                            src: history?.driver.avatar || ""
-                                                        }}
-                                                        name={history?.driver.name}
-                                                    >
-                                                        {history?.driver.name}
-                                                    </User>
+                                        <div className='flex gap-4'>
+                                            <div className='flex-col'>
+                                                <h4 className='font-bold'>Lịch sử chuyến đi: </h4>
+                                                <div className='flex-col gap-2'>
+                                                    <Table hideHeader>
+                                                        <TableHeader>
+                                                            <TableColumn>STT</TableColumn>
+                                                            <TableColumn>Thời gian</TableColumn>
+                                                            <TableColumn>Trạng thái</TableColumn>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {
+                                                                history?.rideHistories?.map((rideHistory, index) => {
+                                                                    return (
+                                                                        <TableRow key={index}>
+                                                                            <TableCell>{index}</TableCell>
+                                                                            <TableCell>{convertStringInstantToDateTime(rideHistory.createdAt)}</TableCell>
+                                                                            <TableCell>
+                                                                                <Chip color={ride_status_map.find(status => status.value === rideHistory.status)?.color} variant="flat" size="sm">
+                                                                                    {ride_status_map.find(status => status.value === rideHistory.status)?.label}
+                                                                                </Chip>
+                                                                            </TableCell>
+                                                                        </TableRow>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </TableBody>
+                                                    </Table>
                                                 </div>
-                                                <div className='flex gap-1 items-center'>
-                                                    <h4 className='font-bold'>Phụ xe:</h4>
-                                                    <User
-                                                        avatarProps={{
-                                                            src: history?.driverMate.avatar || ""
-                                                        }}
-                                                        name={history?.driverMate.name}
-                                                    >
-                                                        {history?.driverMate.name}
-                                                    </User>
-                                                </div>
-                                            </h4>
-                                        </div>
-                                    </div>
-
-                                    <div className='flex gap-4'>
-                                        <div className='flex-col'>
-                                            <h4 className='font-bold'>Lịch sử chuyến đi: </h4>
-                                            <div className='flex-col gap-2'>
-                                                <Table hideHeader>
-                                                    <TableHeader>
-                                                        <TableColumn>STT</TableColumn>
-                                                        <TableColumn>Thời gian</TableColumn>
-                                                        <TableColumn>Trạng thái</TableColumn>
-                                                    </TableHeader>
-                                                    <TableBody>
-                                                        {
-                                                            history?.rideHistories?.map((rideHistory, index) => {
-                                                                return (
-                                                                    <TableRow key={index}>
-                                                                        <TableCell>{index}</TableCell>
-                                                                        <TableCell>{convertStringInstantToDateTime(rideHistory.createdAt)}</TableCell>
-                                                                        <TableCell>
-                                                                            <Chip color={ride_status_map.find(status => status.value === rideHistory.status)?.color} variant="flat" size="sm">
-                                                                                {ride_status_map.find(status => status.value === rideHistory.status)?.label}
-                                                                            </Chip>
-                                                                        </TableCell>
-                                                                    </TableRow>
-                                                                )
-                                                            })
-                                                        }
-                                                    </TableBody>
-                                                </Table>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div className='flex gap-4 mt-2'>
-                                        <div className='flex-col'>
-                                            <h4 className='font-bold'>Lịch sử điểm đón: </h4>
-                                            <div className='flex-col gap-2'>
-                                                <Table hideHeader>
-                                                    <TableHeader>
-                                                        <TableColumn>STT</TableColumn>
-                                                        <TableColumn>Địa chỉ</TableColumn>
-                                                        <TableColumn>Thời gian</TableColumn>
-                                                    </TableHeader>
-                                                    <TableBody>
-                                                        {
-                                                            history?.ridePickupPointHistories?.map((ridePickupPointHistory, index) => {
-                                                                return (
-                                                                    <TableRow key={index}>
-                                                                        <TableCell>{ridePickupPointHistory.orderIndex}</TableCell>
-                                                                        <TableCell>{ridePickupPointHistory.address}</TableCell>
-                                                                        <TableCell>{convertStringInstantToDateTime(ridePickupPointHistory.updatedAt)}</TableCell>
-                                                                    </TableRow>
-                                                                )
-                                                            })
-                                                        }
-                                                    </TableBody>
-                                                </Table>
+                                        <div className='flex gap-4 mt-2'>
+                                            <div className='flex-col'>
+                                                <h4 className='font-bold'>Lịch sử điểm đón: </h4>
+                                                <div className='flex-col gap-2'>
+                                                    <Table hideHeader>
+                                                        <TableHeader>
+                                                            <TableColumn>STT</TableColumn>
+                                                            <TableColumn>Địa chỉ</TableColumn>
+                                                            <TableColumn>Thời gian</TableColumn>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {
+                                                                history?.ridePickupPointHistories?.map((ridePickupPointHistory, index) => {
+                                                                    return (
+                                                                        <TableRow key={index}>
+                                                                            <TableCell>{ridePickupPointHistory.orderIndex}</TableCell>
+                                                                            <TableCell>{ridePickupPointHistory.address}</TableCell>
+                                                                            <TableCell>{convertStringInstantToDateTime(ridePickupPointHistory.updatedAt)}</TableCell>
+                                                                        </TableRow>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </TableBody>
+                                                    </Table>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div className='flex gap-4 mt-2'>
-                                        <div className='flex-col'>
-                                            <h4 className='font-bold'>Lịch sử học sinh: </h4>
-                                            <div className='flex-col gap-2'>
-                                                {/* {
-                                                    history?.studentRideHistories.map((studentRideHistory, index) => {
-                                                        return (
-                                                            <div key={index} className='flex gap-4'>
-                                                                <div className='flex gap-2'>
-                                                                    <User
-                                                                        avatarProps={{
-                                                                            src: studentRideHistory.student.avatar || ""
-                                                                        }}
-                                                                        name={studentRideHistory.student.name}
-                                                                    >
-                                                                        {studentRideHistory.student.name}
-                                                                    </User>
-                                                                </div>
-                                                                <div className='flex-col gap-2'>
-                                                                    {
-                                                                        studentRideHistory.studentPickupPointHistories.map((studentPickupPointHistory, index) => {
-                                                                            return (
-                                                                                <div key={index} className='flex gap-2'>
-                                                                                    <p>{studentPickupPointHistory.address}</p>
-                                                                                    <Chip color={student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.color} variant="flat" size="sm">
-                                                                                        {student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.label}
-                                                                                    </Chip>
-                                                                                </div>
-                                                                            )
-                                                                        })
-                                                                    }
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    })
-                                                } */}
-                                                <Table hideHeader>
-                                                    <TableHeader>
-                                                        <TableColumn>Học sinh</TableColumn>
-                                                        <TableColumn>Lịch sử</TableColumn>
-                                                    </TableHeader>
-                                                    <TableBody>
-                                                        {
-                                                            history?.studentRideHistories.map((studentRideHistory, index) => {
-                                                                return (
-                                                                    <TableRow key={index}>
-                                                                        <TableCell>
-                                                                            <User
-                                                                                avatarProps={{
-                                                                                    src: studentRideHistory.student.avatar || ""
-                                                                                }}
-                                                                                name={studentRideHistory.student.name}
-                                                                            >
-                                                                                {studentRideHistory.student.name}
-                                                                            </User>
-                                                                        </TableCell>
-                                                                        {/* <TableCell>
+                                        <div className='flex gap-4 mt-2'>
+                                            <div className='flex-col'>
+                                                <h4 className='font-bold'>Lịch sử học sinh: </h4>
+                                                <div className='flex-col gap-2'>
+                                                    <Table hideHeader>
+                                                        <TableHeader>
+                                                            <TableColumn>Học sinh</TableColumn>
+                                                            <TableColumn>Lịch sử</TableColumn>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {
+                                                                history?.studentRideHistories.map((studentRideHistory, index) => {
+                                                                    return (
+                                                                        <TableRow key={index}>
+                                                                            <TableCell>
+                                                                                <User
+                                                                                    avatarProps={{
+                                                                                        src: studentRideHistory.student.avatar || ""
+                                                                                    }}
+                                                                                    name={studentRideHistory.student.name}
+                                                                                >
+                                                                                    {studentRideHistory.student.name}
+                                                                                </User>
+                                                                            </TableCell>
+                                                                            {/* <TableCell>
                                                                             {
                                                                                 studentRideHistory.studentPickupPointHistories.map((studentPickupPointHistory, index) => {
                                                                                     return (
@@ -349,41 +347,51 @@ const HistoryRidePage: React.FC = () => {
                                                                                 })
                                                                             }
                                                                         </TableCell> */}
-                                                                        <TableCell>
-                                                                            {
-                                                                                studentRideHistory.studentPickupPointHistories.map((studentPickupPointHistory, index) => {
-                                                                                    return (
-                                                                                        <div key={index} className='flex gap-2'>
-                                                                                            <p>{studentPickupPointHistory.address}</p>
-                                                                                            <Chip color={student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.color} variant="flat" size="sm">
-                                                                                                {student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.label}
-                                                                                            </Chip>
-                                                                                            <p>{convertStringInstantToDateTime(studentPickupPointHistory.updatedAt)}</p>
-                                                                                        </div>
-                                                                                    )
-                                                                                })
-                                                                            }
-                                                                        </TableCell>
-                                                                    </TableRow>
-                                                                )
-                                                            })
-                                                        }
-                                                    </TableBody>
-                                                </Table>
+                                                                            <TableCell>
+                                                                                {
+                                                                                    studentRideHistory.studentPickupPointHistories.map((studentPickupPointHistory, index) => {
+                                                                                        return (
+                                                                                            <div key={index} className='flex gap-2'>
+                                                                                                <p>{studentPickupPointHistory.address}</p>
+                                                                                                <Chip color={student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.color} variant="flat" size="sm">
+                                                                                                    {student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.label}
+                                                                                                </Chip>
+                                                                                                <p>{convertStringInstantToDateTime(studentPickupPointHistory.updatedAt)}</p>
+                                                                                            </div>
+                                                                                        )
+                                                                                    })
+                                                                                }
+                                                                            </TableCell>
+                                                                        </TableRow>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </TableBody>
+                                                    </Table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </AccordionItem>
-                        )
-                    })
-                }
-            </Accordion>
+                                </AccordionItem>
+                            )
+                        })
+                    }
+                </Accordion>
 
-            <div>
-                {bottomContent}
+                <div>
+                    {bottomContent}
+                </div>
+            </div>
+
+            {/* map */}
+            <div className='m-4 w-1/2'>
+                <Map
+                    pickupPoints={selectedHistoryRide?.ridePickupPointHistories ?? []}
+                    manipulatePickupPointsDirections={directions}
+                />
             </div>
         </div>
+
     );
 };
 
