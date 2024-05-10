@@ -9,7 +9,7 @@ import lombok.Data;
 @Builder
 public class AdminHistoryRideFilterParam {
     // filter for ride
-    private Instant startAt;
+    private String startAt;
     private Integer rideId;
     private String numberPlate;
     private RideStatus status;

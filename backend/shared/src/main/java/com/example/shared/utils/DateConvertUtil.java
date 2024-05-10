@@ -35,4 +35,22 @@ public class DateConvertUtil {
         LocalDateTime localDateTime = LocalDateTime.parse(date, formatter);
         return localDateTime.atZone(ZoneId.of("GMT+7")).toInstant();
     }
+
+    public static String convertInstantToString(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.of("GMT+7"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return zonedDateTime.format(formatter);
+    }
+
+    public static String convertInstantToStringTimeStamp(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.of("GMT+7"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        return zonedDateTime.format(formatter);
+    }
 }

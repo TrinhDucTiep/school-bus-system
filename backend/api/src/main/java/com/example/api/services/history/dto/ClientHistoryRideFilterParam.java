@@ -1,7 +1,6 @@
 package com.example.api.services.history.dto;
 
 import com.example.shared.enumeration.RideStatus;
-import java.time.Instant;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +8,7 @@ import lombok.Data;
 @Builder
 public class ClientHistoryRideFilterParam {
     // filter for ride
-    private Instant startAt;
+    private String startAt;
     private Integer rideId;
     private String numberPlate;
     private RideStatus status;

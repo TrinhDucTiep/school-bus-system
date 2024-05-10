@@ -26,6 +26,7 @@ import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.StudentPickupPointHistoryRepository;
 import com.example.shared.db.repo.StudentRepository;
 import com.example.shared.exception.MyException;
+import com.example.shared.utils.DateConvertUtil;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,9 +58,9 @@ public class HistoryServiceImpl implements HistoryService {
 
         // set for query not get error
         boolean isAllDate = false;
-        if (filterParam.getStartAt() == null) {
+        if (filterParam.getStartAt() == null || filterParam.getStartAt().isBlank()) {
             isAllDate = true;
-            filterParam.setStartAt(Instant.now());
+            filterParam.setStartAt(DateConvertUtil.convertInstantToString(Instant.now()));
         }
 
         // find ride page
@@ -67,7 +68,7 @@ public class HistoryServiceImpl implements HistoryService {
         if (filterParam.getAddress() != null || filterParam.getStudentPhoneNumber() != null
             || filterParam.getParentPhoneNumber() != null) {
             ridepage = rideRepository.searchHistory(
-                filterParam.getStartAt(), filterParam.getRideId(),
+                DateConvertUtil.convertStringToInstant(filterParam.getStartAt()), filterParam.getRideId(),
                 filterParam.getNumberPlate(), filterParam.getStatus(), filterParam.getIsToSchool(),
                 filterParam.getAddress(), filterParam.getStudentPhoneNumber(),
                 filterParam.getParentPhoneNumber(),
@@ -76,7 +77,7 @@ public class HistoryServiceImpl implements HistoryService {
             );
         } else {
             ridepage = rideRepository.searchHistory(
-                filterParam.getStartAt(), filterParam.getRideId(),
+                DateConvertUtil.convertStringToInstant(filterParam.getStartAt()), filterParam.getRideId(),
                 filterParam.getNumberPlate(), filterParam.getStatus(), filterParam.getIsToSchool(),
                 isAllDate,
                 pageable
@@ -158,10 +159,11 @@ public class HistoryServiceImpl implements HistoryService {
         Page<EmployeeHistoryRideOutput> result = null;
 
         // set for query not get error
+        // set for query not get error
         boolean isAllDate = false;
-        if (filterParam.getStartAt() == null) {
+        if (filterParam.getStartAt() == null || filterParam.getStartAt().isBlank()) {
             isAllDate = true;
-            filterParam.setStartAt(Instant.now());
+            filterParam.setStartAt(DateConvertUtil.convertInstantToString(Instant.now()));
         }
 
         // find ride page
@@ -169,18 +171,26 @@ public class HistoryServiceImpl implements HistoryService {
         if (filterParam.getAddress() != null || filterParam.getStudentPhoneNumber() != null
             || filterParam.getParentPhoneNumber() != null) {
             ridepage = rideRepository.searchEmployeeHistory(
-                filterParam.getStartAt(), filterParam.getRideId(),
-                filterParam.getNumberPlate(), filterParam.getStatus(), filterParam.getIsToSchool(),
-                filterParam.getAddress(), filterParam.getStudentPhoneNumber(),
+                DateConvertUtil.convertStringToInstant(filterParam.getStartAt()),
+                filterParam.getRideId(),
+                filterParam.getNumberPlate(),
+                filterParam.getStatus(),
+                filterParam.getIsToSchool(),
+                filterParam.getAddress(),
+                filterParam.getStudentPhoneNumber(),
                 filterParam.getParentPhoneNumber(),
                 isAllDate, employee.getId(),
                 pageable
             );
         } else {
             ridepage = rideRepository.searchEmployeeHistory(
-                filterParam.getStartAt(), filterParam.getRideId(),
-                filterParam.getNumberPlate(), filterParam.getStatus(), filterParam.getIsToSchool(),
-                isAllDate, employee.getId(),
+                DateConvertUtil.convertStringToInstant(filterParam.getStartAt()),
+                filterParam.getRideId(),
+                filterParam.getNumberPlate(),
+                filterParam.getStatus(),
+                filterParam.getIsToSchool(),
+                isAllDate,
+                employee.getId(),
                 pageable
             );
         }
@@ -265,16 +275,20 @@ public class HistoryServiceImpl implements HistoryService {
             .toList();
 
         // set for query not get error
+        // set for query not get error
         boolean isAllDate = false;
-        if (filterParam.getStartAt() == null) {
+        if (filterParam.getStartAt() == null || filterParam.getStartAt().isBlank()) {
             isAllDate = true;
-            filterParam.setStartAt(Instant.now());
+            filterParam.setStartAt(DateConvertUtil.convertInstantToString(Instant.now()));
         }
 
         // find ride page
         Page<Ride> ridepage = rideRepository.searchClientHistory(
-            filterParam.getStartAt(), filterParam.getRideId(),
-            filterParam.getNumberPlate(), filterParam.getStatus(), filterParam.getIsToSchool(),
+            DateConvertUtil.convertStringToInstant(filterParam.getStartAt()),
+            filterParam.getRideId(),
+            filterParam.getNumberPlate(),
+            filterParam.getStatus(),
+            filterParam.getIsToSchool(),
             filterParam.getAddress(),
             isAllDate,
             studentIds,
