@@ -56,11 +56,11 @@ const HistoryRidePage: React.FC = () => {
     const [parentPhoneNumber, setParentPhoneNumber] = React.useState<string | null>(null);
     const [page, setPage] = React.useState<number>(1);
 
-    const debounceRideId = _.debounce((rideId: number) => setRideId(rideId), 500);
-    const debounceNumberPlate = _.debounce((numberPlate: string) => setNumberPlate(numberPlate), 500);
-    const debounceAddress = _.debounce((address: string) => setAddress(address), 500);
-    const debounceStudentPhoneNumber = _.debounce((studentPhoneNumber: string) => setStudentPhoneNumber(studentPhoneNumber), 500);
-    const debounceParentPhoneNumber = _.debounce((parentPhoneNumber: string) => setParentPhoneNumber(parentPhoneNumber), 500);
+    const debounceRideId = _.debounce((value: number | null) => setRideId(value), 500);
+    const debounceNumberPlate = _.debounce((value: string) => setNumberPlate(value), 500);
+    const debounceAddress = _.debounce((address: string | null) => setAddress(address), 500);
+    const debounceStudentPhoneNumber = _.debounce((studentPhoneNumber: string | null) => setStudentPhoneNumber(studentPhoneNumber), 500);
+    const debounceParentPhoneNumber = _.debounce((parentPhoneNumber: string | null) => setParentPhoneNumber(parentPhoneNumber), 500);
 
     let adminHistoryRideFilterParam: IAdminHistoryRideFilterParam = {
         startAt: startAt,
@@ -122,10 +122,8 @@ const HistoryRidePage: React.FC = () => {
                     />
                     <Input
                         placeholder='Mã chuyến'
-                        startContent={<SearchIcon />}
-                        type='number'
                         onChange={(e) => {
-                            debounceRideId(parseInt(e.target.value))
+                            debounceRideId(e.target.value === '' ? null : parseInt(e.target.value))
                         }}
                     />
                     <Input
@@ -151,23 +149,28 @@ const HistoryRidePage: React.FC = () => {
                 <div className='flex gap-4 m-2'>
                     <Select
                         placeholder='Chiều'
-                        onChange={(e) => setIsToSchool(e.target.value === 'true')}
-                        value={isToSchool ? isToSchool.toString() : ''}
+                        onChange={(e) => {
+                            // isToSchool can be null
+                            setIsToSchool(e.target.value === '' ? null : e.target.value === 'true')
+                        }}
+                        value={isToSchool ? isToSchool.toString() : null}
                     >
-                        <SelectItem key={true} value='true'>Trường -> Nhà</SelectItem>
-                        <SelectItem key={false} value='false'>Nhà -> Trường</SelectItem>
+                        <SelectItem key={false} value='true'>Trường -> Nhà</SelectItem>
+                        <SelectItem key={true} value='false'>Nhà -> Trường</SelectItem>
                     </Select>
                     <Input
                         placeholder='Địa chỉ'
-                        onChange={(e) => debounceAddress(e.target.value)}
+                        onChange={(e) => {
+                            debounceAddress(e.target.value === '' ? null : e.target.value)
+                        }}
                     />
                     <Input
                         placeholder='Sđt học sinh'
-                        onChange={(e) => debounceStudentPhoneNumber(e.target.value)}
+                        onChange={(e) => debounceStudentPhoneNumber(e.target.value === '' ? null : e.target.value)}
                     />
                     <Input
                         placeholder='Sđt phụ huynh'
-                        onChange={(e) => debounceParentPhoneNumber(e.target.value)}
+                        onChange={(e) => debounceParentPhoneNumber(e.target.value === '' ? null : e.target.value)}
                     />
                 </div>
 
@@ -214,7 +217,7 @@ const HistoryRidePage: React.FC = () => {
                                                             </span>
                                                             <span className='flex gap-2 items-center'>
                                                                 <p className='font-bold'>Chiều: </p>
-                                                                <p>{history.ride.isToSchool ? 'Trường -> Nhà' : 'Nhà -> Trường'}</p>
+                                                                <p>{!history.ride.isToSchool ? 'Trường -> Nhà' : 'Nhà -> Trường'}</p>
                                                             </span>
                                                             {/* <span className='flex gap-2 items-center'>
                                                     <p className='font-bold'>Trạng thái:</p>
@@ -349,7 +352,7 @@ const HistoryRidePage: React.FC = () => {
                                                 <div className='flex-col'>
                                                     <h4 className='font-bold'>Lịch sử học sinh: </h4>
                                                     <div className='flex-col gap-2'>
-                                                        <Table hideHeader>
+                                                        <Table hideHeader isStriped>
                                                             <TableHeader>
                                                                 <TableColumn>Học sinh</TableColumn>
                                                                 <TableColumn>Lịch sử</TableColumn>
@@ -365,21 +368,11 @@ const HistoryRidePage: React.FC = () => {
                                                                                             src: studentRideHistory.student.avatar || ""
                                                                                         }}
                                                                                         name={studentRideHistory.student.name}
+                                                                                        description={studentRideHistory.student.phoneNumber}
                                                                                     >
                                                                                         {studentRideHistory.student.name}
                                                                                     </User>
                                                                                 </TableCell>
-                                                                                {/* <TableCell>
-                                                                            {
-                                                                                studentRideHistory.studentPickupPointHistories.map((studentPickupPointHistory, index) => {
-                                                                                    return (
-                                                                                        <div key={index} className='flex gap-2'>
-                                                                                            <p>{studentPickupPointHistory.address}</p>
-                                                                                        </div>
-                                                                                    )
-                                                                                })
-                                                                            }
-                                                                        </TableCell> */}
                                                                                 <TableCell>
                                                                                     {
                                                                                         studentRideHistory.studentPickupPointHistories.map((studentPickupPointHistory, index) => {
