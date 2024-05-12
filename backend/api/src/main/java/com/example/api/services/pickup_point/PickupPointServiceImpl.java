@@ -5,6 +5,7 @@ import com.example.api.services.common_dto.BusOutput;
 import com.example.api.services.common_dto.EmployeeOutput;
 import com.example.api.services.common_dto.PickupPointOutput;
 import com.example.api.services.common_dto.RideOutput;
+import com.example.api.services.common_dto.RidePickupPointOutput;
 import com.example.api.services.common_dto.StudentOutput;
 import com.example.api.services.common_dto.StudentPickupPointOutput;
 import com.example.api.services.pickup_point.dto.AddPickupPointInput;
@@ -269,6 +270,20 @@ public class PickupPointServiceImpl implements PickupPointService {
             pickupPointWithStudents.add(
                 ManipulatePickupPointOutput.PickupPointWithStudent.builder()
                     .pickupPoint(PickupPointOutput.fromEntity(pickupPoint))
+                    .ridePickupPoint(
+                        RidePickupPointOutput.fromEntity(
+                            ridePickupPointRepository.findByRideIdAndPickupPointId(
+                                ride.getId(),
+                                pickupPoint.getId()
+                            ).orElseThrow(() -> new MyException(
+                                null,
+                                "RIDE_PICKUP_POINT_NOT_FOUND",
+                                "Ride pickup point with ride id " + ride.getId() +
+                                    " and pickup point id " + pickupPoint.getId() + " not found",
+                                HttpStatus.NOT_FOUND
+                            ))
+                        )
+                    )
                     .studentWithPickupPoints(studentWithPickupPoints)
                     .build()
             );

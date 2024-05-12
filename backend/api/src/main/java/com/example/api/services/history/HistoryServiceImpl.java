@@ -151,7 +151,7 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public Page<EmployeeHistoryRideOutput> getEmployeeHistoryRides(
         EmployeeHistoryRideFilterParam filterParam, Pageable pageable, Account account) {
-        Employee employee = employeeRepository.findById(account.getId())
+        Employee employee = employeeRepository.findByAccountId(account.getId())
             .orElseThrow(() -> new MyException(
                 null, "EMPLOYEE_NOT_FOUND", "Employee not found", HttpStatus.NOT_FOUND
             ));
@@ -263,7 +263,7 @@ public class HistoryServiceImpl implements HistoryService {
     public Page<ClientHistoryRideOutput> getClientHistoryRides(
         ClientHistoryRideFilterParam filterParam, Pageable pageable, Account account) {
         Page<ClientHistoryRideOutput> result = null;
-        Parent parent = parentRepository.findById(account.getId())
+        Parent parent = parentRepository.findByAccountId(account.getId())
             .orElseThrow(() -> new MyException(
                 null, "PARENT_NOT_FOUND", "Parent not found", HttpStatus.NOT_FOUND
             ));

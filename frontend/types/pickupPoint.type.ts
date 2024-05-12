@@ -31,6 +31,7 @@ interface IManipulatePickupPointOutput {
 
 interface IPickupPointWithStudent {
     pickupPoint: IPickupPoint;
+    ridePickupPoint: IRidePickupPoint;
     studentWithPickupPoints: IStudentWithPickupPoint[];
 }
 

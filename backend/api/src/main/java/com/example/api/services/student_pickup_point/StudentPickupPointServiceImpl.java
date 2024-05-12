@@ -62,7 +62,8 @@ public class StudentPickupPointServiceImpl implements StudentPickupPointService 
                     );
                 }
                 case PICKED, MISSED -> {
-                    if (studentPickupPoint.getStatus() != StudentPickupPointStatus.PICKING) {
+                    if (studentPickupPoint.getStatus() != StudentPickupPointStatus.PICKING &&
+                        studentPickupPoint.getStatus() != StudentPickupPointStatus.AT_SCHOOL) {
                         throw new MyException(
                                 null,
                                 "Invalid status",

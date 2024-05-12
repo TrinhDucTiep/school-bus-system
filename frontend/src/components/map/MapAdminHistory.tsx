@@ -142,6 +142,7 @@ export default function MapAdminHistory(
                 >
                     {/* tooltip for address when hover */}
                     <Tooltip>
+                        <h3 className='font-bold'>{pickupPointTable.orderIndex}</h3>
                         {pickupPointTable?.address}
                     </Tooltip>
                 </Marker>

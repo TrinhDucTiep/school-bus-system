@@ -62,13 +62,13 @@ export const ClientSidebarWrapper = () => {
                                 isActive={pathname === "/history-ride"}
                                 title="Lịch sử đưa đón"
                                 icon={<ReportsIcon />}
-                                href="/admin/history-ride"
+                                href="/client/history-ride"
                             />
                             <SidebarItem
                                 isActive={pathname === "/help-center"}
                                 title="Trung tâm trợ giúp"
                                 icon={<ReportsIcon />}
-                                href="/admin/help-center"
+                                href="/client/help-center"
                             />
                         </SidebarMenu>
 

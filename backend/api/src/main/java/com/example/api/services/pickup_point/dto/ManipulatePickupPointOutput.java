@@ -4,6 +4,7 @@ import com.example.api.services.common_dto.BusOutput;
 import com.example.api.services.common_dto.EmployeeOutput;
 import com.example.api.services.common_dto.PickupPointOutput;
 import com.example.api.services.common_dto.RideOutput;
+import com.example.api.services.common_dto.RidePickupPointOutput;
 import com.example.api.services.common_dto.StudentOutput;
 import com.example.api.services.common_dto.StudentPickupPointOutput;
 import java.util.List;
@@ -23,6 +24,7 @@ public class ManipulatePickupPointOutput {
     @Builder
     public static class PickupPointWithStudent {
         private PickupPointOutput pickupPoint;
+        private RidePickupPointOutput ridePickupPoint;
         private List<StudentWithPickupPoint> studentWithPickupPoints;
 
         @Data

@@ -9,6 +9,7 @@ import com.example.shared.db.dto.GetListRidePickupPointDTO;
 import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Bus;
 import com.example.shared.db.entities.Employee;
+import com.example.shared.db.entities.Ride;
 import com.example.shared.db.entities.RidePickupPoint;
 import com.example.shared.db.entities.RidePickupPointHistory;
 import com.example.shared.db.repo.EmployeeRepository;
@@ -16,7 +17,9 @@ import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RidePickupPointHistoryRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
 import com.example.shared.db.repo.RideRepository;
+import com.example.shared.enumeration.BusStatus;
 import com.example.shared.enumeration.RidePickupPointStatus;
+import com.example.shared.enumeration.RideStatus;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -148,7 +151,19 @@ public class RidePickupPointServiceImpl implements RidePickupPointService{
             throw new IllegalArgumentException("Employee is not assigned to ride pickup point");
         }
 
+        Ride ride = ridePickupPoint.getRide();
+        if (input.getStatus().equals(RidePickupPointStatus.PICKED) &&
+            !bus.getStatus().equals(BusStatus.RUNNING) &&
+            !ride.getStatus().equals(RideStatus.RUNNING)) {
+            throw new IllegalArgumentException("Bus or ride is not running");
+        }
+
         ridePickupPoint.setStatus(input.getStatus());
         ridePickupPointRepository.save(ridePickupPoint);
+        if (!input.getStatus().equals(RidePickupPointStatus.PICKING)) {
+            ridePickupPointHistoryRepository.save(
+                RidePickupPointHistory.fromEntity(ridePickupPoint)
+            );
+        }
     }
 }

@@ -10,7 +10,7 @@ interface IRidePickupPoint {
 
 // employee
 interface IEmployeeUpdateRidePickupPointRequest {
-    rideId: number;
-    pickupPointId: number;
-    status: string;
+    rideId: number | null;
+    pickupPointId: number | null;
+    status: string | null;
 }

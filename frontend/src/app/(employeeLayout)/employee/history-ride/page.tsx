@@ -41,11 +41,11 @@ import _, { set } from 'lodash';
 import LocationIcon from '@/components/icons/location-icon';
 import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
 import { bus_status_map, ride_status_map, student_pickup_point_status_map } from '@/util/constant';
-import { useGetAdminHistory } from '@/services/historyService';
+import { useGetEmployeeHistory } from '@/services/historyService';
 
 
 const HistoryRidePage: React.FC = () => {
-    // get admin history
+    // get employee history
     const [startAt, setStartAt] = React.useState<string | null>(null);
     const [rideId, setRideId] = React.useState<number | null>(null);
     const [numberPlate, setNumberPlate] = React.useState<string | null>(null);
@@ -62,7 +62,7 @@ const HistoryRidePage: React.FC = () => {
     const debounceStudentPhoneNumber = _.debounce((studentPhoneNumber: string | null) => setStudentPhoneNumber(studentPhoneNumber), 500);
     const debounceParentPhoneNumber = _.debounce((parentPhoneNumber: string | null) => setParentPhoneNumber(parentPhoneNumber), 500);
 
-    let adminHistoryRideFilterParam: IAdminHistoryRideFilterParam = {
+    let employeeHistoryRideFilterParam: IEmployeeHistoryRideFilterParam = {
         startAt: startAt,
         rideId: rideId,
         numberPlate: numberPlate,
@@ -76,7 +76,7 @@ const HistoryRidePage: React.FC = () => {
         sort: '-id'
     }
 
-    const { data: adminHistory, isLoading: isLoadingAdminHistory, isError: isErrorAdminHistory } = useGetAdminHistory(adminHistoryRideFilterParam);
+    const { data: employeeHistory, isLoading: isLoadingEmployeeHistory, isError: isErrorEmployeeHistory } = useGetEmployeeHistory(employeeHistoryRideFilterParam);
 
     const bottomContent = (
         <div className="py-2 px-2 flex w-full justify-center items-center">
@@ -86,7 +86,7 @@ const HistoryRidePage: React.FC = () => {
                 showShadow
                 color="primary"
                 page={page}
-                total={adminHistory?.result.totalPages || 1}
+                total={employeeHistory?.result.totalPages || 1}
                 onChange={setPage}
             />
         </div>
@@ -183,10 +183,10 @@ const HistoryRidePage: React.FC = () => {
                     <Accordion selectionMode='single' variant='shadow' className='bg-default-100'
                     >
                         {
-                            (adminHistory?.result?.content || []).map((history, index) => {
+                            (employeeHistory?.result?.content || []).map((history, index) => {
                                 return (
                                     <AccordionItem
-                                        onClick={() => setSelectedHistoryRide(adminHistory?.result?.content[index])}
+                                        onClick={() => setSelectedHistoryRide(employeeHistory?.result?.content[index])}
                                         key={index}
                                         title={
                                             <div className='flex justify-around'>
@@ -302,7 +302,7 @@ const HistoryRidePage: React.FC = () => {
                                                                         return (
                                                                             <TableRow key={index}>
                                                                                 <TableCell>{index}</TableCell>
-                                                                                <TableCell>{convertStringInstantToDateTime(rideHistory.createdAt)}</TableCell>
+                                                                                <TableCell>{convertStringInstantToDateTime(rideHistory.updatedAt)}</TableCell>
                                                                                 <TableCell>
                                                                                     <Chip color={ride_status_map.find(status => status.value === rideHistory.status)?.color} variant="flat" size="sm">
                                                                                         {ride_status_map.find(status => status.value === rideHistory.status)?.label}

@@ -18,6 +18,11 @@ export const ride_status_map = [
     { value: 'AT_SCHOOL', label: 'Tại trường', color: 'danger' },
 ];
 
+export const ride_pickup_point_status_map = [
+    { value: 'PICKING', label: 'Đang đón', color: 'warning' },
+    { value: 'PICKED', label: 'Đã đón', color: 'success' },
+];
+
 export const student_pickup_point_status_map = [
     { value: 'PICKING', label: 'Đang đón', color: 'warning' },
     { value: 'PICKED', label: 'Đã đón', color: 'success' },

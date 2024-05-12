@@ -57,4 +57,17 @@ public class RidePickupPointHistory {
     @LastModifiedDate
     @UpdateTimestamp
     private Instant updatedAt;
+
+    public static RidePickupPointHistory fromEntity(RidePickupPoint ridePickupPoint) {
+        return RidePickupPointHistory.builder()
+            .ridePickupPointId(ridePickupPoint.getId())
+            .pickupPointId(ridePickupPoint.getPickupPoint().getId())
+            .rideId(ridePickupPoint.getRide().getId())
+            .status(ridePickupPoint.getStatus())
+            .orderIndex(ridePickupPoint.getOrderIndex())
+            .address(ridePickupPoint.getPickupPoint().getAddress())
+            .longitude(ridePickupPoint.getPickupPoint().getLongitude())
+            .latitude(ridePickupPoint.getPickupPoint().getLatitude())
+            .build();
+    }
 }

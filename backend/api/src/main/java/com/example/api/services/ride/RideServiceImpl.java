@@ -21,6 +21,7 @@ import com.example.shared.db.repo.RidePickupPointRepository;
 import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.StudentPickupPointHistoryRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
+import com.example.shared.enumeration.BusStatus;
 import com.example.shared.enumeration.RidePickupPointStatus;
 import com.example.shared.enumeration.RideStatus;
 import com.example.shared.enumeration.StudentPickupPointStatus;
@@ -281,6 +282,17 @@ public class RideServiceImpl implements RideService {
                 null,
                 "employee_not_assign_to_ride",
                 "Employee not assign to ride",
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+        // validate ride status
+        if (updateRideEmployeeInput.getStatus() == RideStatus.RUNNING &&
+            bus.getStatus() != BusStatus.RUNNING) {
+            throw new MyException(
+                null,
+                "bus_not_running",
+                "Bus is not running",
                 HttpStatus.BAD_REQUEST
             );
         }

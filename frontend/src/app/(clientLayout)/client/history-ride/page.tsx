@@ -41,11 +41,11 @@ import _, { set } from 'lodash';
 import LocationIcon from '@/components/icons/location-icon';
 import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
 import { bus_status_map, ride_status_map, student_pickup_point_status_map } from '@/util/constant';
-import { useGetAdminHistory } from '@/services/historyService';
+import { useGetClientHistory } from '@/services/historyService';
 
 
 const HistoryRidePage: React.FC = () => {
-    // get admin history
+    // get client history
     const [startAt, setStartAt] = React.useState<string | null>(null);
     const [rideId, setRideId] = React.useState<number | null>(null);
     const [numberPlate, setNumberPlate] = React.useState<string | null>(null);
@@ -53,16 +53,14 @@ const HistoryRidePage: React.FC = () => {
     const [isToSchool, setIsToSchool] = React.useState<boolean | null>(null);
     const [address, setAddress] = React.useState<string | null>(null);
     const [studentPhoneNumber, setStudentPhoneNumber] = React.useState<string | null>(null);
-    const [parentPhoneNumber, setParentPhoneNumber] = React.useState<string | null>(null);
     const [page, setPage] = React.useState<number>(1);
 
     const debounceRideId = _.debounce((value: number | null) => setRideId(value), 500);
     const debounceNumberPlate = _.debounce((value: string) => setNumberPlate(value), 500);
     const debounceAddress = _.debounce((address: string | null) => setAddress(address), 500);
     const debounceStudentPhoneNumber = _.debounce((studentPhoneNumber: string | null) => setStudentPhoneNumber(studentPhoneNumber), 500);
-    const debounceParentPhoneNumber = _.debounce((parentPhoneNumber: string | null) => setParentPhoneNumber(parentPhoneNumber), 500);
 
-    let adminHistoryRideFilterParam: IAdminHistoryRideFilterParam = {
+    let clientHistoryRideFilterParam: IClientHistoryRideFilterParam = {
         startAt: startAt,
         rideId: rideId,
         numberPlate: numberPlate,
@@ -70,13 +68,12 @@ const HistoryRidePage: React.FC = () => {
         isToSchool: isToSchool,
         address: address,
         studentPhoneNumber: studentPhoneNumber,
-        parentPhoneNumber: parentPhoneNumber,
         page: page - 1,
         size: 5,
         sort: '-id'
     }
 
-    const { data: adminHistory, isLoading: isLoadingAdminHistory, isError: isErrorAdminHistory } = useGetAdminHistory(adminHistoryRideFilterParam);
+    const { data: clientHistory, isLoading: isLoadingClientHistory, isError: isErrorClientHistory } = useGetClientHistory(clientHistoryRideFilterParam);
 
     const bottomContent = (
         <div className="py-2 px-2 flex w-full justify-center items-center">
@@ -86,7 +83,7 @@ const HistoryRidePage: React.FC = () => {
                 showShadow
                 color="primary"
                 page={page}
-                total={adminHistory?.result.totalPages || 1}
+                total={clientHistory?.result.totalPages || 1}
                 onChange={setPage}
             />
         </div>
@@ -170,10 +167,6 @@ const HistoryRidePage: React.FC = () => {
                         placeholder='Sđt học sinh'
                         onChange={(e) => debounceStudentPhoneNumber(e.target.value === '' ? null : e.target.value)}
                     />
-                    <Input
-                        placeholder='Sđt phụ huynh'
-                        onChange={(e) => debounceParentPhoneNumber(e.target.value === '' ? null : e.target.value)}
-                    />
                 </div>
 
             </div>
@@ -183,10 +176,10 @@ const HistoryRidePage: React.FC = () => {
                     <Accordion selectionMode='single' variant='shadow' className='bg-default-100'
                     >
                         {
-                            (adminHistory?.result?.content || []).map((history, index) => {
+                            (clientHistory?.result?.content || []).map((history, index) => {
                                 return (
                                     <AccordionItem
-                                        onClick={() => setSelectedHistoryRide(adminHistory?.result?.content[index])}
+                                        onClick={() => setSelectedHistoryRide(clientHistory?.result?.content[index])}
                                         key={index}
                                         title={
                                             <div className='flex justify-around'>
@@ -302,7 +295,7 @@ const HistoryRidePage: React.FC = () => {
                                                                         return (
                                                                             <TableRow key={index}>
                                                                                 <TableCell>{index}</TableCell>
-                                                                                <TableCell>{convertStringInstantToDateTime(rideHistory.createdAt)}</TableCell>
+                                                                                <TableCell>{convertStringInstantToDateTime(rideHistory.updatedAt)}</TableCell>
                                                                                 <TableCell>
                                                                                     <Chip color={ride_status_map.find(status => status.value === rideHistory.status)?.color} variant="flat" size="sm">
                                                                                         {ride_status_map.find(status => status.value === rideHistory.status)?.label}

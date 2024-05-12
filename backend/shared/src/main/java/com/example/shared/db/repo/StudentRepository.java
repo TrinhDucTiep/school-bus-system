@@ -73,7 +73,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("""
         select s from Student s
         where s.parent.id = :parentId
-        and s.phoneNumber LIKE %:studentPhoneNumber%
+        and (:studentPhoneNumber is null or s.phoneNumber like %:studentPhoneNumber%)
     """)
     List<Student> findAllByParentIdAndStudentPhoneNumber(
         @Param("parentId") Long parentId,

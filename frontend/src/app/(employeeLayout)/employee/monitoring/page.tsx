@@ -38,8 +38,8 @@ import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/m
 import _, { set } from 'lodash';
 import LocationIcon from '@/components/icons/location-icon';
 import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
-import { useGetListManipulatePickupPoint, useUpdateEmployeeBus, useUpdateEmployeeRide, useUpdateEmployeeStudentPickupPoint } from '@/services/employee/employeeService';
-import { bus_status_map, ride_status_map, student_pickup_point_status_map } from '@/util/constant';
+import { useGetListManipulatePickupPoint, useUpdateEmployeeBus, useUpdateEmployeeRide, useUpdateEmployeeRidePickupPoint, useUpdateEmployeeStudentPickupPoint } from '@/services/employee/employeeService';
+import { bus_status_map, ride_pickup_point_status_map, ride_status_map, student_pickup_point_status_map } from '@/util/constant';
 
 const EmployeeMonitoring: React.FC = () => {
 
@@ -107,6 +107,26 @@ const EmployeeMonitoring: React.FC = () => {
             return;
         }
         updateEmployeeRideMutation.mutate(updateEmployeeRideRequest);
+    }
+
+    // update ride pickup point
+    const [statusRidePickupPoint, setStatusRidePickupPoint] = React.useState<string>('');
+    const [selectedPickupPointId, setSelectedPickupPointId] = React.useState<number | null>(null);
+    let employeeUpdateRidePickupPointRequest: IEmployeeUpdateRidePickupPointRequest = {
+        rideId: manipulatePickupPointData?.result?.ride.id || null,
+        pickupPointId: selectedPickupPointId || null,
+        status: statusRidePickupPoint
+    }
+    const { isOpen: isUpdateRidePickupPointModalOpen, onOpen: onOpenUpdateRidePickupPointModal, onOpenChange: onOpenUpdateRidePickupPointModalChange } = useDisclosure();
+    const updateEmployeeRidePickupPointMutation = useUpdateEmployeeRidePickupPoint(() => {
+        setStatusRidePickupPoint('');
+        onOpenUpdateRidePickupPointModalChange();
+    });
+    const handleUpdateEmployeeRidePickupPoint = () => {
+        if (!employeeUpdateRidePickupPointRequest.pickupPointId || !employeeUpdateRidePickupPointRequest.status) {
+            return;
+        }
+        updateEmployeeRidePickupPointMutation.mutate(employeeUpdateRidePickupPointRequest);
     }
 
     // update student pickup point
@@ -317,7 +337,47 @@ const EmployeeMonitoring: React.FC = () => {
                                     return (
                                         <AccordionItem
                                             key={index}
-                                            title={item.pickupPoint.address}
+                                            title={
+                                                <div className='flex justify-between items-center'>
+                                                    <div className='flex flex-col'>
+                                                        {item.pickupPoint.address}
+                                                    </div>
+                                                    {/* select status here */}
+                                                    <div className='flex gap-2 w-1/3 items-center'>
+                                                        <Select
+                                                            label='Trạng thái'
+                                                            placeholder='Chọn trạng thái'
+                                                            value={item.ridePickupPoint.status}
+                                                            defaultSelectedKeys={[ride_pickup_point_status_map.find((mapItem) => mapItem.value === item.ridePickupPoint.status)?.value || '']}
+                                                            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                                                                setStatusRidePickupPoint(event.target.value);
+                                                                setSelectedPickupPointId(item.pickupPoint.id);
+                                                            }}
+                                                            color={ride_pickup_point_status_map.find((mapItem) => mapItem.value == item.ridePickupPoint.status)?.color || 'default'}
+                                                        >
+                                                            {
+                                                                ride_pickup_point_status_map.map((mapItem, index) => {
+                                                                    return (
+                                                                        <SelectItem key={mapItem.value} value={mapItem.value} color={mapItem.color}>
+                                                                            {mapItem.label}
+                                                                        </SelectItem>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </Select>
+                                                        <Button
+                                                            color='primary'
+                                                            className='w-1/12'
+                                                            onClick={() => {
+                                                                onOpenUpdateRidePickupPointModal();
+                                                            }}
+                                                        >
+                                                            Lưu
+                                                        </Button>
+                                                    </div>
+
+                                                </div>
+                                            }
                                         >
                                             <Table
                                                 aria-label='Student pickup point'
@@ -367,7 +427,7 @@ const EmployeeMonitoring: React.FC = () => {
                                                 </TableBody>
                                             </Table>
 
-                                            <div className='flex'>
+                                            <div className='flex justify-between m-2'>
                                                 <Select
                                                     label='Chọn trạng thái'
                                                     placeholder='Chọn trạng thái'
@@ -487,6 +547,37 @@ const EmployeeMonitoring: React.FC = () => {
                                     </Button>
                                     <Button color="primary" onPress={() => {
                                         handleUpdateEmployeeRide();
+                                    }}>
+                                        Xác nhận
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
+            </div>
+
+            {/* modal update ride pickup point */}
+            <div className='relative z-10'>
+                <Modal isOpen={isUpdateRidePickupPointModalOpen} onOpenChange={onOpenUpdateRidePickupPointModalChange}
+                >
+                    <ModalContent>
+                        {(onOpenAddRideConfirm) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Xác nhận lưu trạng thái điểm đón</ModalHeader>
+                                <ModalBody>
+                                    <p>
+                                        Bạn có muốn lưu trạng thái điểm đón không?
+                                    </p>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light"
+                                        onPress={onOpenUpdateRidePickupPointModalChange}
+                                    >
+                                        Huỷ
+                                    </Button>
+                                    <Button color="primary" onPress={() => {
+                                        handleUpdateEmployeeRidePickupPoint();
                                     }}>
                                         Xác nhận
                                     </Button>
