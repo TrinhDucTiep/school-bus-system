@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FC, RefObject, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents, GeoJSON, Polyline, Tooltip, Popup } from 'react-leaflet';
 import L, { LatLngExpression, LatLngTuple } from 'leaflet';
 import polyline from 'polyline';
 // import { PolylineDecorator } from 'leaflet-polylinedecorator';
@@ -74,6 +74,17 @@ function MapEvents() {
     return null;
 }
 
+// Create a transparent icon
+const transparentIcon = new L.Icon({
+    iconUrl: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+    iconSize: [1, 1],
+    iconAnchor: [0, 0],
+    popupAnchor: [0, 0],
+    shadowUrl: undefined,
+    shadowSize: undefined,
+    shadowAnchor: undefined
+});
+
 
 // arrow decorator for polyline
 const ArrowDecorator = ({ positions }: { positions: LatLngExpression[] }) => {
@@ -132,9 +143,6 @@ export default function MapAdmin(
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {geoData.lat && geoData.lng && (
-                <Marker position={center} icon={locationIcon} />
-            )}
 
             {/* pickup points */}
             {pickupPoints?.map((pickupPointTable, index) => (
@@ -163,6 +171,21 @@ export default function MapAdmin(
                     {/* tooltip for address when hover */}
                     <Tooltip>
                         {pickupPointTable.pickupPoint.address}
+                    </Tooltip>
+                </Marker>
+            ))}
+
+            {/* just the size of students at each of pickup points: pickupPointTable.students.size to add more information in map */}
+            {pickupPoints?.map((pickupPointTable, index) => (
+                <Marker
+                    key={index}
+                    position={{ lat: pickupPointTable.pickupPoint.latitude, lng: pickupPointTable.pickupPoint.longitude }}
+                    icon={transparentIcon}
+                >
+                    <Tooltip permanent direction='left' offset={[-20, 0]}>
+                        <div className="bg-white rounded shadow p-0">
+                            <p className="font-bold text-blue-500">{pickupPointTable.students.length + " HS"}</p>
+                        </div>
                     </Tooltip>
                 </Marker>
             ))}

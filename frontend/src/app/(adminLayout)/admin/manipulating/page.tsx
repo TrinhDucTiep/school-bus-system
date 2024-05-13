@@ -195,7 +195,7 @@ const ManipulatingPage: React.FC = () => {
                         <Input
                             placeholder="Ngày"
                             type='date'
-                            className='m-2 w-1/3'
+                            className='m-2 w-1/3  bg-default-100 rounded-lg'
                             variant='bordered'
                             size='sm'
                             onChange={(e) => setManipulateDate(e.target.value)}
@@ -213,9 +213,9 @@ const ManipulatingPage: React.FC = () => {
                     <div className='flex justify-between'>
                         <Input
                             placeholder="Biển số xe"
-                            className='m-2'
-                            variant='bordered'
+                            className='m-2 bg-default-100 rounded-lg'
                             onChange={(e) => debouncedSetNumberPlateQuery(e.target.value)}
+                            size='lg'
                         />
                         <Select
                             label="Trạng thái"
@@ -296,7 +296,7 @@ const ManipulatingPage: React.FC = () => {
                             placeholder="Thời gian khởi hành"
                             label='Thời gian khởi hành'
                             type='datetime-local'
-                            className='m-2'
+                            className='m-2  bg-default-100'
                             variant='bordered'
                             onChange={(e) => {
                                 setManipulateStartAt(e.target.value)
@@ -308,7 +308,7 @@ const ManipulatingPage: React.FC = () => {
                         <Input
                             placeholder="Địa điểm xuất phát"
                             label='Địa điểm xuất phát'
-                            className='m-2'
+                            className='m-2  bg-default-100'
                             variant='bordered'
                             onChange={(e) => setManipulateStartFrom(e.target.value)}
                             value={
