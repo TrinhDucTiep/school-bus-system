@@ -191,4 +191,16 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         @Param("studentIds") List<Long> studentIds,
         Pageable pageable
     );
+
+    @Query("""
+    select r from Ride r
+    left join Bus b
+    on r.bus.id = b.id
+    where (b.driverId = :employeeId or b.driverMateId = :employeeId)
+    and DATE(r.startAt) = DATE(:startAt)
+    """)
+    List<Ride> findEmployeeRides(
+        @Param("employeeId") Long employeeId,
+        @Param("startAt") Instant startAt
+    );
 }

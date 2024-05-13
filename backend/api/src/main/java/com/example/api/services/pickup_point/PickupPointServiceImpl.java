@@ -34,6 +34,7 @@ import com.example.shared.exception.MyException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -168,7 +169,8 @@ public class PickupPointServiceImpl implements PickupPointService {
     }
 
     @Override
-    public ManipulatePickupPointOutput getListManipulatePickupPoint(Account account) {
+    public ManipulatePickupPointOutput getListManipulatePickupPoint(Account account, Instant date,
+                                                                    Long rideId) {
         Employee driver;
         Employee driverMate;
         Bus bus;
@@ -216,22 +218,45 @@ public class PickupPointServiceImpl implements PickupPointService {
                 ));
         }
 
-        // find manipulate ride
-        List<Ride> rides = rideRepository.findByBusIdAndNotInStatusAndStartAt(
-            bus.getId(),
-            RideStatus.FINISHED,
-            Instant.now()
-        );
-        // ride to school pending => get ride to school,
-        // else get ride to home (just have 1 element in array)
-        if (rides.isEmpty()) {
-            return null;
-        }
-        Ride ride; //todo: tieptd
-        if (rides.size() > 1 && !rides.get(0).getIsToSchool()) {
-            ride = rides.get(1);
+        Ride ride;
+        if (rideId != null) {
+            ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new MyException(
+                    null,
+                    "RIDE_NOT_FOUND",
+                    "Ride with id " + rideId + " not found",
+                    HttpStatus.NOT_FOUND
+                ));
+
+
+            // validate employee with ride
+            if (!Objects.equals(ride.getBus().getDriverId(), driver.getId()) &&
+                !Objects.equals(ride.getBus().getDriverMateId(), driverMate.getId())) {
+                throw new MyException(
+                    null,
+                    "EMPLOYEE_NOT_IN_RIDE",
+                    "Employee with id " + driver.getId() + " or " + driverMate.getId() +
+                        " not in ride with id " + rideId,
+                    HttpStatus.BAD_REQUEST
+                );
+            }
         } else {
-            ride = rides.get(0);
+            // find manipulate ride
+            List<Ride> rides = rideRepository.findByBusIdAndNotInStatusAndStartAt(
+                bus.getId(),
+                RideStatus.FINISHED,
+                date
+            );
+            // ride to school pending => get ride to school,
+            // else get ride to home (just have 1 element in array)
+            if (rides.isEmpty()) {
+                return null;
+            }
+            if (rides.size() > 1 && !rides.get(0).getIsToSchool()) {
+                ride = rides.get(1);
+            } else {
+                ride = rides.get(0);
+            }
         }
 
 
@@ -297,5 +322,20 @@ public class PickupPointServiceImpl implements PickupPointService {
             .ride(RideOutput.fromEntity(ride))
             .pickupPointWithStudents(pickupPointWithStudents)
             .build();
+    }
+
+    @Override
+    public List<RideOutput> getListRideId(Account account, Instant date) {
+        // find driver, driver mate, and bus
+        Employee employee = employeeRepository.findByAccountId(account.getId())
+            .orElseThrow(() -> new MyException(
+                null,
+                "EMPLOYEE_NOT_FOUND",
+                "Employee with account id " + account.getId() + " not found",
+                HttpStatus.NOT_FOUND
+            ));
+
+        return rideRepository.findEmployeeRides(employee.getId(), date)
+            .stream().map(RideOutput::fromEntity).toList();
     }
 }

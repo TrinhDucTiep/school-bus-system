@@ -38,7 +38,7 @@ import { useGetAutoComplete, useGetSearch, useGetDirections } from '@/services/m
 import _, { set } from 'lodash';
 import LocationIcon from '@/components/icons/location-icon';
 import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
-import { useGetListManipulatePickupPoint, useUpdateEmployeeBus, useUpdateEmployeeRide, useUpdateEmployeeRidePickupPoint, useUpdateEmployeeStudentPickupPoint } from '@/services/employee/employeeService';
+import { useGetListManipulatePickupPoint, useGetListRideAtThatDay, useUpdateEmployeeBus, useUpdateEmployeeRide, useUpdateEmployeeRidePickupPoint, useUpdateEmployeeStudentPickupPoint } from '@/services/employee/employeeService';
 import { bus_status_map, ride_pickup_point_status_map, ride_status_map, student_pickup_point_status_map } from '@/util/constant';
 
 const EmployeeMonitoring: React.FC = () => {
@@ -66,8 +66,15 @@ const EmployeeMonitoring: React.FC = () => {
     // enable click point to map
     const [enableClickMap, setEnableClickMap] = React.useState<boolean>(false);
 
+
+
+    const [date, setDate] = React.useState<string>(convertStringInstantToDate(new Date().toISOString()));
+    // get list ride at that day
+    const { data: listRideAtThatDayData, isLoading: listRideAtThatDayLoading, error: listRideAtThatDayError } = useGetListRideAtThatDay(date);
+
     // get manipulate pickup point
-    const { data: manipulatePickupPointData, isLoading: manipulatePickupPointLoading, error: manipulatePickupPointError } = useGetListManipulatePickupPoint();
+    const [rideId, setRideId] = React.useState<number | null>(null);
+    const { data: manipulatePickupPointData, isLoading: manipulatePickupPointLoading, error: manipulatePickupPointError } = useGetListManipulatePickupPoint(date, rideId);
 
     // get directions
     const useGetManipulatePickupPointDirectionParams: IDirectionsParams = {
@@ -159,7 +166,17 @@ const EmployeeMonitoring: React.FC = () => {
     }
     // if dont have data => return message you dont have ride today
     if (!manipulatePickupPointData?.result) {
-        return <div className='w-auto h-full m-4 flex justify-center'>
+        return <div className='w-auto h-full m-4 flex-col justify-center'>
+            <Input
+                className='m-2 w-1/4 bg-default-100'
+                type='date'
+                label='Chọn ngày'
+                value={date}
+                onChange={(event) => {
+                    setDate(event.target.value);
+                }}
+                variant='flat'
+            />
             <Card className='m-2 w-full h-full flex justify-center'>
                 <CardBody className='flex justify-center'>
                     <div className='flex justify-center'>
@@ -171,6 +188,40 @@ const EmployeeMonitoring: React.FC = () => {
     }
     return (
         <div className='flex flex-col'>
+            <div className='flex gap-4 items-center'>
+                <Input
+                    className='m-2 w-1/4 bg-default-100'
+                    type='date'
+                    label='Chọn ngày'
+                    value={date}
+                    onChange={(event) => {
+                        setDate(event.target.value);
+                    }}
+                    variant='flat'
+                />
+                {/* select ride id from list ride at that day */}
+                <Select
+                    classNames='m-2 w-1/4 bg-default-100'
+                    label='Chọn chuyến đi'
+                    placeholder='Chọn chuyến đi'
+                    value={rideId}
+                    defaultSelectedKeys={[rideId || '']}
+                    onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                        setRideId(parseInt(event.target.value));
+                    }}
+                    className='w-1/2'
+                >
+                    {
+                        listRideAtThatDayData?.result?.map((item, index) => {
+                            return (
+                                <SelectItem key={item.id} value={item.id}>
+                                    {item.id}
+                                </SelectItem>
+                            )
+                        })
+                    }
+                </Select>
+            </div>
             <div className='flex justify-between  flex-col sm:flex-row'>
                 {/* card bus info */}
                 <Card className='m-2 w-full sm:w-1/2'>
@@ -279,7 +330,7 @@ const EmployeeMonitoring: React.FC = () => {
             </div>
 
             <div className='flex justify-between w-auto'>
-                <div className='w-2/5 mr-4'>
+                <div className='w-3/5 mr-4'>
                     <Autocomplete
                         placeholder="Nhập địa điểm"
                         allowsCustomValue
@@ -483,7 +534,7 @@ const EmployeeMonitoring: React.FC = () => {
 
                 {/* map */}
                 <div
-                    className="w-3/5 z-50"
+                    className="w-2/5 z-50"
                 >
                     <Map
                         features={selectedAutoCompleteData ? [selectedAutoCompleteData] : []}

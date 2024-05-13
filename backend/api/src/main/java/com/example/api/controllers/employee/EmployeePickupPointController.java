@@ -3,7 +3,9 @@ package com.example.api.controllers.employee;
 import com.example.api.services.pickup_point.PickupPointService;
 import com.example.shared.db.entities.Account;
 import com.example.shared.response.CommonResponse;
+import com.example.shared.utils.DateConvertUtil;
 import com.example.shared.utils.ResponseUtil;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +21,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmployeePickupPointController {
     private final PickupPointService pickupPointService;
 
-    @GetMapping("/manipulate")
-    public ResponseEntity<CommonResponse<Object>> getListManipulatePickupPoint(
-        @AuthenticationPrincipal Account account
+    @GetMapping("/list-ride-id")
+    public ResponseEntity<CommonResponse<Object>> getListRideId(
+        @AuthenticationPrincipal Account account,
+        String date
     ) {
         return ResponseUtil.toSuccessCommonResponse(
-            pickupPointService.getListManipulatePickupPoint(account)
+            pickupPointService.getListRideId(account, DateConvertUtil.convertStringToInstant(date))
+        );
+    }
+
+    @GetMapping("/manipulate")
+    public ResponseEntity<CommonResponse<Object>> getListManipulatePickupPoint(
+        @AuthenticationPrincipal Account account,
+        String date,
+        Long rideId
+    ) {
+        return ResponseUtil.toSuccessCommonResponse(
+            pickupPointService.getListManipulatePickupPoint(account,
+                DateConvertUtil.convertStringToInstant(date), rideId)
         );
     }
 }

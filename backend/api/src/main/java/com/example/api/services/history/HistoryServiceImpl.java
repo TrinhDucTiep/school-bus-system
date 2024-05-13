@@ -275,7 +275,6 @@ public class HistoryServiceImpl implements HistoryService {
             .toList();
 
         // set for query not get error
-        // set for query not get error
         boolean isAllDate = false;
         if (filterParam.getStartAt() == null || filterParam.getStartAt().isBlank()) {
             isAllDate = true;

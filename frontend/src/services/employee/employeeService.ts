@@ -4,14 +4,27 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
-const getListManipulatePickupPoint = async () => {
-    const response = await apiClient.get<ICommonResponse<IManipulatePickupPointOutput>>('/api/v1/employee/pickup-point/manipulate');
+// get manipulate pickup point
+const getListManipulatePickupPoint = async (date: string, rideId: number | null) => {
+    const response = await apiClient.get<ICommonResponse<IManipulatePickupPointOutput>>('/api/v1/employee/pickup-point/manipulate',{ params: { date, rideId } });
     return response.data;
 }
-export const useGetListManipulatePickupPoint = () => {
+export const useGetListManipulatePickupPoint = (date: string, rideId: number | null) => {
     return useQuery<ICommonResponse<IManipulatePickupPointOutput>, AxiosError>({
-        queryKey: ['manipulatePickupPoint'],
-        queryFn: () => getListManipulatePickupPoint()
+        queryKey: ['manipulatePickupPoint', date, rideId],
+        queryFn: () => getListManipulatePickupPoint(date, rideId)
+    });
+};
+
+// get list ride at that day
+const getListRideAtThatDay = async (date: string) => {
+    const response = await apiClient.get<ICommonResponse<IRide[]>>('/api/v1/employee/pickup-point/list-ride-id',{ params: { date } });
+    return response.data;
+}
+export const useGetListRideAtThatDay = (date: string) => {
+    return useQuery<ICommonResponse<IRide[]>, AxiosError>({
+        queryKey: ['listRideAtThatDay', date],
+        queryFn: () => getListRideAtThatDay(date)
     });
 };
 
