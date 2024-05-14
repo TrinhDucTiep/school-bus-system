@@ -195,7 +195,7 @@ const ManipulatingPage: React.FC = () => {
                         <Input
                             placeholder="Ngày"
                             type='date'
-                            className='m-2 w-1/3  bg-default-100 rounded-lg'
+                            className='m-2 w-1/3  bg-default-50 rounded-lg'
                             variant='bordered'
                             size='sm'
                             onChange={(e) => setManipulateDate(e.target.value)}
@@ -210,25 +210,27 @@ const ManipulatingPage: React.FC = () => {
                         </Button>
                     </div>
 
-                    <div className='flex justify-between'>
+                    <div className='flex justify-between items-center'>
                         <Input
                             placeholder="Biển số xe"
-                            className='m-2 bg-default-100 rounded-lg'
+                            className='m-2 bg-default-50 rounded-lg'
                             onChange={(e) => debouncedSetNumberPlateQuery(e.target.value)}
                             size='lg'
                         />
                         <Select
                             label="Trạng thái"
                             placeholder='Chọn trạng thái'
+                            size='sm'
                             selectionMode='single'
                             value={statusQuery}
                             onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                                 const newValue = event.target.value;
                                 setStatusQuery(newValue);
                             }}
+                            color={bus_status_map.find((item) => item.value === statusQuery)?.color ?? 'default'}
                         >
                             {bus_status_map.map((status) => (
-                                <SelectItem key={status.value} value={status.value}
+                                <SelectItem key={status.value} value={status.value} color={status.color}
                                 >
                                     {status.label}
                                 </SelectItem>
@@ -257,7 +259,8 @@ const ManipulatingPage: React.FC = () => {
                             <TableHeader columns={[
                                 { key: 'numberPlate', label: 'Biển số xe' },
                                 { key: 'status', label: 'Trạng thái' },
-                                { key: 'ride', label: 'Chuyến' }
+                                { key: 'ride', label: 'Chuyến' },
+                                { key: 'seatNumber', label: 'Số ghế' }
                             ]}>
                                 {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                             </TableHeader>
@@ -273,18 +276,13 @@ const ManipulatingPage: React.FC = () => {
                                         <TableCell>
                                             <Chip
                                                 variant='flat'
-                                                color={
-                                                    item.bus.status === 'AVAILABLE' ? 'success' :
-                                                        item.bus.status === 'RUNNING' ? 'warning' :
-                                                            item.bus.status === 'BROKEN' ? 'danger' :
-                                                                item.bus.status === 'MAINTENANCE' ? 'primary' : 'default'
-
-                                                }
+                                                color={bus_status_map.find((status) => status.value === item.bus.status)?.color ?? 'default'}
                                             >
-                                                {item.bus.status}
+                                                {bus_status_map.find((status) => status.value === item.bus.status)?.label ?? 'Không xác định'}
                                             </Chip>
                                         </TableCell>
                                         <TableCell>{item?.ride?.id}</TableCell>
+                                        <TableCell>{item?.bus?.seatNumber}</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -296,7 +294,7 @@ const ManipulatingPage: React.FC = () => {
                             placeholder="Thời gian khởi hành"
                             label='Thời gian khởi hành'
                             type='datetime-local'
-                            className='m-2  bg-default-100'
+                            className='m-2 bg-default-50'
                             variant='bordered'
                             onChange={(e) => {
                                 setManipulateStartAt(e.target.value)
@@ -308,7 +306,7 @@ const ManipulatingPage: React.FC = () => {
                         <Input
                             placeholder="Địa điểm xuất phát"
                             label='Địa điểm xuất phát'
-                            className='m-2  bg-default-100'
+                            className='m-2 bg-default-50'
                             variant='bordered'
                             onChange={(e) => setManipulateStartFrom(e.target.value)}
                             value={

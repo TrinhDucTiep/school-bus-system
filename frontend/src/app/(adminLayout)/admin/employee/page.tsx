@@ -261,12 +261,14 @@ const EmployeePage: React.FC = () => {
                                         label="Vai trò"
                                         placeholder='Chọn vai trò'
                                         selectionMode='single'
+                                        size='sm'
                                         value={selectedEmployee?.employee.role}
                                         defaultSelectedKeys={[employee_role_map.find(role => role.value === selectedEmployee?.employee.role)?.value || '']}
+                                        color={employee_role_map.find(role => role.value === selectedEmployee?.employee.role)?.color || 'default'}
                                         {...register("role", { required: true })}
                                     >
                                         {employee_role_map.map((role) => (
-                                            <SelectItem key={role.value} value={role.value}>
+                                            <SelectItem key={role.value} value={role.value} color={role.color}>
                                                 {role.label}
                                             </SelectItem>
                                         ))}

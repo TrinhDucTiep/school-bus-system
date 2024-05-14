@@ -72,7 +72,9 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
                     variant="flat"
                     color={getBusStatusColor(bus?.bus?.status)}
                 >
-                    <span className="capitalize text-xs">{bus?.bus?.status}</span>
+                    <span className="capitalize text-xs">
+                        {bus_status_map.find((s) => s.value === bus?.bus?.status)?.label}
+                    </span>
                 </Chip>
             );
 

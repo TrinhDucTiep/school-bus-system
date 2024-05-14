@@ -17,9 +17,13 @@ interface Company {
   logo: React.ReactNode;
 }
 
-export const CompaniesDropdown = () => {
+interface CompaniesDropdownProps {
+  name: string;
+}
+
+export const CompaniesDropdown = ({ name }: CompaniesDropdownProps) => {
   const [company, setCompany] = useState<Company>({
-    name: "Admin",
+    name: name,
     location: "School bus",
     logo: <AcmeIcon />,
   });

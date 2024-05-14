@@ -53,7 +53,7 @@ export const ClientNavbarWrapper = ({ children }: Props) => {
                     </div>
 
                     <Link
-                        href="https://github.com/Siumauricio/nextui-dashboard-template"
+                        href="https://github.com/TrinhDucTiep"
                         target={"_blank"}
                     >
                         <GithubIcon />

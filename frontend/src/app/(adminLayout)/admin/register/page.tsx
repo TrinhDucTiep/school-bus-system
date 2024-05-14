@@ -196,6 +196,8 @@ const RegisterPage: React.FC = () => {
             <div className='flex justify-between w-auto'>
                 <div className='w-5/12 mr-4'>
 
+                    <h5 className='text-xl font-bold m-1'>Yêu cầu đăng ký chờ xử lý</h5>
+
                     <div className='flex justify-between'>
                         <div className='flex gap-2 mx-2 mt-2'>
                             <Input
@@ -369,6 +371,7 @@ const RegisterPage: React.FC = () => {
 
             {/* table all request registration */}
             <div className='m-4'>
+                <h3 className='text-xl font-bold m-2'>Lịch sử đăng ký</h3>
                 <div className='flex  gap-2 m-2'>
                     <Input
                         size='sm'
@@ -389,13 +392,14 @@ const RegisterPage: React.FC = () => {
                         size='sm'
                         placeholder='Trạng thái'
                         selectionMode='multiple'
+                        color={request_registration_status_map.find((status) => status.value === statuses)?.color || 'default'}
                         onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                             const newValue = event.target.value;
                             setStatuses(newValue);
                         }}
                     >
                         {request_registration_status_map.map((status) => (
-                            <SelectItem key={status.value} value={status.value}>
+                            <SelectItem key={status.value} value={status.value} color={status.color}>
                                 {status.label}
                             </SelectItem>
                         ))}

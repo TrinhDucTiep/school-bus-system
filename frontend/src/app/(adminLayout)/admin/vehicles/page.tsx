@@ -153,6 +153,8 @@ const VehiclesPage: React.FC = () => {
                             label="Trạng thái"
                             placeholder='Chọn trạng thái'
                             selectionMode='multiple'
+                            size='sm'
+                            color={bus_status_map.find((status) => status.value === statuses)?.color || 'default'}
                             value={statuses?.split(',')}
                             onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                                 const newValue = event.target.value;
@@ -160,7 +162,7 @@ const VehiclesPage: React.FC = () => {
                             }}
                         >
                             {bus_status_map.map((status) => (
-                                <SelectItem key={status.value} value={status.value}
+                                <SelectItem key={status.value} value={status.value} color={status.color}
                                 >
                                     {status.label}
                                 </SelectItem>

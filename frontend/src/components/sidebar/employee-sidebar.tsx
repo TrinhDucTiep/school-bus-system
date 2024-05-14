@@ -19,6 +19,8 @@ import { FilterIcon } from "../icons/sidebar/filter-icon";
 import { useSidebarContext } from "../layout/layout-context";
 import { ChangeLogIcon } from "../icons/sidebar/changelog-icon";
 import { usePathname } from "next/navigation";
+import { ManageIcon } from "../icons/sidebar/manage-icon";
+import { SupportIcon } from "../icons/navbar/support-icon";
 
 export const EmployeeSidebarWrapper = () => {
     const pathname = usePathname();
@@ -35,40 +37,40 @@ export const EmployeeSidebarWrapper = () => {
                 })}
             >
                 <div className={Sidebar.Header()}>
-                    <CompaniesDropdown />
+                    <CompaniesDropdown name="Employee" />
                 </div>
                 <div className="flex flex-col justify-between h-full">
                     <div className={Sidebar.Body()}>
                         <SidebarItem
                             title="Trang chủ"
                             icon={<HomeIcon />}
-                            isActive={pathname === "/"}
+                            isActive={pathname === "/employee"}
                             href="/employee"
                         />
                         <SidebarMenu title="Main Menu">
                             <SidebarItem
-                                isActive={pathname === "/monitoring"}
+                                isActive={pathname === "/employee/monitoring"}
                                 title="Theo dõi & giám sát"
-                                icon={<PaymentsIcon />}
+                                icon={<ManageIcon />}
                                 href="/employee/monitoring"
                             />
                             <SidebarItem
-                                isActive={pathname === "/history-ride"}
+                                isActive={pathname === "/employee/history-ride"}
                                 title="Lịch sử đưa đón"
-                                icon={<ReportsIcon />}
+                                icon={<ChangeLogIcon />}
                                 href="/employee/history-ride"
                             />
                             <SidebarItem
-                                isActive={pathname === "/help-center"}
+                                isActive={pathname === "/employee/help-center"}
                                 title="Trung tâm trợ giúp"
-                                icon={<ReportsIcon />}
+                                icon={<SupportIcon />}
                                 href="/employee/help-center"
                             />
                         </SidebarMenu>
 
                         <SidebarMenu title="General">
                             <SidebarItem
-                                isActive={pathname === "/settings"}
+                                isActive={pathname === "/employee/settings"}
                                 title="Settings"
                                 icon={<SettingsIcon />}
                             />
