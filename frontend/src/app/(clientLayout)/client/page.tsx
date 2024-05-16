@@ -9,7 +9,7 @@ import ClientStudentTable from '@/components/parent_student/client/student/clien
 import ModalUpdateParentClient from '@/components/parent_student/client/parent/update-parent-client';
 
 const ClientPage: React.FC = () => {
-    const {data: parentDetail, isLoading: parentDetailLoading, error: parentDetailError} = useGetParentDetailClient();
+    const { data: parentDetail, isLoading: parentDetailLoading, error: parentDetailError } = useGetParentDetailClient();
     const { isOpen: isOpenView, onOpen: onOpenView, onOpenChange: onOpenChangeView } = useDisclosure();
     const handleOpenChangeViewParent = () => onOpenChangeView();
     return (
@@ -53,10 +53,10 @@ const ClientPage: React.FC = () => {
                                 <div className="font-semibold">Ngày sinh:</div>
                                 <div>{convertStringInstantToDate(parentDetail?.result.dob)}</div>
                             </div>
-                            <div className="flex flex-row gap-4">
+                            {/* <div className="flex flex-row gap-4">
                                 <div className="font-semibold">Địa chỉ:</div>
-                                <div>123 Đường ABC, Quận XYZ, TP HCM</div>
-                            </div>
+                                <div>{parentDetail?.result.</div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
