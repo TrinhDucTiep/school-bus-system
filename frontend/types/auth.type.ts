@@ -8,7 +8,7 @@ interface IAccount {
 
 interface ILoginResponse{
     accessToken: string;
-    refreshToken?: string; //todo
+    refreshToken: string;
 }
 
 interface ILoginData {

@@ -27,6 +27,11 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = this.recoverToken(request);
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/v1/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (token != null) {
             log.info("Token: " + token);
             Long userId = Long.valueOf(JwtUtil.validateToken(token));

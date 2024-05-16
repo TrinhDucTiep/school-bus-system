@@ -5,11 +5,16 @@ import { Google, Github, Twitter, FaceBook } from "@/components/icons";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useHandleLogin, useHandlerSignup } from "@/services/admin/authService";
+import { useRouter } from "next/navigation";
 
 
 export default function Login() {
+    const router = useRouter(); 
+
     const [selected, setSelected] = React.useState("login");
-    const loginMutation = useHandleLogin();
+    const loginMutation = useHandleLogin(
+        router
+    );
     const {
         register,
         handleSubmit,
