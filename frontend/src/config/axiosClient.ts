@@ -5,7 +5,7 @@ import { camelCase } from 'lodash';
 const apiClient = axios.create({
   baseURL: "http://localhost:8080", //todo: lam lai sau
 });
-const REFRESH_TOKEN_ENDPOINT: string = process.env.REFRESH_TOKEN_ENDPOINT || ''; // replace with your refresh token endpoint
+const REFRESH_TOKEN_ENDPOINT: string = '/api/v1/auth/refresh-token'; // replace with your refresh token endpoint
 // Add a request interceptor
 apiClient.interceptors.request.use((config) => {
   const token = Cookies.get('accessToken');
@@ -21,21 +21,29 @@ apiClient.interceptors.request.use((config) => {
 });
 '/refresh-token-endpoint'
 // Add a response interceptor
+interface IRefreshTokenRequest {
+  refreshToken: string;
+}
 apiClient.interceptors.response.use((response) => {
   response.data = toCamelCase(response.data);
   return response;
 }, async (error) => {
-
   const originalRequest = error.config;
-  if (error?.response?.status === 401 && !originalRequest._retry) { // if response is unauthorized
+  if (error.response && error.response.status === 401 && !originalRequest._retry) {
     originalRequest._retry = true;
-    const refreshToken = Cookies.get('refreshToken'); // replace with your refresh token getting logic
-    return apiClient.post(REFRESH_TOKEN_ENDPOINT, { refreshToken }) // replace with your refresh token endpoint
-      .then((response) => {
-        Cookies.set('accessToken', response.data.accessToken); // replace with your token setting logic
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
-        return apiClient(originalRequest); // Retry the original request
-      });
+    const refreshToken = Cookies.get('refreshToken1');
+    if (refreshToken) {
+      try {
+        let data: IRefreshTokenRequest = { refreshToken };
+        const response = await apiClient.post(REFRESH_TOKEN_ENDPOINT, data);
+        const accessToken = response.data.result;
+        Cookies.set('accessToken', accessToken);
+        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+        return apiClient(originalRequest);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    }
   }
   return Promise.reject(error);
 

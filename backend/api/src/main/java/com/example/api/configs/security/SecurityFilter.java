@@ -3,6 +3,7 @@ package com.example.api.configs.security;
 import com.example.api.utils.JwtUtil;
 import com.example.shared.db.entities.Account;
 import com.example.shared.db.repo.AccountRepository;
+import com.example.shared.exception.MyException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +26,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain
+    ) throws ServletException, IOException, MyException {
         String token = this.recoverToken(request);
         String path = request.getRequestURI();
         if (path.startsWith("/api/v1/auth")) {
@@ -34,15 +36,20 @@ public class SecurityFilter extends OncePerRequestFilter {
         }
         if (token != null) {
             log.info("Token: " + token);
-            Long userId = Long.valueOf(JwtUtil.validateToken(token));
-            Account account = accountRepository.findById(userId).orElseThrow(
-                () -> new UsernameNotFoundException("User not found")
-            );
-            CustomUserDetails userDetails = CustomUserDetails.fromAccount(account);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                account, null, userDetails.getAuthorities()
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                Long userId = Long.valueOf(JwtUtil.validateToken(token));
+                Account account = accountRepository.findById(userId).orElseThrow(
+                    () -> new UsernameNotFoundException("User not found")
+                );
+                CustomUserDetails userDetails = CustomUserDetails.fromAccount(account);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    account, null, userDetails.getAuthorities()
+                );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (MyException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
         }
         filterChain.doFilter(request, response);
     }

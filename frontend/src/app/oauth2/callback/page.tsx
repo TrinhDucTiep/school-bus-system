@@ -26,9 +26,11 @@ export default function OAuth2Callback() {
             if (refreshToken) {
                 localStorage.setItem('refreshToken', refreshToken);
                 Cookies.set('refreshToken', refreshToken); // Set refreshToken in cookies
+                Cookies.set('refreshToken1', refreshToken); // Set refreshToken1 in cookies
             }
 
-            redirect('/'); // Redirect to home page
+            const role = decodedToken.role.toLowerCase();
+            redirect(`/${role}`); // Redirect to home page
         }
     }, []);
 }

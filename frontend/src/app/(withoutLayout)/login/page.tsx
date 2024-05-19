@@ -4,7 +4,7 @@ import { Tabs, Tab, Input, Link, Button, Card, CardBody, CardHeader, Spacer, Div
 import { Google, Github, Twitter, FaceBook } from "@/components/icons";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useHandleLogin, useHandlerSignup } from "@/services/admin/authService";
+import { useHandleLogin, useHandlerSignup } from "@/services/authService";
 import { useRouter } from "next/navigation";
 
 
