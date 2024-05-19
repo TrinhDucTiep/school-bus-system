@@ -21,9 +21,10 @@ interface Props {
     handleOpenChange: () => void;
     setSelectedBus: (bus: IBusTable) => void;
     handleOpenChangeDelete: () => void;
+    handleOpenChangeDetail: () => void;
 }
 
-export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus, handleOpenChangeDelete
+export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus, handleOpenChangeDelete, handleOpenChangeDetail
 }: Props) => {
 
     switch (columnKey) {
@@ -50,6 +51,7 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
                         src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                     }}
                     name={bus?.driver?.name}
+                    description={bus?.driver?.phoneNumber}
                 >
                     {bus?.driver?.name}
                 </User>
@@ -61,6 +63,7 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
                         src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
                     }}
                     name={bus?.driverMate?.name}
+                    description={bus?.driverMate?.phoneNumber}
                 >
                     {bus?.driverMate?.name}
                 </User>
@@ -83,7 +86,10 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
                 <div className="flex items-center gap-4 ">
                     <div>
                         <Tooltip content="Details">
-                            <button onClick={() => console.log("View bus", bus?.bus.id)}>
+                            <button onClick={() => {
+                                setSelectedBus(bus);
+                                handleOpenChangeDetail();
+                            }}>
                                 <EyeIcon size={20} fill="#979797" />
                             </button>
                         </Tooltip>

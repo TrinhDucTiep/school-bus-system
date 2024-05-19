@@ -24,15 +24,19 @@ import {
     Autocomplete,
     AutocompleteItem,
     Avatar,
+    Snippet,
+    Chip,
+    User,
 } from "@nextui-org/react";
 import { BusRenderCell } from '@/components/bus/bus-render-cell';
 import { AddBus } from '@/components/bus/add-bus';
 import { ExportIcon } from '@/components/icons/export-icon';
-import { useGetListBus, useUpdateBus, useDeleteBus } from '@/services/admin/busService';
+import { useGetListBus, useUpdateBus, useDeleteBus, useGetBusDetail } from '@/services/admin/busService';
 import CustomSkeleton from '@/components/custom-skeleton';
 import { SubmitHandler, set, useForm } from "react-hook-form";
 import { bus_status_map, EmployeeRole } from '@/util/constant';
 import { useGetAvailableEmployees } from '@/services/admin/employeeService';
+import { convertStringInstantToDate } from '@/util/dateConverter';
 
 
 const VehiclesPage: React.FC = () => {
@@ -83,15 +87,17 @@ const VehiclesPage: React.FC = () => {
     const [driverMateName, setDriverMateName] = React.useState('');
     const [driverMateId, setDriverMateId] = React.useState('');
 
+    // map columns for table
     const columns = [
         { name: 'BIỂN SỐ XE', uid: 'numberPlate' },
-        { name: 'SỐ CHỖ NGỒI', uid: 'seatNumber' },
+        { name: 'SỐ GHẾ', uid: 'seatNumber' },
         { name: 'TRẠNG THÁI', uid: 'status' },
         { name: 'TÀI XẾ', uid: 'driverName' },
         { name: 'PHỤ XE', uid: 'driverMateName' },
         { name: 'ACTIONS', uid: 'actions' },
     ];
 
+    // get bus page
     const { data, isLoading, isError } = useGetListBus({
         numberPlate: numberPlate ? numberPlate : null,
         seatNumber: seatNumber,
@@ -105,6 +111,7 @@ const VehiclesPage: React.FC = () => {
         sort: "-createdAt",
     });
 
+    // bottom content of table (pagination, ...)
     const bottomContent = (
         <div className="py-2 px-2 flex w-full justify-center items-center">
             <Pagination
@@ -119,7 +126,10 @@ const VehiclesPage: React.FC = () => {
         </div>
     );
 
-
+    // get bus detail
+    const { data: busDetail, isLoading: isLoadingBusDetail, isError: isErrorBusDetail } = useGetBusDetail(selectedBus?.bus.id || -1);
+    const { isOpen: isOpenDetail, onOpen: onOpenDetail, onOpenChange: onOpenChangeDetail } = useDisclosure();
+    const handleOpenChangeDetail = () => onOpenChangeDetail();
 
     return (
         <div>
@@ -143,7 +153,7 @@ const VehiclesPage: React.FC = () => {
                                 mainWrapper: "w-full",
                             }}
                             size='sm'
-                            label="Số chỗ ngồi"
+                            label="Số ghế"
                             type="number"
                             value={seatNumber?.toString() || ''}
                             onValueChange={(newValue) => setSeatNumber(newValue ? parseInt(newValue) : null)}
@@ -233,6 +243,7 @@ const VehiclesPage: React.FC = () => {
                                                                 reset();
                                                             },
                                                             handleOpenChangeDelete: () => { handleOpenChangeDelete() },
+                                                            handleOpenChangeDetail: () => { handleOpenChangeDetail() },
                                                         })}
                                                     </TableCell>
 
@@ -277,11 +288,11 @@ const VehiclesPage: React.FC = () => {
                                             defaultValue={selectedBus?.bus.numberPlate}
                                         />
                                         <Input
-                                            label="Số chỗ ngồi"
+                                            label="Số ghế"
                                             variant="bordered"
                                             {...register("seatNumber", {
                                                 required: true,
-                                                validate: (value: any) => parseInt(value, 10) > 0 || 'Số chỗ ngồi không hợp lệ'
+                                                validate: (value: any) => parseInt(value, 10) > 0 || 'Số ghế không hợp lệ'
                                             })}
                                             defaultValue={selectedBus?.bus.seatNumber?.toString()}
                                         />
@@ -457,6 +468,102 @@ const VehiclesPage: React.FC = () => {
                                 )}
                             </ModalContent>
                         </Modal>
+
+                        {/* bus detail modal */}
+                        <Modal isOpen={isOpenDetail} onOpenChange={onOpenChangeDetail}>
+                            <ModalContent>
+                                <ModalHeader className="flex flex-col gap-1">
+                                    Chi tiết xe bus
+                                </ModalHeader>
+                                <ModalBody>
+                                    <div className="flex flex-col gap-4 overflow-auto">
+                                        <div className="flex flex-col gap-2 overflow-auto">
+                                            <div className='flex gap-2 items-center'>
+                                                <span className="font-bold">Biển số xe:</span>
+                                                <Snippet symbol="" color="default">{busDetail?.result?.bus.numberPlate}</Snippet>
+                                            </div>
+                                            {/* <span className="font-bold">Ngày tạo: {convertStringInstantToDate(busDetail?.result?.bus.createdAt)}</span> */}
+                                            <div className='flex gap-2 items-center overflow-auto'>
+                                                <span className="font-bold overflow-auto">Ngày tạo:</span>
+                                                <p>{convertStringInstantToDate(busDetail?.result?.bus.createdAt)}</p>
+                                            </div>
+
+                                            <div className='flex gap-2 items-center'>
+                                                <span className="font-bold">Ngày cập nhật:</span>
+                                                <p>{convertStringInstantToDate(busDetail?.result?.bus.updatedAt)}</p>
+                                            </div>
+
+                                            <div className='flex gap-2 items-center'>
+                                                <span className="font-bold">Số ghế:</span>
+                                                <p>{busDetail?.result?.bus.seatNumber}</p>
+                                            </div>
+                                            <div className='flex gap-2 items-center'>
+                                                <span className="font-bold">Trạng thái:</span>
+                                                <Chip
+                                                    size="sm"
+                                                    variant="flat"
+                                                    color={bus_status_map.find((s) => s.value === busDetail?.result?.bus.status)?.color || 'default'}
+                                                >
+                                                    <span className="capitalize text-xs">
+                                                        {bus_status_map.find((s) => s.value === busDetail?.result?.bus.status)?.label}
+                                                    </span>
+                                                </Chip>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2">
+                                            {/* <span className="font-bold">Tài xế: {busDetail?.result?.driver.name}</span>
+                                            <span className="font-bold">Phụ xe: {busDetail?.result?.driverMate.name}</span> */}
+                                            <div className='flex gap-2 items-center'>
+                                                <div className='flex gap-1 items-center'>
+                                                    <span className="font-bold">Tài xế:</span>
+                                                    <User
+                                                        avatarProps={{
+                                                            src: busDetail?.result?.driver.avatar,
+                                                        }}
+                                                        name={busDetail?.result?.driver.name}
+                                                        description={busDetail?.result?.driver.phoneNumber}
+                                                    >
+                                                        {busDetail?.result?.driver.name}
+                                                    </User>
+                                                </div>
+                                                <div className='flex gap-2 items-center'>
+                                                    <span className="font-bold">Ngày sinh:</span>
+                                                    <p>{convertStringInstantToDate(busDetail?.result?.driver.dob)}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className='flex gap-2 items-center'>
+                                                <div className='flex gap-1 items-center'>
+                                                    <span className="font-bold">Phụ xe:</span>
+                                                    <User
+                                                        avatarProps={{
+                                                            src: busDetail?.result?.driverMate.avatar,
+                                                        }}
+                                                        name={busDetail?.result?.driverMate.name}
+                                                        description={busDetail?.result?.driverMate.phoneNumber}
+                                                    >
+                                                        {busDetail?.result?.driverMate.name}
+                                                    </User>
+                                                </div>
+
+
+                                                <div className='flex gap-2 items-center'>
+                                                    <span className="font-bold">Ngày sinh:</span>
+                                                    <p>{convertStringInstantToDate(busDetail?.result?.driverMate.dob)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="primary" onPress={onOpenChangeDetail}>
+                                        Đóng
+                                    </Button>
+                                </ModalFooter>
+                            </ModalContent>
+                        </Modal>
+
                     </>
             }
 

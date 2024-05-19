@@ -65,11 +65,11 @@ export const AddBus = () => {
                                 {...register("numberPlate", { required: true })}
                             />
                             <Input
-                                label="Số chỗ ngồi"
+                                label="Số ghế"
                                 variant="bordered"
                                 {...register("seatNumber", {
                                     required: true,
-                                    validate: (value: any) => parseInt(value, 10) > 0 || 'Số chỗ ngồi không hợp lệ'
+                                    validate: (value: any) => parseInt(value, 10) > 0 || 'Số ghế không hợp lệ'
                                 })}
                             />
                             {errors.seatNumber && errors.seatNumber.message && <p className="text-red-500 text-sm">{`*${errors.seatNumber.message}`}</p>}

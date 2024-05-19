@@ -4,6 +4,7 @@ import { useMutation, useQuery, UseMutationOptions } from "@tanstack/react-query
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
+// get bus page
 const getListBus = async (params: IGetListBusParams) => {
     const response = await apiClient.get<ICommonResponse<Page<IBusTable>>>('/api/v1/admin/bus/pagination', { params });
     return response.data;
@@ -15,6 +16,19 @@ export const useGetListBus = (params: IGetListBusParams) => {
     });
 };
 
+// get bus detail
+const getBusDetail = async (id: number) => {
+    const response = await apiClient.get<ICommonResponse<IGetBusDetailResponse>>(`/api/v1/admin/bus/${id}`);
+    return response.data;
+}
+export const useGetBusDetail = (id: number) => {
+    return useQuery<ICommonResponse<IGetBusDetailResponse>, AxiosError>({
+        queryKey: ['busDetail', id],
+        queryFn: () => getBusDetail(id)
+    });
+};
+
+// add bus
 const addBus = async (data: IBus) => {
     const response = await apiClient.post('/api/v1/admin/bus', data);
     return response.data;
@@ -42,6 +56,7 @@ export const useAddBus = (callback: any) => {
     )
 };
 
+// update bus
 const updateBus = async (data: IBus) => {
     const response = await apiClient.put('/api/v1/admin/bus', data);
     return response.data;
@@ -69,6 +84,7 @@ export const useUpdateBus = (callback: any) => {
     )
 };
 
+// delete bus
 const deleteBus = async (id: number) => {
     const response = await apiClient.delete(`/api/v1/admin/bus`, { data: { id } });
     return response.data;
@@ -96,6 +112,7 @@ export const useDeleteBus = (callback: any) => {
     )
 }
 
+// get bus have available status
 const getAvailableBuses = async (role: string | null, numberPlate: String | null) => {
     const response = await apiClient.get<ICommonResponse<IBus[]>>(`/api/v1/admin/bus/available`, { params: { role, numberPlate } });
     return response.data;

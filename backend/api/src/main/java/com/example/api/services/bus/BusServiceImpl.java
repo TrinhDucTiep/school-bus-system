@@ -1,12 +1,15 @@
 package com.example.api.services.bus;
 
 import com.example.api.controllers.admin.dto.BusManipulateParam;
+import com.example.api.services.bus.dto.GetBusDetailOutput;
 import com.example.api.services.bus.dto.GetListBusOutput;
 import com.example.api.services.bus.dto.GetListManipulateBusOutPut;
 import com.example.api.services.bus.dto.ListBusFilterParam;
 import com.example.api.services.bus.dto.AddBusInput;
 import com.example.api.services.bus.dto.UpdateBusEmployeeInput;
 import com.example.api.services.bus.dto.UpdateBusInput;
+import com.example.api.services.common_dto.BusOutput;
+import com.example.api.services.common_dto.EmployeeOutput;
 import com.example.shared.db.dto.GetListBusDTO;
 import com.example.shared.db.entities.Account;
 import com.example.shared.db.entities.Bus;
@@ -67,6 +70,25 @@ public class BusServiceImpl implements BusService {
                 "Invalid input",
                 HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public GetBusDetailOutput getBus(Long busId) {
+        Bus bus = busRepository.findById(busId).orElseThrow(
+            () -> new MyException(null,
+                "BUS_NOT_FOUND",
+                "Bus with id " + busId + " not found",
+                HttpStatus.NOT_FOUND)
+        );
+
+        Employee driver = employeeRepository.findById(bus.getDriverId()).orElse(null);
+        Employee driverMate = employeeRepository.findById(bus.getDriverMateId()).orElse(null);
+
+        return GetBusDetailOutput.builder()
+            .bus(BusOutput.fromEntity(bus))
+            .driver(driver == null ? null : EmployeeOutput.fromEntity(driver))
+            .driverMate(driverMate == null ? null : EmployeeOutput.fromEntity(driverMate))
+            .build();
     }
 
     @Override
