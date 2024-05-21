@@ -6,10 +6,9 @@ import { LayoutClient } from "@/components/layout/layout-client";
 
 export interface ProvidersProps {
     children: React.ReactNode;
-    themeProps?: ThemeProviderProps;
 }
 
-export default function ClientWithLayoutGroup({ children, themeProps }: ProvidersProps) {
+export default function ClientWithLayoutGroup({ children }: ProvidersProps) {
 
     return (
         <LayoutClient>

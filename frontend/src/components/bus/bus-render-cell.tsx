@@ -9,6 +9,7 @@ import { DeleteIcon } from "../icons/table/delete-icon";
 import { EditIcon } from "../icons/table/edit-icon";
 import { EyeIcon } from "../icons/table/eye-icon";
 import { bus_status_map } from "@/util/constant";
+import { validateColor } from "@/util/color";
 
 const getBusStatusColor = (status: string) => {
     const statusObject = bus_status_map.find((s) => s.value === status);
@@ -73,7 +74,7 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
                 <Chip
                     size="sm"
                     variant="flat"
-                    color={getBusStatusColor(bus?.bus?.status)}
+                    color={validateColor(getBusStatusColor(bus?.bus?.status))}
                 >
                     <span className="capitalize text-xs">
                         {bus_status_map.find((s) => s.value === bus?.bus?.status)?.label}

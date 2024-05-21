@@ -10,6 +10,7 @@ import { EditIcon } from "../icons/table/edit-icon";
 import { EyeIcon } from "../icons/table/eye-icon";
 import { convertStringInstantToDate } from "@/util/dateConverter";
 import { employee_role_map } from "@/util/constant";
+import { validateColor } from "@/util/color";
 
 interface Props {
     employeeTable: IEmployeeTable;
@@ -75,7 +76,7 @@ export const EmployeeRenderCell = ({
             );
         case "role":
             return (
-                <Chip color={getChipColor(employeeTable?.employee.role)} variant="flat" size="sm">
+                <Chip color={validateColor(getChipColor(employeeTable?.employee.role))} variant="flat" size="sm">
                     {employee_role_map.find(role => role.value === employeeTable?.employee.role)?.label}
                 </Chip>
             );

@@ -30,6 +30,7 @@ import CustomSkeleton from '@/components/custom-skeleton';
 import { SubmitHandler, set, useForm } from 'react-hook-form';
 import { convertStringInstantToDate } from '@/util/dateConverter';
 import { employee_role_map } from '@/util/constant';
+import { validateColor } from '@/util/color';
 
 const EmployeePage: React.FC = () => {
     const [page, setPage] = React.useState(1);
@@ -264,11 +265,11 @@ const EmployeePage: React.FC = () => {
                                         size='sm'
                                         value={selectedEmployee?.employee.role}
                                         defaultSelectedKeys={[employee_role_map.find(role => role.value === selectedEmployee?.employee.role)?.value || '']}
-                                        color={employee_role_map.find(role => role.value === selectedEmployee?.employee.role)?.color || 'default'}
+                                        color={validateColor(employee_role_map.find(role => role.value === selectedEmployee?.employee.role)?.color || 'default')}
                                         {...register("role", { required: true })}
                                     >
                                         {employee_role_map.map((role) => (
-                                            <SelectItem key={role.value} value={role.value} color={role.color}>
+                                            <SelectItem key={role.value} value={role.value} color={validateColor(role.color)}>
                                                 {role.label}
                                             </SelectItem>
                                         ))}

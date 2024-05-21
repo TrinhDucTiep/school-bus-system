@@ -42,6 +42,7 @@ import LocationIcon from '@/components/icons/location-icon';
 import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
 import { bus_status_map, ride_status_map, student_pickup_point_status_map } from '@/util/constant';
 import { useGetEmployeeHistory } from '@/services/historyService';
+import { validateColor } from '@/util/color';
 
 
 const HistoryRidePage: React.FC = () => {
@@ -141,7 +142,7 @@ const HistoryRidePage: React.FC = () => {
                         {
                             ride_status_map.map((status, index) => {
                                 return (
-                                    <SelectItem key={status.value} value={status.value} color={status.color}>{status.label}</SelectItem>
+                                    <SelectItem key={status.value} value={status.value} color={validateColor(status.color)}>{status.label}</SelectItem>
                                 )
                             })
                         }
@@ -155,10 +156,10 @@ const HistoryRidePage: React.FC = () => {
                             // isToSchool can be null
                             setIsToSchool(e.target.value === '' ? null : e.target.value === 'true')
                         }}
-                        value={isToSchool ? isToSchool.toString() : null}
+                        value={isToSchool ? isToSchool.toString() : ''}
                     >
-                        <SelectItem key={false} value='true'>Trường -> Nhà</SelectItem>
-                        <SelectItem key={true} value='false'>Nhà -> Trường</SelectItem>
+                        <SelectItem key={'false'} value='true'>Trường -{'>'} Nhà</SelectItem>
+                        <SelectItem key={'true'} value='false'>Nhà -{'>'} Trường</SelectItem>
                     </Select>
                     <Input
                         placeholder='Địa chỉ'
@@ -186,7 +187,7 @@ const HistoryRidePage: React.FC = () => {
                             (employeeHistory?.result?.content || []).map((history, index) => {
                                 return (
                                     <AccordionItem
-                                        onClick={() => setSelectedHistoryRide(employeeHistory?.result?.content[index])}
+                                        onClick={() => setSelectedHistoryRide(employeeHistory?.result?.content[index] ?? null)}
                                         key={index}
                                         title={
                                             <div className='flex justify-around'>
@@ -204,7 +205,7 @@ const HistoryRidePage: React.FC = () => {
                                                             </span>
                                                             <span className='flex gap-2 items-center'>
                                                                 <p className='font-bold'>Trạng thái:</p>
-                                                                <Chip color={ride_status_map.find(status => status.value === history.ride.status)?.color} variant="flat" size="sm">
+                                                                <Chip color={validateColor(ride_status_map.find(status => status.value === history.ride.status)?.color ?? 'default')} variant="flat" size="sm">
                                                                     {ride_status_map.find(status => status.value === history.ride.status)?.label}
                                                                 </Chip>
                                                             </span>
@@ -304,7 +305,7 @@ const HistoryRidePage: React.FC = () => {
                                                                                 <TableCell>{index}</TableCell>
                                                                                 <TableCell>{convertStringInstantToDateTime(rideHistory.updatedAt)}</TableCell>
                                                                                 <TableCell>
-                                                                                    <Chip color={ride_status_map.find(status => status.value === rideHistory.status)?.color} variant="flat" size="sm">
+                                                                                    <Chip color={validateColor(ride_status_map.find(status => status.value === rideHistory.status)?.color ?? 'default')} variant="flat" size="sm">
                                                                                         {ride_status_map.find(status => status.value === rideHistory.status)?.label}
                                                                                     </Chip>
                                                                                 </TableCell>
@@ -378,7 +379,7 @@ const HistoryRidePage: React.FC = () => {
                                                                                             return (
                                                                                                 <div key={index} className='flex gap-2'>
                                                                                                     <p>{studentPickupPointHistory.address}</p>
-                                                                                                    <Chip color={student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.color} variant="flat" size="sm">
+                                                                                                    <Chip color={validateColor(student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.color ?? 'default')} variant="flat" size="sm">
                                                                                                         {student_pickup_point_status_map.find(status => status.value === studentPickupPointHistory.status)?.label}
                                                                                                     </Chip>
                                                                                                     <p>{convertStringInstantToDateTime(studentPickupPointHistory.updatedAt)}</p>

@@ -39,6 +39,7 @@ import { useGetListPickupPoint } from '@/services/admin/pickupPointService';
 import { useGetPageRequestRegistration, useHandleRequestRegistration } from '@/services/admin/requestRegistrationService';
 import { request_registration_status_map } from '@/util/constant';
 import { toast } from "react-toastify";
+import { validateColor } from '@/util/color';
 
 
 const RegisterPage: React.FC = () => {
@@ -392,14 +393,14 @@ const RegisterPage: React.FC = () => {
                         size='sm'
                         placeholder='Trạng thái'
                         selectionMode='multiple'
-                        color={request_registration_status_map.find((status) => status.value === statuses)?.color || 'default'}
+                        color={validateColor(request_registration_status_map.find((status) => status.value === statuses)?.color || 'default')}
                         onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                             const newValue = event.target.value;
                             setStatuses(newValue);
                         }}
                     >
                         {request_registration_status_map.map((status) => (
-                            <SelectItem key={status.value} value={status.value} color={status.color}>
+                            <SelectItem key={status.value} value={status.value} color={validateColor(status.color)}>
                                 {status.label}
                             </SelectItem>
                         ))}

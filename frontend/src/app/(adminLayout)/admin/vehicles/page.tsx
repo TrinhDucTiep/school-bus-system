@@ -37,6 +37,7 @@ import { SubmitHandler, set, useForm } from "react-hook-form";
 import { bus_status_map, EmployeeRole } from '@/util/constant';
 import { useGetAvailableEmployees } from '@/services/admin/employeeService';
 import { convertStringInstantToDate } from '@/util/dateConverter';
+import { validateColor } from '@/util/color';
 
 
 const VehiclesPage: React.FC = () => {
@@ -164,7 +165,7 @@ const VehiclesPage: React.FC = () => {
                             placeholder='Chọn trạng thái'
                             selectionMode='multiple'
                             size='sm'
-                            color={bus_status_map.find((status) => status.value === statuses)?.color || 'default'}
+                            color={validateColor(bus_status_map.find((status) => status.value === statuses)?.color || 'default')}
                             value={statuses?.split(',')}
                             onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                                 const newValue = event.target.value;
@@ -172,7 +173,7 @@ const VehiclesPage: React.FC = () => {
                             }}
                         >
                             {bus_status_map.map((status) => (
-                                <SelectItem key={status.value} value={status.value} color={status.color}
+                                <SelectItem key={status.value} value={status.value} color={validateColor(status.color)}
                                 >
                                     {status.label}
                                 </SelectItem>
@@ -502,7 +503,7 @@ const VehiclesPage: React.FC = () => {
                                                 <Chip
                                                     size="sm"
                                                     variant="flat"
-                                                    color={bus_status_map.find((s) => s.value === busDetail?.result?.bus.status)?.color || 'default'}
+                                                    color={validateColor(bus_status_map.find((s) => s.value === busDetail?.result?.bus.status)?.color || 'default')}
                                                 >
                                                     <span className="capitalize text-xs">
                                                         {bus_status_map.find((s) => s.value === busDetail?.result?.bus.status)?.label}

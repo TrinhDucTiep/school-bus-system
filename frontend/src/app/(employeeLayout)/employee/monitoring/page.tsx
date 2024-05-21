@@ -41,6 +41,7 @@ import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/ut
 import { useGetListManipulatePickupPoint, useGetListRideAtThatDay, useUpdateEmployeeBus, useUpdateEmployeeRide, useUpdateEmployeeRidePickupPoint, useUpdateEmployeeStudentPickupPoint } from '@/services/employee/employeeService';
 import { bus_status_map, ride_pickup_point_status_map, ride_status_map, student_pickup_point_status_map } from '@/util/constant';
 import { stringify } from 'querystring';
+import { validateColor } from '@/util/color';
 
 const EmployeeMonitoring: React.FC = () => {
 
@@ -205,7 +206,7 @@ const EmployeeMonitoring: React.FC = () => {
                     className='m-2 w-1/4 bg-default-100 rounded-lg'
                     label='Chọn chuyến đi'
                     placeholder='Chọn chuyến đi'
-                    value={stringify(rideId) || ''}
+                    value={rideId || ''}
                     defaultSelectedKeys={[rideId || '']}
                     onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                         setRideId(parseInt(event.target.value));
@@ -218,7 +219,7 @@ const EmployeeMonitoring: React.FC = () => {
                                     {item.id}
                                 </SelectItem>
                             )
-                        })
+                        }) || [] // Add an empty array as a fallback for the children prop
                     }
                 </Select>
             </div>
@@ -240,12 +241,12 @@ const EmployeeMonitoring: React.FC = () => {
                                     setStatus(event.target.value);
                                 }}
                                 className='w-1/2'
-                                color={bus_status_map.find((item) => item.value == status)?.color || 'default'}
+                                color={validateColor(bus_status_map.find((item) => item.value == status)?.color || 'default')}
                             >
                                 {
                                     bus_status_map.map((item, index) => {
                                         return (
-                                            <SelectItem key={item.value} value={item.value} color={item.color}>
+                                            <SelectItem key={item.value} value={item.value} color={validateColor(item.color)}>
                                                 {item.label}
                                             </SelectItem>
                                         )
@@ -299,12 +300,12 @@ const EmployeeMonitoring: React.FC = () => {
                                     setStatusRide(event.target.value);
                                 }}
                                 className='w-1/2'
-                                color={ride_status_map.find((item) => item.value == statusRide)?.color || 'default'}
+                                color={validateColor(ride_status_map.find((item) => item.value == statusRide)?.color || 'default')}
                             >
                                 {
                                     ride_status_map.map((item, index) => {
                                         return (
-                                            <SelectItem key={item.value} value={item.value} color={item.color}>
+                                            <SelectItem key={item.value} value={item.value} color={validateColor(item.color)}>
                                                 {item.label}
                                             </SelectItem>
                                         )
@@ -404,12 +405,12 @@ const EmployeeMonitoring: React.FC = () => {
                                                                 setStatusRidePickupPoint(event.target.value);
                                                                 setSelectedPickupPointId(item.pickupPoint.id);
                                                             }}
-                                                            color={ride_pickup_point_status_map.find((mapItem) => mapItem.value == item.ridePickupPoint.status)?.color || 'default'}
+                                                            color={validateColor(ride_pickup_point_status_map.find((mapItem) => mapItem.value == item.ridePickupPoint.status)?.color || 'default')}
                                                         >
                                                             {
                                                                 ride_pickup_point_status_map.map((mapItem, index) => {
                                                                     return (
-                                                                        <SelectItem key={mapItem.value} value={mapItem.value} color={mapItem.color}>
+                                                                        <SelectItem key={mapItem.value} value={mapItem.value} color={validateColor(mapItem.color)}>
                                                                             {mapItem.label}
                                                                         </SelectItem>
                                                                     )
@@ -488,7 +489,7 @@ const EmployeeMonitoring: React.FC = () => {
                                                         setStatusStudentPickupPoint(event.target.value);
                                                     }}
                                                     className='w-1/2'
-                                                    color={student_pickup_point_status_map.find((item) => item.value == statusStudentPickupPoint)?.color || 'default'}
+                                                    color={validateColor(student_pickup_point_status_map.find((item) => item.value == statusStudentPickupPoint)?.color || 'default')}
                                                 >
                                                     {
                                                         student_pickup_point_status_map
@@ -504,7 +505,7 @@ const EmployeeMonitoring: React.FC = () => {
                                                             .map((item, index) => {
                                                                 return (
                                                                     <SelectItem key={item.value} value={item.value}
-                                                                        color={item.color}
+                                                                        color={validateColor(item.color)}
                                                                     >
                                                                         {item.label}
                                                                     </SelectItem>

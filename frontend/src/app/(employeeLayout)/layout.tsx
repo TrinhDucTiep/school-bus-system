@@ -6,10 +6,9 @@ import { LayoutEmployee } from "@/components/layout/layout-employee";
 
 export interface ProvidersProps {
     children: React.ReactNode;
-    themeProps?: ThemeProviderProps;
 }
 
-export default function EmployeeWithLayoutGroup({ children, themeProps }: ProvidersProps) {
+export default function EmployeeWithLayoutGroup({ children }: ProvidersProps) {
 
     return (
         <LayoutEmployee>

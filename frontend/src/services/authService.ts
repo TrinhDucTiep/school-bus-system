@@ -63,8 +63,8 @@ export const useHandlerSignup = () => {
             },
             onError: (error: AxiosError) => {
                 if (error.response && error.response.data && typeof error.response.data === 'object') {
-                    const response: ICommonResponse<any> = error.response.data;
-                    toast.error(error.response.data.message || 'An error occurred')
+                    const response: ICommonResponse<any> = error.response.data as ICommonResponse<any>;
+                    toast.error(response.message || 'An error occurred')
                 } else {
                     // Handle any other errors
                     toast.error('An error occurred')

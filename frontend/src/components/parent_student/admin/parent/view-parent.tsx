@@ -90,7 +90,7 @@ const ModalViewParent: React.FC<IProps> = (
                             <Accordion defaultExpandedKeys={'all'}>
                                 <AccordionItem title="Danh sách học sinh">
                                     {parentDetail?.result.students?.map((student) => (
-                                        <div className='flex justify-between mt-2 mb-2'>
+                                        <div className='flex justify-between mt-2 mb-2' key={student.id}>
                                             <User
                                                 name={student.name || ""}
                                                 description={student.studentClass || ""}

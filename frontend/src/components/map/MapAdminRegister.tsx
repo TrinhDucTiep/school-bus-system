@@ -201,7 +201,8 @@ export default function MapAdminRegister(
 
             {/* directions */}
             {directionsGetResponse?.routes.map((route, routeIndex) => {
-                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude
+                // const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude
+                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => ({ lat: coordinate[0], lng: coordinate[1] }));
 
                 return (
                     <Polyline

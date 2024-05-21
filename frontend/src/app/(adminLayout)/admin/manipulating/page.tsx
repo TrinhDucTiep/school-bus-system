@@ -36,6 +36,7 @@ import { useAddRide } from '@/services/admin/rideService';
 import { on } from 'events';
 import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
 import { bus_status_map } from '@/util/constant';
+import { validateColor } from '@/util/color';
 
 const ManipulatingPage: React.FC = () => {
 
@@ -227,10 +228,10 @@ const ManipulatingPage: React.FC = () => {
                                 const newValue = event.target.value;
                                 setStatusQuery(newValue);
                             }}
-                            color={bus_status_map.find((item) => item.value === statusQuery)?.color ?? 'default'}
+                            color={validateColor(bus_status_map.find((item) => item.value === statusQuery)?.color ?? 'default')}
                         >
                             {bus_status_map.map((status) => (
-                                <SelectItem key={status.value} value={status.value} color={status.color}
+                                <SelectItem key={status.value} value={status.value} color={validateColor(status.color)}
                                 >
                                     {status.label}
                                 </SelectItem>
@@ -276,7 +277,7 @@ const ManipulatingPage: React.FC = () => {
                                         <TableCell>
                                             <Chip
                                                 variant='flat'
-                                                color={bus_status_map.find((status) => status.value === item.bus.status)?.color ?? 'default'}
+                                                color={validateColor(bus_status_map.find((status) => status.value === item.bus.status)?.color ?? 'default')}
                                             >
                                                 {bus_status_map.find((status) => status.value === item.bus.status)?.label ?? 'Không xác định'}
                                             </Chip>

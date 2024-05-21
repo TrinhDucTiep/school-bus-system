@@ -204,7 +204,8 @@ export default function MapAdmin(
             {enableClickMap && <ClickMapComponent geoData={geoData} setGeoData={setGeoData} />}
 
             {manipulatePickupPointsDirections?.routes.map((route, routeIndex) => {
-                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]);
+                // const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]);
+                const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => ({ lat: coordinate[0], lng: coordinate[1] }));
                 const distance = (route.summary.distance / 1000).toFixed(2); // convert distance to km
                 const durationInSeconds = route.summary.duration;
                 const hours = Math.floor(durationInSeconds / 3600);

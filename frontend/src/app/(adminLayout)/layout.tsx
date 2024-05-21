@@ -4,12 +4,11 @@ import { ThemeProviderProps } from "next-themes/dist/types";
 import { Layout } from "@/components/layout/layout";
 
 
-export interface ProvidersProps {
+export interface AdminProvidersProps {
     children: React.ReactNode;
-    themeProps?: ThemeProviderProps;
 }
 
-export default function WithLayoutGroup({ children, themeProps }: ProvidersProps) {
+export default function AdminWithLayoutGroup({ children }: AdminProvidersProps) {
 
     return (
         <Layout>
