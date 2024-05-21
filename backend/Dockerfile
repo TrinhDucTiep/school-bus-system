@@ -8,4 +8,4 @@ RUN gradle clean build --no-daemon -x test
 FROM eclipse-temurin:17-jre
 WORKDIR /workspace
 COPY --from=build /workspace/api/build/libs/*.jar ./api.jar
-COPY --from=build /workspace/consumer/build/libs/*.jar ./consumer.jar
+#COPY --from=build /workspace/consumer/build/libs/*.jar ./consumer.jar
