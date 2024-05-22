@@ -81,8 +81,12 @@ public class BusServiceImpl implements BusService {
                 HttpStatus.NOT_FOUND)
         );
 
-        Employee driver = employeeRepository.findById(bus.getDriverId()).orElse(null);
-        Employee driverMate = employeeRepository.findById(bus.getDriverMateId()).orElse(null);
+        Employee driver = (bus.getDriverId() != null) ?
+            employeeRepository.findById(bus.getDriverId()).orElse(null)
+            : null;
+        Employee driverMate = (bus.getDriverMateId() != null) ?
+            employeeRepository.findById(bus.getDriverMateId()).orElse(null)
+            : null;
 
         return GetBusDetailOutput.builder()
             .bus(BusOutput.fromEntity(bus))
