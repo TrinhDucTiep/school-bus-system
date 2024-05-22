@@ -4,7 +4,7 @@ import { camelCase } from 'lodash';
 // Create an axios instance
 const apiClient = axios.create({
   // baseURL: "http://localhost:8080", //todo: lam lai sau
-  baseURL: "https://school-bus-system.onrender.com:10000",
+  baseURL: "https://school-bus-system.onrender.com",
 });
 const REFRESH_TOKEN_ENDPOINT: string = '/api/v1/auth/refresh-token'; // replace with your refresh token endpoint
 // Add a request interceptor
