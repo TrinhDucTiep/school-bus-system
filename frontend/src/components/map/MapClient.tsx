@@ -98,9 +98,9 @@ export default function MapClient({
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {/* {geoData.lat && geoData.lng && (
+            {geoData.lat && geoData.lng && (
                 <Marker position={center} icon={locationIcon} />
-            )} */}
+            )}
             {features.map((feature, index) => (
                 <Marker
                     key={index}
@@ -111,7 +111,7 @@ export default function MapClient({
 
             <ChangeView coords={center} />
 
-            {/* {enableClickMap && <MapClick geoData={geoData} setGeoData={setGeoData} />} */}
+            {enableClickMap && <MapClick geoData={geoData} setGeoData={setGeoData} />}
 
             {ourPickupPoints?.map((pickupPoint, index) => (
                 <Marker
@@ -125,7 +125,7 @@ export default function MapClient({
                 </Marker>
             ))}
 
-            {directionsGetResponse?.routes.map((route, routeIndex) => {
+            {/* {directionsGetResponse?.routes.map((route, routeIndex) => {
                 // const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => [coordinate[0], coordinate[1]]); // Swap latitude and longitude
                 const decodedPolyline = polyline.decode(route.geometry).map((coordinate: number[]) => ({ lat: coordinate[0], lng: coordinate[1] }));
 
@@ -135,7 +135,7 @@ export default function MapClient({
                         positions={decodedPolyline}
                     />
                 );
-            })}
+            })} */}
 
             <MapZoom />
         </MapContainer>

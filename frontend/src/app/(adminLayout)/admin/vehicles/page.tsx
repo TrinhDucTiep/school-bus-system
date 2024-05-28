@@ -520,7 +520,7 @@ const VehiclesPage: React.FC = () => {
                                                     <span className="font-bold">Tài xế:</span>
                                                     <User
                                                         avatarProps={{
-                                                            src: busDetail?.result?.driver.avatar,
+                                                            // src: busDetail?.result?.driver.avatar,
                                                         }}
                                                         name={busDetail?.result?.driver.name}
                                                         description={busDetail?.result?.driver.phoneNumber}
@@ -539,7 +539,7 @@ const VehiclesPage: React.FC = () => {
                                                     <span className="font-bold">Phụ xe:</span>
                                                     <User
                                                         avatarProps={{
-                                                            src: busDetail?.result?.driverMate.avatar,
+                                                            // src: busDetail?.result?.driverMate.avatar,
                                                         }}
                                                         name={busDetail?.result?.driverMate.name}
                                                         description={busDetail?.result?.driverMate.phoneNumber}

@@ -256,7 +256,7 @@ const HistoryRidePage: React.FC = () => {
                                                             <h4 className='font-bold'>Tài xế:</h4>
                                                             <User
                                                                 avatarProps={{
-                                                                    src: history?.driver.avatar || ""
+                                                                    // src: history?.driver.avatar || ""
                                                                 }}
                                                                 name={history?.driver.name}
                                                                 description={history?.driver.phoneNumber}
@@ -268,7 +268,7 @@ const HistoryRidePage: React.FC = () => {
                                                             <h4 className='font-bold'>Phụ xe:</h4>
                                                             <User
                                                                 avatarProps={{
-                                                                    src: history?.driverMate.avatar || ""
+                                                                    // src: history?.driverMate.avatar || ""
                                                                 }}
                                                                 name={history?.driverMate.name}
                                                                 description={history?.driverMate.phoneNumber}
@@ -358,7 +358,7 @@ const HistoryRidePage: React.FC = () => {
                                                                                 <TableCell>
                                                                                     <User
                                                                                         avatarProps={{
-                                                                                            src: studentRideHistory.student.avatar || ""
+                                                                                            // src: studentRideHistory.student.avatar || ""
                                                                                         }}
                                                                                         name={studentRideHistory.student.name}
                                                                                         description={studentRideHistory.student.phoneNumber}

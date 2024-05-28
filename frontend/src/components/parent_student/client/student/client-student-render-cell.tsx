@@ -27,7 +27,7 @@ export const ClientStudentRenderCell = ({ data, columnKey, handleOpenChange, set
                     <div>
                         <User
                             avatarProps={{
-                                src: data.avatar ? data.avatar : undefined,
+                                // src: data.avatar ? data.avatar : undefined,
                             }}
                             name={data.name}
                         >

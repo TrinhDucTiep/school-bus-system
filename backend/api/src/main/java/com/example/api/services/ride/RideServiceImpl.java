@@ -56,7 +56,8 @@ public class RideServiceImpl implements RideService {
     @Transactional
     public void upsertRide(UpsertRideInput upsertRideInput) {
         // validate input
-        if (upsertRideInput.getBusId() == null || upsertRideInput.getStartFrom() == null || upsertRideInput.getStartAt() == null || upsertRideInput.getPickupPointIds() == null) {
+        if (upsertRideInput.getBusId() == null || upsertRideInput.getStartFrom() == null ||
+            upsertRideInput.getStartAt() == null || upsertRideInput.getPickupPointIds() == null) {
             throw new MyException(
                 null,
                 "missing_required_fields",
@@ -103,55 +104,56 @@ public class RideServiceImpl implements RideService {
         // sort to the right order from request
         pickupPoints.sort(Comparator.comparing(pickupPoint -> upsertRideInput.getPickupPointIds().indexOf(pickupPoint.getId())));
 
-        // validate ride
-        if (upsertRideInput.getId() != null) {
-            Ride ride = rideRepository.findById(upsertRideInput.getId())
-                    .orElseThrow(() -> new MyException(
-                        null,
-                        "ride_not_found",
-                        "Ride not found with id: " + upsertRideInput.getId(),
-                        HttpStatus.BAD_REQUEST
-                    ));
-            if (ride.getStatus() != RideStatus.PENDING) {
-                throw new MyException(
-                    null,
-                    "ride_not_pending_to_update",
-                    "Ride is not pending to update",
-                    HttpStatus.BAD_REQUEST
-                );
-            }
-        }
-
         // validate that a bus only has one pending ride at a time (to school or from school)
-        List<Ride> rides = rideRepository.findByManipulateRide(
-            bus.getId(),
-            RideStatus.PENDING,
-            upsertRideInput.getIsToSchool(),
-            upsertRideInput.getStartAt()
-        );
-        if (rides.size() == 1) {
-            if (upsertRideInput.getId() == null || !rides.get(0).getId().equals(upsertRideInput.getId())) {
-                throw new MyException(
+//        List<Ride> rides = rideRepository.findByManipulateRide(
+//            bus.getId(),
+//            RideStatus.PENDING,
+//            upsertRideInput.getIsToSchool(),
+//            upsertRideInput.getStartAt()
+//        );
+//        if (rides.size() == 1) { // todo: tieptd
+//            if (upsertRideInput.getId() == null || !rides.get(0).getId().equals(upsertRideInput.getId())) {
+//                throw new MyException(
+//                    null,
+//                    "bus_already_had_pending_ride",
+//                    "Bus already had pending ride",
+//                    HttpStatus.BAD_REQUEST
+//                );
+//            }
+//        }
+
+        // upsert ride
+        Ride ride;
+        if (upsertRideInput.getId() == null) {
+            ride = rideRepository.save(
+                Ride.builder()
+                    .bus(bus)
+                    .startAt(upsertRideInput.getStartAt())
+                    .endAt(upsertRideInput.getEndAt())
+                    .startFrom(upsertRideInput.getStartFrom())
+                    .status(RideStatus.PENDING)
+                    .isToSchool(upsertRideInput.getIsToSchool())
+                    .build()
+            );
+            upsertRideInput.setId(ride.getId());
+        } else {
+            ride = rideRepository.findById(upsertRideInput.getId())
+                .orElseThrow(() -> new MyException(
                     null,
-                    "bus_already_had_pending_ride",
-                    "Bus already had pending ride",
+                    "ride_not_found",
+                    "Ride not found with id: " + upsertRideInput.getId(),
                     HttpStatus.BAD_REQUEST
-                );
-            }
+                ));
+            ride.setBus(bus);
+            ride.setStartAt(upsertRideInput.getStartAt());
+            ride.setEndAt(upsertRideInput.getEndAt());
+            ride.setStartFrom(upsertRideInput.getStartFrom());
+            ride.setStatus(RideStatus.PENDING);
+            ride.setIsToSchool(upsertRideInput.getIsToSchool());
+            rideRepository.save(ride);
         }
 
-        // save ride
-        Ride ride = rideRepository.save(
-            Ride.builder()
-            .id(upsertRideInput.getId())
-            .bus(bus)
-            .startAt(upsertRideInput.getStartAt())
-            .endAt(upsertRideInput.getEndAt())
-            .startFrom(upsertRideInput.getStartFrom())
-            .status(RideStatus.PENDING)
-            .isToSchool(upsertRideInput.getIsToSchool())
-            .build()
-        );
+
         rideHistoryRepository.save(ride.toRideHistory(
             bus.getDriverId(),
             bus.getDriverMateId()
@@ -186,7 +188,7 @@ public class RideServiceImpl implements RideService {
         });
 
         // default upsert back to school ride is reversed from school ride
-        if (upsertRideInput.getIsToSchool()) {
+        if (upsertRideInput.getIsToSchool() && upsertRideInput.getId() == null) {
             upsertRideInput.setIsToSchool(false);
             upsertRideInput.setStartFrom("School");
             // always start at 17:45pm, not related to the input
@@ -197,6 +199,25 @@ public class RideServiceImpl implements RideService {
             Collections.reverse(upsertRideInput.getPickupPointIds());
 
             upsertRide(upsertRideInput);
+        } else if (upsertRideInput.getIsToSchool()) {
+            long reversedRideId = upsertRideInput.getId() + 1; // note that the reversed ride id is always the next id of the current ride
+            Ride reversedRide = rideRepository.findById(reversedRideId)
+                .orElseThrow(() -> new MyException(
+                    null,
+                    "reversed_ride_not_found",
+                    "Reversed ride not found with id: " + reversedRideId,
+                    HttpStatus.BAD_REQUEST
+                ));
+
+            // compared if date of upsert input is different from the reversed ride => make the reversed ride the same date as the upsert input but still maintain the old time
+            if (!(upsertRideInput.getStartAt().toEpochMilli() / 86400000L ==
+                reversedRide.getStartAt().toEpochMilli() / 86400000L)) {
+                ZonedDateTime startAtZonedDateTime = upsertRideInput.getStartAt().atZone(ZoneId.systemDefault());
+                ZonedDateTime newStartAtZonedDateTime = startAtZonedDateTime.withHour(reversedRide.getStartAt().atZone(ZoneId.systemDefault()).getHour())
+                    .withMinute(reversedRide.getStartAt().atZone(ZoneId.systemDefault()).getMinute());
+                reversedRide.setStartAt(newStartAtZonedDateTime.toInstant());
+                rideRepository.save(reversedRide);
+            }
         }
 
         // set all student pickup points to PICKING status

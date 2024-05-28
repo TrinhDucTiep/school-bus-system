@@ -34,7 +34,7 @@ export const StudentRenderCell = ({ data, columnKey, handleOpenChange, setSelect
                     <div>
                         <User
                             avatarProps={{
-                                src: data.avatar ? data.avatar : undefined,
+                                // src: data.avatar ? data.avatar : undefined,
                             }}
                             name={data.name}
                         >

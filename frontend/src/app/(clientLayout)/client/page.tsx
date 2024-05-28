@@ -25,7 +25,7 @@ const ClientPage: React.FC = () => {
                 <div className="flex flex-row gap-2 m-2 w-auto">
                     <User
                         avatarProps={{
-                            src: "https://www.w3schools.com/howto/img_avatar.png",
+                            // src: "https://www.w3schools.com/howto/img_avatar.png",
                         }}
                         name=""
                     >

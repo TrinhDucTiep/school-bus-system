@@ -113,7 +113,7 @@ const ModalUpdateParent: React.FC<IProps> = (
                                                 name={student.name || ""}
                                                 description={student.studentClass || ""}
                                                 avatarProps={{
-                                                    src: student.avatar || ""
+                                                    // src: student.avatar || ""
                                                 }} />
 
                                             <div className="flex items-center gap-4 ">

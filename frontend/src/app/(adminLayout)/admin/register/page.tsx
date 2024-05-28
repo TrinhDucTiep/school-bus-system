@@ -373,7 +373,7 @@ const RegisterPage: React.FC = () => {
             {/* table all request registration */}
             <div className='m-4'>
                 <h3 className='text-xl font-bold m-2'>Lịch sử đăng ký</h3>
-                <div className='flex  gap-2 m-2'>
+                <div className='flex gap-2 m-2'>
                     <Input
                         size='sm'
                         placeholder='Tên học sinh'

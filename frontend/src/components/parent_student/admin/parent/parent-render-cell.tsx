@@ -27,7 +27,7 @@ export const ParentRenderCell = ({ parent, columnKey, handleOpenChange, setSelec
                     <div>
                         <User
                             avatarProps={{
-                                src: parent.avatar ? parent.avatar : undefined,
+                                // src: parent.avatar ? parent.avatar : undefined,
                             }}
                             name={parent.name}
                         >

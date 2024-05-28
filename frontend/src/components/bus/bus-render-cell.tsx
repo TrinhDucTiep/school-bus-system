@@ -49,7 +49,7 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
             return (
                 <User
                     avatarProps={{
-                        src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+                        // src: bus?.driver?.avatar ? bus?.driver?.avatar : undefined,
                     }}
                     name={bus?.driver?.name}
                     description={bus?.driver?.phoneNumber}
@@ -61,7 +61,7 @@ export const BusRenderCell = ({ bus, columnKey, handleOpenChange, setSelectedBus
             return (
                 <User
                     avatarProps={{
-                        src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+                        // src: bus?.driverMate?.avatar ? bus?.driverMate?.avatar : undefined,
                     }}
                     name={bus?.driverMate?.name}
                     description={bus?.driverMate?.phoneNumber}

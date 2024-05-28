@@ -38,7 +38,7 @@ export const EmployeeRenderCell = ({
             return (
                 <User
                     avatarProps={{
-                        src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+                        // src: employeeTable?.employee.avatar ? employeeTable?.employee.avatar : undefined,
                     }}
                     name={employeeTable?.employee.name}
                 >
