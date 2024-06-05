@@ -74,4 +74,7 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
     """)
     Page<Bus> findAllByNumberPlateAndStatus(String numberPlate, BusStatus status,
                                             Pageable pageable);
+
+    // countByNumberPlateIn
+    Long countByNumberPlateIn(List<String> numberPlates);
 }

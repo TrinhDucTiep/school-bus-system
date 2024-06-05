@@ -11,11 +11,13 @@ import com.example.shared.db.entities.Parent;
 import com.example.shared.db.entities.PickupPoint;
 import com.example.shared.db.entities.Ride;
 import com.example.shared.db.entities.Student;
+import com.example.shared.db.entities.StudentAssign;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.ParentRepository;
 import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
 import com.example.shared.db.repo.RideRepository;
+import com.example.shared.db.repo.StudentAssignRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
 import com.example.shared.db.repo.StudentRepository;
 import com.example.shared.exception.MyException;
@@ -37,6 +39,7 @@ public class ParentStudentServiceImpl implements ParentStudentService{
     private final RidePickupPointRepository ridePickupPointRepository;
     private final RideRepository rideRepository;
     private final BusRepository busRepository;
+    private final StudentAssignRepository studentAssignRepository;
 
     @Override
     public List<GetStudentRideOutput> getStudentRides(Account account) {
@@ -95,6 +98,12 @@ public class ParentStudentServiceImpl implements ParentStudentService{
                     );
                     executionOutputs.add(executionOutput);
                 }
+            }
+
+            // enrich student assign - bus with number plate
+            StudentAssign studentAssign = studentAssignRepository.findByStudentId(studentId).orElse(null);
+            if (studentAssign != null) {
+                studentOutput.setNumberPlateAssign(studentAssign.getNumberPlate());
             }
 
             GetStudentRideOutput getStudentRideOutput = GetStudentRideOutput.builder()

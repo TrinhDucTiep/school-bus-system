@@ -104,24 +104,6 @@ public class RideServiceImpl implements RideService {
         // sort to the right order from request
         pickupPoints.sort(Comparator.comparing(pickupPoint -> upsertRideInput.getPickupPointIds().indexOf(pickupPoint.getId())));
 
-        // validate that a bus only has one pending ride at a time (to school or from school)
-//        List<Ride> rides = rideRepository.findByManipulateRide(
-//            bus.getId(),
-//            RideStatus.PENDING,
-//            upsertRideInput.getIsToSchool(),
-//            upsertRideInput.getStartAt()
-//        );
-//        if (rides.size() == 1) { // todo: tieptd
-//            if (upsertRideInput.getId() == null || !rides.get(0).getId().equals(upsertRideInput.getId())) {
-//                throw new MyException(
-//                    null,
-//                    "bus_already_had_pending_ride",
-//                    "Bus already had pending ride",
-//                    HttpStatus.BAD_REQUEST
-//                );
-//            }
-//        }
-
         // upsert ride
         Ride ride;
         if (upsertRideInput.getId() == null) {

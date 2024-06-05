@@ -22,6 +22,7 @@ import {
     ModalFooter,
     useDisclosure,
     Chip,
+    Textarea,
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
@@ -142,24 +143,6 @@ const ClientRegistration: React.FC = () => {
 
                     <div className='flex justify-between'>
                         <div></div>
-                        {/* <Switch
-                            className='mx-2'
-                            isSelected={manipulateIsToSchool}
-                            color='primary'
-                            onClick={() => setManipulateIsToSchool(!manipulateIsToSchool)}
-                        >
-                            {manipulateIsToSchool ? 'Đi học' : 'Về nhà'}
-                        </Switch> */}
-
-                        {/* <Input
-                            placeholder="Ngày"
-                            type='date'
-                            className='m-2 w-1/3'
-                            variant='bordered'
-                            size='sm'
-                            // onChange={(e) => setManipulateDate(e.target.value)}
-                            // defaultValue={convertStringInstantToDate(manipulateDate)}
-                        /> */}
 
                         <Button
                             color={enableClickMap ? 'primary' : 'default'}
@@ -186,8 +169,8 @@ const ClientRegistration: React.FC = () => {
                         >
                             <TableHeader columns={[
                                 { key: 'student', label: 'Học sinh' },
-                                // { key: 'ride-bus', label: 'Chuyến - Xe' },
-                                { key: 'address', label: 'Điểm đón' }
+                                { key: 'address', label: 'Điểm đón' },
+                                { key: 'numberPlateAssign', label: 'Xe chỉ định' }
                             ]}>
                                 {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                             </TableHeader>
@@ -196,15 +179,8 @@ const ClientRegistration: React.FC = () => {
                                 {(item) => (
                                     <TableRow key={item.student.id}>
                                         <TableCell>{item?.student?.name}</TableCell>
-                                        {/* <TableCell>
-                                            {item.executions.map((execution, index) =>
-                                                <React.Fragment key={index}>
-                                                    {`${execution.ride.id} - ${execution.bus.numberPlate}`}
-                                                    {index < item.executions.length - 1 && <br />}
-                                                </React.Fragment>
-                                            )}
-                                        </TableCell> */}
                                         <TableCell>{item?.pickupPoint?.address}</TableCell>
+                                        <TableCell>{item?.student?.numberPlateAssign}</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -218,6 +194,16 @@ const ClientRegistration: React.FC = () => {
                         >
                             Đăng ký
                         </Button>
+                    </div>
+
+                    {/* a text note for client */}
+                    <div className='m-2'>
+                        <Textarea
+                            isReadOnly
+                            defaultValue='Ghi chú: Xe chỉ định chỉ là xe học sinh được ưu tiên hơn so với học sinh khác nếu xe đó đến. Học sinh vẫn có thể được phụ xe ở xe khác điểm danh và gọi đón.'
+                            color='danger'
+                        >
+                        </Textarea>
                     </div>
 
                 </div>

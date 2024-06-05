@@ -80,4 +80,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         @Param("studentPhoneNumber") String studentPhoneNumber
     );
 
+    // countByIdIn
+    Long countByIdIn(List<Long> ids);
+
 }

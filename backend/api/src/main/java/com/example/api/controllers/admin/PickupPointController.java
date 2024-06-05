@@ -31,6 +31,9 @@ public class PickupPointController {
     public ResponseEntity<CommonResponse<Object>> getPickupPoints(PickupPointFilterParam filterParam,
                                                                   Integer page, Integer size,
                                                                   String sort) {
+        if (size == null || size == 0) {
+            size = 10000000;
+        }
         Pageable pageable = PageableUtils.generate(page, size, sort);
 
         return ResponseUtil.toSuccessCommonResponse(

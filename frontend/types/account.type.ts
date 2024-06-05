@@ -9,6 +9,8 @@ interface IStudentBase {
     parentId: number;
     created_at: string;
     updated_at: string;
+
+    numberPlateAssign: string | null;
 }
 interface IStudent extends IStudentBase {
     id: number;

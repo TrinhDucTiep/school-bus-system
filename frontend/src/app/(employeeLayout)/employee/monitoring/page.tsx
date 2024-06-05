@@ -447,6 +447,7 @@ const EmployeeMonitoring: React.FC = () => {
                                                     <TableColumn>Tên học sinh</TableColumn>
                                                     <TableColumn>Số điện thoại</TableColumn>
                                                     <TableColumn>Trạng thái</TableColumn>
+                                                    <TableColumn>Chỉ định</TableColumn>
                                                 </TableHeader>
                                                 <TableBody>
                                                     {item.studentWithPickupPoints.map((student, index) => {
@@ -471,6 +472,14 @@ const EmployeeMonitoring: React.FC = () => {
                                                                         }
                                                                     >
                                                                         {student.studentPickupPoint.status}
+                                                                    </Chip>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {/* {student.student.numberPlateAssign == manipulatePickupPointData?.result?.bus.numberPlate ? 'Có' : 'Không'} */}
+                                                                    <Chip
+                                                                        color={student.student.numberPlateAssign == manipulatePickupPointData?.result?.bus.numberPlate ? 'success' : 'default'}
+                                                                    >
+                                                                        {student.student.numberPlateAssign == manipulatePickupPointData?.result?.bus.numberPlate ? 'Có' : 'Không'}
                                                                     </Chip>
                                                                 </TableCell>
                                                             </TableRow>

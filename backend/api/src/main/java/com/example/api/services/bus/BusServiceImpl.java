@@ -272,12 +272,15 @@ public class BusServiceImpl implements BusService {
             );
 
             if (rides.size() > 1) {
-                throw new MyException(null,
-                    "MULTIPLE_PENDING_RIDES",
-                    "Multiple pending rides found for bus with id " + bus.getId()
-                        + " on date " + param.getDate()
-                        + " and isToSchool " + param.getIsToSchool(),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+//                throw new MyException(null,
+//                    "MULTIPLE_PENDING_RIDES",
+//                    "Multiple pending rides found for bus with id " + bus.getId()
+//                        + " on date " + param.getDate()
+//                        + " and isToSchool " + param.getIsToSchool(),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+
+                // sort to get ride with bigger ID (cause ID is auto increment)
+                rides.sort((r1, r2) -> r2.getId().compareTo(r1.getId()));
             }
 
             Ride ride = rides.isEmpty() ? null : rides.get(0);

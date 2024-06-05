@@ -19,6 +19,8 @@ public class StudentOutput {
     private Instant createdAt;
     private Instant updatedAt;
 
+    private String numberPlateAssign;
+
     public static StudentOutput fromEntity(Student entity) {
         return StudentOutput.builder()
             .id(entity.getId())

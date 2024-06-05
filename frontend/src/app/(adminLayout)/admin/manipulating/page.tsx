@@ -23,7 +23,9 @@ import {
     Pagination,
     Select,
     SelectItem,
-    Snippet
+    Snippet,
+    Accordion,
+    AccordionItem
 } from '@nextui-org/react';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
@@ -37,6 +39,7 @@ import { on } from 'events';
 import { convertStringInstantToDate, convertStringInstantToDateTime } from '@/util/dateConverter';
 import { bus_status_map } from '@/util/constant';
 import { validateColor } from '@/util/color';
+import { useUpsertStudentAssign } from '@/services/admin/studentAssignService';
 
 const ManipulatingPage: React.FC = () => {
 
@@ -121,6 +124,21 @@ const ManipulatingPage: React.FC = () => {
         </div>
     );
 
+    // upsert student assign
+    const [upsertStudentAssigns, setUpsertStudentAssigns] = React.useState<IUpsertStudentAssignItem[]>([]);
+    const { isOpen: isOpenUpsertStudentAssignConfirm, onOpen: onOpenUpsertStudentAssignConfirm, onOpenChange: onOpenChangeUpsertStudentAssignConfirm } = useDisclosure();
+    const upsertStudentAssignMutation = useUpsertStudentAssign(() => {
+        onOpenChangeUpsertStudentAssignConfirm();
+    });
+    let upsertStudentAssignRequest: IUpsertStudentAssignRequest = {
+        items: upsertStudentAssigns
+    }
+    const handleUpsertStudentAssign = () => {
+        upsertStudentAssignMutation.mutate(upsertStudentAssignRequest);
+    }
+    const [pageStudentAssign, setPageStudentAssign] = React.useState<number>(1);
+    const [numberPlateStudentAssignQuery, setNumberPlateStudentAssignQuery] = React.useState('');
+    const [addressStudentAssignQuery, setAddressStudentAssignQuery] = React.useState('');
 
     // search manipulate pickup points direction
     const useGetManipulatePickupPointsDirectionsParams: IDirectionsParams = {
@@ -342,7 +360,120 @@ const ManipulatingPage: React.FC = () => {
                 </div >
             </div>
 
-            {/* table for list ride */}
+            {/* table for list pickuppoint accordion and table student multiple choice on that and below have a select to select bus which are included in ride that go through that pickuppoint */}
+            <div className='m-8 flex flex-col'>
+                <div>
+                    <h2 className='m-2 text-2xl font-bold'>
+                        Chỉ định học sinh - xe bus
+                    </h2>
+                </div>
+
+                <div className='m-2 bg-white rounded-lg w-1/3'>
+                    <Input
+                        size='lg'
+                        variant='bordered'
+                        placeholder="Địa chỉ"
+                        onChange={(e) => setAddressStudentAssignQuery(e.target.value)}
+                    />
+                </div>
+                <div className='w-2/3'>
+                    <Accordion variant='shadow'>
+                        {/* split list pickup point into chunk size 5 */}
+                        {
+                            (listPickupPoint?.result.content ?? []).filter((item) => item.pickupPoint.address.toLocaleLowerCase().includes(addressStudentAssignQuery.toLocaleLowerCase()))
+                                .slice((pageStudentAssign - 1) * 5, pageStudentAssign * 5).map((item) => (
+                                    <AccordionItem
+                                        key={item?.pickupPoint?.id}
+                                        title={item?.pickupPoint?.address}
+                                    >
+                                        <div className='m-2'>
+                                            <Table
+                                                aria-label="List student assign"
+                                                selectionMode='multiple'
+                                                onSelectionChange={(selectedKeys) => {
+                                                    const keysArray = Array.from(selectedKeys);
+                                                    const selectedKeysArray = keysArray.map((item) => Number(item));
+                                                    const newUpsertStudentAssigns = selectedKeysArray.map((studentId) => {
+                                                        return {
+                                                            studentId: studentId,
+                                                            numberPlate: numberPlateStudentAssignQuery
+                                                        }
+                                                    });
+                                                    setUpsertStudentAssigns(newUpsertStudentAssigns);
+                                                }}
+                                            >
+                                                <TableHeader columns={[
+                                                    { key: 'name', label: 'Tên học sinh' },
+                                                    { key: 'phoneNumber', label: 'Số điện thoại' },
+                                                    { key: 'class', label: 'Lớp' },
+                                                    { key: 'numberPlateAssign', label: 'Xe bus chi định' }
+                                                ]}>
+                                                    {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                                                </TableHeader>
+                                                <TableBody items={item.students ?? []} emptyContent='No row to display'>
+                                                    {(student) => (
+                                                        <TableRow key={student.id}>
+                                                            <TableCell>
+                                                                {student.name}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {student.phoneNumber}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {student.studentClass}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {student.numberPlateAssign}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+
+                                        <div className='flex justify-between mx-8'>
+                                            <Input
+                                                className='w-1/3 m-2'
+                                                placeholder="Biển số xe"
+                                                onChange={(e) => {
+                                                    const newValue = e.target.value;
+                                                    const newUpsertStudentAssigns = upsertStudentAssigns.map((item1) => {
+                                                        return {
+                                                            studentId: item1.studentId,
+                                                            numberPlate: newValue
+                                                        }
+                                                    });
+                                                    setUpsertStudentAssigns(newUpsertStudentAssigns);
+                                                    setNumberPlateStudentAssignQuery(newValue);
+                                                }}
+                                            />
+
+                                            <Button
+                                                color='primary'
+                                                className='m-2'
+                                                onClick={onOpenUpsertStudentAssignConfirm}
+                                            >
+                                                Lưu chỉ định
+                                            </Button>
+                                        </div>
+                                    </AccordionItem>
+                                ))
+                        }
+                    </Accordion>
+                    <div className='py-2 px-2 flex w-full justify-center items-center'>
+                        <Pagination
+                            isCompact
+                            showControls
+                            showShadow
+                            color="primary"
+                            page={pageStudentAssign}
+                            total={listPickupPoint?.result.totalElements ? Math.ceil(listPickupPoint?.result.totalElements / 5) : 1}
+                            onChange={setPageStudentAssign}
+                        />
+                    </div>
+                </div>
+
+            </div>
 
 
             {/* modal confirm adding ride */}
@@ -376,6 +507,36 @@ const ManipulatingPage: React.FC = () => {
                 </Modal>
             </div>
 
+            {/* modal confirm upsert student assign */}
+            <div className='relative z-10'>
+                <Modal isOpen={isOpenUpsertStudentAssignConfirm} onOpenChange={onOpenChangeUpsertStudentAssignConfirm}
+                >
+                    <ModalContent>
+                        {(onOpenUpsertStudentAssignConfirm) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Xác nhận lưu chỉ định</ModalHeader>
+                                <ModalBody>
+                                    <p>
+                                        Bạn có muốn lưu chỉ định không?
+                                    </p>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light"
+                                        onPress={onOpenChangeUpsertStudentAssignConfirm}
+                                    >
+                                        Huỷ
+                                    </Button>
+                                    <Button color="primary" onPress={() => {
+                                        handleUpsertStudentAssign();
+                                    }}>
+                                        Xác nhận
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
+            </div>
         </div>
     );
 };

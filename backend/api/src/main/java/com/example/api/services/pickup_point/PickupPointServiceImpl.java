@@ -18,6 +18,7 @@ import com.example.shared.db.entities.Bus;
 import com.example.shared.db.entities.Employee;
 import com.example.shared.db.entities.PickupPoint;
 import com.example.shared.db.entities.Ride;
+import com.example.shared.db.entities.StudentAssign;
 import com.example.shared.db.repo.AccountRepository;
 import com.example.shared.db.repo.BusRepository;
 import com.example.shared.db.repo.EmployeeRepository;
@@ -26,6 +27,7 @@ import com.example.shared.db.repo.PickupPointRepository;
 import com.example.shared.db.repo.RidePickupPointRepository;
 import com.example.shared.db.repo.RideRepository;
 import com.example.shared.db.repo.RoutePickupPointRepository;
+import com.example.shared.db.repo.StudentAssignRepository;
 import com.example.shared.db.repo.StudentPickupPointRepository;
 import com.example.shared.db.repo.StudentRepository;
 import com.example.shared.enumeration.EmployeeRole;
@@ -57,6 +59,7 @@ public class PickupPointServiceImpl implements PickupPointService {
     private final StudentRepository studentRepository;
     private final RideRepository rideRepository;
     private final BusRepository busRepository;
+    private final StudentAssignRepository studentAssignRepository;
 
     @Override
     public Page<GetListPickupPointOutput> getListPickupPoint(PickupPointFilterParam filterParam,
@@ -75,6 +78,14 @@ public class PickupPointServiceImpl implements PickupPointService {
                 rideRepository.findByPickupPointId(output.getPickupPoint().getId())
                     .stream().map(RideOutput::fromEntity).toList()
             );
+        }
+
+        // enrich assign student - bus: numberPlate
+        for (GetListPickupPointOutput output : result) {
+            for (StudentOutput student : output.getStudents()) {
+                StudentAssign studentAssign = studentAssignRepository.findByStudentId(student.getId()).orElse(null);
+                student.setNumberPlateAssign(studentAssign == null ? null : studentAssign.getNumberPlate());
+            }
         }
 
         return result;
@@ -290,6 +301,10 @@ public class PickupPointServiceImpl implements PickupPointService {
                         )
                         .build()
                 );
+
+                // enrich student assign - bus with number plate
+                StudentAssign studentAssign = studentAssignRepository.findByStudentId(student.getId()).orElse(null);
+                student.setNumberPlateAssign(studentAssign == null ? null : studentAssign.getNumberPlate());
             }
 
             pickupPointWithStudents.add(
