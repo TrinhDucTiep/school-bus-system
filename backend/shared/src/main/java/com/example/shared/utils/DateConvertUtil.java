@@ -53,4 +53,11 @@ public class DateConvertUtil {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         return zonedDateTime.format(formatter);
     }
+
+    public static Instant addDays(Instant instant, int days) {
+        if (instant == null) {
+            return null;
+        }
+        return instant.plusSeconds((long) days * 24 * 60 * 60);
+    }
 }

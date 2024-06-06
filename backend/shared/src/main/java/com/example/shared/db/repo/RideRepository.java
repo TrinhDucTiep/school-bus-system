@@ -203,4 +203,15 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         @Param("employeeId") Long employeeId,
         @Param("startAt") Instant startAt
     );
+
+    @Query("""
+        SELECT r
+        FROM Ride r
+        WHERE DATE(r.startAt) = DATE(:date)
+        AND r.isToSchool = :isToSchool
+    """)
+    List<Ride> findAllRidesByDateStartAt(
+        @Param("date") Instant date,
+        @Param("isToSchool") Boolean isToSchool
+    );
 }

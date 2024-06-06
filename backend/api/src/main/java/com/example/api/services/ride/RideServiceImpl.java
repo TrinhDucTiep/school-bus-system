@@ -55,6 +55,8 @@ public class RideServiceImpl implements RideService {
     @Override
     @Transactional
     public void upsertRide(UpsertRideInput upsertRideInput) {
+        boolean isAdd = upsertRideInput.getId() == null;
+
         // validate input
         if (upsertRideInput.getBusId() == null || upsertRideInput.getStartFrom() == null ||
             upsertRideInput.getStartAt() == null || upsertRideInput.getPickupPointIds() == null) {
@@ -142,7 +144,7 @@ public class RideServiceImpl implements RideService {
         ));
 
         // save ride pickup points
-        if (upsertRideInput.getId() != null) {
+        if (!isAdd) {
             ridePickupPointRepository.deleteAllByRideId(upsertRideInput.getId());
             ridePickupPointHistoryRepository.deleteAllByRideId(upsertRideInput.getId());
         }
@@ -170,7 +172,8 @@ public class RideServiceImpl implements RideService {
         });
 
         // default upsert back to school ride is reversed from school ride
-        if (upsertRideInput.getIsToSchool() && upsertRideInput.getId() == null) {
+        if (upsertRideInput.getIsToSchool() && isAdd) {
+            upsertRideInput.setId(null);
             upsertRideInput.setIsToSchool(false);
             upsertRideInput.setStartFrom("School");
             // always start at 17:45pm, not related to the input
@@ -181,7 +184,7 @@ public class RideServiceImpl implements RideService {
             Collections.reverse(upsertRideInput.getPickupPointIds());
 
             upsertRide(upsertRideInput);
-        } else if (upsertRideInput.getIsToSchool()) {
+        } else if (upsertRideInput.getIsToSchool() && !isAdd) { // update reversed ride in case wanna update ride to school
             long reversedRideId = upsertRideInput.getId() + 1; // note that the reversed ride id is always the next id of the current ride
             Ride reversedRide = rideRepository.findById(reversedRideId)
                 .orElseThrow(() -> new MyException(
@@ -205,9 +208,7 @@ public class RideServiceImpl implements RideService {
         // set all student pickup points to PICKING status
         List<StudentPickupPoint> studentPickupPoints = studentPickupPointRepository
             .findByPickupPointIdIn(upsertRideInput.getPickupPointIds());
-        studentPickupPoints.forEach(studentPickupPoint -> {
-            studentPickupPoint.setStatus(StudentPickupPointStatus.PICKING);
-        });
+        studentPickupPoints.forEach(studentPickupPoint -> studentPickupPoint.setStatus(StudentPickupPointStatus.PICKING));
         studentPickupPointRepository.saveAll(studentPickupPoints);
         studentPickupPointHistoryRepository.saveAll(
             studentPickupPoints.stream()

@@ -54,4 +54,11 @@ public interface RidePickupPointRepository extends JpaRepository<RidePickupPoint
 
     // findByRideIdAndPickupPointId
     Optional<RidePickupPoint> findByRideIdAndPickupPointId(Long rideId, Long pickupPointId);
+
+    @Query("""
+        SELECT rpp.pickupPoint.id
+        FROM RidePickupPoint rpp
+        WHERE rpp.ride.id = :rideId
+    """)
+    List<Long> findPickupPointIdsByRideId(Long rideId);
 }
