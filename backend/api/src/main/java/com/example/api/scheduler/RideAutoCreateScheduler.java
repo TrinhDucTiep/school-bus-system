@@ -58,4 +58,10 @@ public class RideAutoCreateScheduler {
 
         log.info("End create ride for next day");
     }
+
+    // scheduler for heartbeat every 10 seconds
+    @Scheduled(fixedRate = 10000)
+    public void heartbeat() {
+        log.info("Heartbeat");
+    }
 }
