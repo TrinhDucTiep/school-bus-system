@@ -204,12 +204,17 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         @Param("startAt") Instant startAt
     );
 
-    @Query("""
-        SELECT r
-        FROM Ride r
-        WHERE DATE(r.startAt) = DATE(:date)
-        AND r.isToSchool = :isToSchool
-    """)
+    @Query(value = """
+        SELECT r.*
+            FROM tieptd_194185_ride r
+            WHERE DATE(r.start_at) = :date
+            AND r.is_to_school = :isToSchool
+            AND r.bus_id not in (
+                SELECT r2.bus_id
+                FROM tieptd_194185_ride r2
+                WHERE DATE(r2.start_at) = DATE(:date) + interval '1' day
+            )
+    """, nativeQuery = true)
     List<Ride> findAllRidesByDateStartAt(
         @Param("date") Instant date,
         @Param("isToSchool") Boolean isToSchool

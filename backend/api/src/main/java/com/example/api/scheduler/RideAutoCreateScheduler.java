@@ -26,7 +26,7 @@ public class RideAutoCreateScheduler {
 
     // schedule to create rides for the next day at 11:00 PM
     // it is copy all rides from the current day to the next day with the same pickup points and students
-    @Scheduled(cron = "0 46 23 * * ?")
+    @Scheduled(cron = "0 28 21 * * ?")
     @Transactional
     public void createRideForNextDay() {
         log.info("Start create ride for next day");
@@ -57,11 +57,5 @@ public class RideAutoCreateScheduler {
         }
 
         log.info("End create ride for next day");
-    }
-
-    // scheduler for heartbeat every 10 seconds
-    @Scheduled(fixedRate = 10000)
-    public void heartbeat() {
-        log.info("Heartbeat");
     }
 }
