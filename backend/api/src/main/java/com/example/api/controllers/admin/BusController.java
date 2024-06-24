@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ public class BusController {
     private final BusService busService;
 
     @GetMapping("/pagination")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getBuses(ListBusFilterParam filterParam,
                                                            Integer page, Integer size,
                                                            String sort) {
@@ -43,6 +45,7 @@ public class BusController {
     }
 
     @GetMapping("/{busId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getBus(
         @PathVariable Long busId
         ) {
@@ -52,6 +55,7 @@ public class BusController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> addBus(
         @RequestBody AddBusRequest request
         ) {
@@ -60,6 +64,7 @@ public class BusController {
     }
 
     @PutMapping("")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> updateBus(
         @RequestBody UpdateBusRequest request
         ) {
@@ -68,6 +73,7 @@ public class BusController {
     }
 
     @DeleteMapping("")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> deleteBus(
         @RequestBody DeleteBusRequest request
         ) {
@@ -76,6 +82,7 @@ public class BusController {
     }
 
     @GetMapping("/available")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getAvailableBuses(
         @RequestParam(required = false) EmployeeRole role,
         @RequestParam(required = false) String numberPlate
@@ -86,6 +93,7 @@ public class BusController {
     }
 
     @GetMapping("/manipulate")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getListManipulateBus(
         BusManipulateParam param,
         Integer page, Integer size, String sort

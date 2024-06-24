@@ -9,6 +9,7 @@ import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ public class EmployeePickupPointController {
     private final PickupPointService pickupPointService;
 
     @GetMapping("/list-ride-id")
+    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getListRideId(
         @AuthenticationPrincipal Account account,
         String date
@@ -32,6 +34,7 @@ public class EmployeePickupPointController {
     }
 
     @GetMapping("/manipulate")
+    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getListManipulatePickupPoint(
         @AuthenticationPrincipal Account account,
         String date,

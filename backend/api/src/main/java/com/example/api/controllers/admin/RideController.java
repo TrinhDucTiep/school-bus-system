@@ -8,6 +8,7 @@ import com.example.shared.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ public class RideController {
     private final RideService rideService;
 
     @PostMapping("/upsert")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> upsertRide(
             @RequestBody UpsertRideRequest upsertRideRequest
     ) {
@@ -31,6 +33,7 @@ public class RideController {
     }
 
     @PutMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> updateRide(
             @RequestBody UpdateRideRequest updateRideRequest
     ) {

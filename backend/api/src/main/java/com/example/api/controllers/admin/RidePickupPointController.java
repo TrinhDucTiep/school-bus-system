@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ public class RidePickupPointController {
     private final RidePickupPointService ridePickupPointService;
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getRidePickupPoints(
         RidePickupPointFilterParam filterParam,
         Integer page, Integer size, String sort
@@ -39,6 +41,7 @@ public class RidePickupPointController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> addRidePickupPoint(
         @RequestBody AddRidePickupPointRequest addRidePickupPointRequest
     ) {
@@ -48,6 +51,7 @@ public class RidePickupPointController {
     }
 
     @PutMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> updateRidePickupPoint(
         @RequestBody UpdateRidePickupPointRequest request
         ) {
@@ -57,6 +61,7 @@ public class RidePickupPointController {
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> deleteRidePickupPoint(
         @RequestBody DeleteRidePickupPointRequest request
         ) {

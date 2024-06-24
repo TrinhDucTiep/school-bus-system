@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping("/pagination")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getEmployees(ListEmployeeFilterParam filterParam,
                                                                Integer page, Integer size,
                                                                String sort) {
@@ -41,6 +43,7 @@ public class EmployeeController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> addEmployee(
         @RequestBody AddEmployeeRequest request
         ) {
@@ -49,6 +52,7 @@ public class EmployeeController {
     }
 
     @PutMapping("")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> updateEmployee(
         @RequestBody UpdateEmployeeRequest request
         ) {
@@ -57,6 +61,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> deleteEmployee(
         @RequestBody DeleteEmployeeRequest request
         ) {
@@ -65,6 +70,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/available")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getAvailableEmployees(
         @RequestParam(required = false) EmployeeRole role,
         @RequestParam(required = false) String query

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ public class PickupPointController {
     private final PickupPointService pickupPointService;
 
     @GetMapping("/pagination")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> getPickupPoints(PickupPointFilterParam filterParam,
                                                                   Integer page, Integer size,
                                                                   String sort) {
@@ -42,6 +44,7 @@ public class PickupPointController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> addPickupPoint(
             @RequestBody AddPickupPointRequest addPickupPointRequest
     ) {
@@ -51,6 +54,7 @@ public class PickupPointController {
     }
 
     @PutMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> updatePickupPoint(
         @RequestBody UpdatePickupPointRequest updatePickupPointRequest
     ) {
@@ -60,6 +64,7 @@ public class PickupPointController {
     }
 
     @DeleteMapping()
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<CommonResponse<Object>> deletePickupPoint(
         @RequestBody DeletePickupPointRequest deletePickupPointRequest
         ) {
