@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { camelCase } from 'lodash';
 
-const api_key = "5b3ce3597851110001cf624835ea0f4836b24bcc8faea58c6a8a4c7d";
+const api_key = "your_api_key";
 
 const apiMap = axios.create({
     baseURL: "https://api.openrouteservice.org",
