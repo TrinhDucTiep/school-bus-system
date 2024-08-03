@@ -55,12 +55,12 @@ services:
       - "8080:8080"
     environment:
       SERVER_PORT: 8080
-      DOCKER_SERVER_HOST: http://erp3.soict.ai:12375
-      SQL_DB_HOST: erp3.soict.ai
-      SQL_DB_PORT: 6543
-      SQL_DB_USER: postgres
-      SQL_DB_PASS: "0penerp@2023#"
-      POSTGRES_DB: erp_dev_2024
+      DOCKER_SERVER_HOST: ##
+      SQL_DB_HOST: ##
+      SQL_DB_PORT: ##
+      SQL_DB_USER: ##
+      SQL_DB_PASS: ##
+      POSTGRES_DB:###
       KAFKA_ADDRESSES: kafka:9092
       KAFKA_EXAMPLE_TOPIC: example-topic
       COLLECTOR_ENDPOINT: http://otel-collector:4317
@@ -82,12 +82,12 @@ services:
     ports:
       - "8082:8082"
     environment:
-      DOCKER_SERVER_HOST: http://erp3.soict.ai:12375
-      SQL_DB_HOST: erp3.soict.ai
-      SQL_DB_PORT: 6543
-      SQL_DB_USER: postgres
-      SQL_DB_PASS: "0penerp@2023#"
-      POSTGRES_DB: erp_dev_2024
+      DOCKER_SERVER_HOST: ###
+      SQL_DB_HOST: ####
+      SQL_DB_PORT: ####
+      SQL_DB_USER: ####
+      SQL_DB_PASS: ###
+      POSTGRES_DB: ####
       KAFKA_ADDRESSES: kafka:9092
       KAFKA_EXAMPLE_TOPIC: example-topic
       COLLECTOR_ENDPOINT: http://otel-collector:4317
