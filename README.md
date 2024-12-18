@@ -1,6 +1,7 @@
 # school-bus-system: 
 This project aims to build a highly customizable school bus dispatching system, providing a flexible and efficient solution for managing and dispatching school buses. Initially, this project will focus on developing a solution to support preschools, elementary schools, middle schools, and high schools, where class schedules are still within certain frameworks and not yet supported for university or equivalent education systems, where schedules and programs are diverse and complex. The system will include functions for managing the fleet of buses, drivers, and bus attendants, managing student and parent information, registering pick-up points and bus schedules, along with a user-friendly interface to enhance the pick-up and drop-off process experience. Especially, the system will be developed with features aimed at convenience and safety in student transportation management.
 
+![image](https://github.com/user-attachments/assets/05ed32c6-bf18-4f10-a587-f05224cdd841)
 ![drawSQL-image-export-2024-05-07](https://github.com/user-attachments/assets/db4044b9-423d-4a1c-a19b-f07efc1785df)
 
 ![registration_screen_1](https://github.com/user-attachments/assets/f272a8bb-1e6c-418e-a159-d6d1c5cef9f3)
@@ -11,8 +12,6 @@ This project aims to build a highly customizable school bus dispatching system, 
 ![control_screen](https://github.com/user-attachments/assets/c4164f65-35fa-4277-a1a7-0b4cd5536a83)
 ![map_1](https://github.com/user-attachments/assets/2c0aaff7-45bc-42e3-b65a-3ac1ecdc3270)
 ![map_2](https://github.com/user-attachments/assets/e4d6375b-416e-40f2-ad89-8827c972d9a9)
-
-![image](https://github.com/user-attachments/assets/04e46e9e-b99a-4cfa-9331-35408f5174e1)
 
 ![image](https://github.com/user-attachments/assets/d0285a34-6be3-4634-b4d1-1c895479082d)
 ![uc](https://github.com/user-attachments/assets/51dd4a6b-8606-42c1-b278-f7c616563b22)
